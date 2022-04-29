@@ -1,0 +1,24 @@
+{
+  "name": "web2project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Simon-Stasovski/Web2Project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Simon-Stasovski/Web2Project/issues"
+  },
+  "homepage": "https://github.com/Simon-Stasovski/Web2Project#readme",
+  "dependencies": {
+    "logger": "^0.0.1",
+    "node": "^17.7.2"
+  }
+}
