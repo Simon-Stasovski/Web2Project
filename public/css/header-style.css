@@ -1,0 +1,103 @@
+
+header{
+    /* background-color: #787A91; */
+    background-color: #9d2235;
+}
+
+header #nav-form-btns{
+    display: flex;
+    /* max-width: 750px; */
+    padding: 1em;
+    border-top: solid black 1px;
+    /* grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 1fr; */
+    /* grid-template-areas: "a b c d e f"; */
+    /* grid-auto-columns: 1fr; */
+}
+
+header #nav-form-btns > form{
+    flex: 1;
+}
+
+header #nav-form-btns form{
+    justify-content: space-between;
+}
+
+#search{
+    padding: 1em;
+    border-radius: 0.5em;
+}
+header #nav-form-btns form input{
+    padding: 0.8em;
+    border-radius: 0.5em;
+    background-color: #0F044C;
+    color: #EEEEEE;
+    font-weight: 600;
+}
+
+#site-header{
+    display:flex;
+    justify-content: space-between;
+    padding: 1em;
+}
+
+#logo-div{
+   flex: 1;
+}
+
+#logo{
+    width: 100%;
+}
+
+#site-header form{
+    flex: 5;
+    display: block;
+}
+
+#site-header input{
+    width: 100%;
+}
+
+#login{
+    flex: 2;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 1.5em;
+}
+
+#login span{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+}
+
+#login button{
+    min-width: 100px;
+    font-weight: 500;
+    padding: 1.2em;
+    border-radius: 0.5em;
+    background-color: #0F044C;
+    color: #EEEEEE;
+}
+
+#login button:hover{
+    background-color: #CACBD3;
+}
+
+#login a{
+    text-decoration: underline;
+    text-decoration-thickness: 5%;
+}
+
+#login a:hover{
+    color: #0F044C;
+}
+
+#nav-form-btns input{
+    width: 100%;
+}
+
+#nav-form-btns input:hover, .submit-btn:hover{
+    background-color: #787A91;
+}
