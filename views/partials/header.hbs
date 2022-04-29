@@ -1,0 +1,49 @@
+<header>
+    <div id="site-header">
+        <div id="logo-div">
+            <image id="logo" src="#" alt="logo"></image>
+        </div>
+        <form>
+            <input type="text" id="search" name="search" placeholder="Search...">
+        </form>
+        <span id="login">
+            <span>
+                <button>Log In</button>
+                <p>or <a>create an account</a></p>
+            </span>
+        </span>
+    </div>
+    <nav>
+        <div id="nav-form-btns">
+            {{!-- Gets home page --}}
+            <form method="get" action="/">
+                <input type="submit" value="Home" id="homeBtn">
+            </form>
+
+            {{!-- Gets form for adding a player --}}
+            <form method="get" action="/nbaPlayers">
+                <input type="submit" value="Add Player" id="addBtn">
+            </form>
+
+            {{!-- Goes directly to list all input because no form is necessary --}}
+            <form method="get" action="/nbaPlayers/list">
+                <input type="submit" value="List All Players" id="showAllBtn">
+            </form>
+
+            {{!-- Gets form for getting specific player entry --}}
+            <form method="get" action="/nbaPlayers/displayQueriedPlayer">
+                <input type="submit" value="Find Specific Player" id="showBtn">
+            </form>
+
+            {{!-- Gets form to edit specific player entry --}}
+            <form method="get" action="/nbaPlayers/displayUpdatedPlayer" >
+                <input type="submit" value="Update Player Number" id="editBtn">
+            </form>
+
+            {{!-- Gets form to delete specific player entry --}}
+            <form method="get" action="/nbaPlayers/displayDeletedPlayer" >
+                <input type="submit" value="Remove Player" id="deleteBtn">
+            </form>
+        </div>
+    </nav>
+</header>
