@@ -105,19 +105,9 @@ async function addCard( cardName, type, description, serialNumber, frontImagePat
             // add all the string values to lower case so they are inserted in lower case
             cardName = cardName.toLowerCase();
             type = type.toLowerCase();
-            colour = colour.toLowerCase();
 
-            // making sure each hex code begins with a #
-            colour = colour.charAt(0) === '#' ? colour : `#${colour}`;
-
-            if( await checkIfNameAlreadyInCardTable( cardName ) !== null ){
-                let errorMessage = `Record with name '${cardName}' already exists in the card table`;
-                logger.error( errorMessage );
-                throw new UserInputError( errorMessage );
-            }
-            else{
-                const sqlQuery =  `INSERT INTO card(name, type, pricePerYard, colour) 
-                                   VALUES ("${cardName}", "${type}", ${pricePerYard}, "${colour}")`;
+            const sqlQuery =  `INSERT INTO card 
+                                   VALUES ("${cardName}", "${type}", ${description}, "${serialNumber}", "${frontImagePath}", "${backImagePath}"), "${isForSale}", "${cardCondition}", "${certificateImage}", "${cardPrice}", "${cardOwner}"`;
 
                 await connection.execute( sqlQuery ).catch(( error ) => { 
                     let errorMessage = `Unable to add data to card table: ${error}`;
@@ -127,8 +117,7 @@ async function addCard( cardName, type, description, serialNumber, frontImagePat
 
                 logger.info( `card with name '${cardName}' added to table successfully`); 
 
-                return {name: cardName, type: type, pricePerYard: pricePerYard, colour: colour};
-            }            
+                return { name: cardName, type: type, pricePerYard: pricePerYard, colour: colour };         
         }
         else{          
             let errorMessage = "Invalid data";
