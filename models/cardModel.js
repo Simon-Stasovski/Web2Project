@@ -101,7 +101,7 @@ async function createCardTable(){
  */
 async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner){
     try{
-        if( validator.isValid( cardName, type, pricePerYard, colour )){ 
+        if( await validator.isValid( cardName, description, frontImagePath, backImagePath, type, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage )){ 
             // add all the string values to lower case so they are inserted in lower case
             cardName = cardName.toLowerCase();
             type = type.toLowerCase();
@@ -110,7 +110,7 @@ async function addCard( cardName, type, description, serialNumber, frontImagePat
             // making sure each hex code begins with a #
             colour = colour.charAt(0) === '#' ? colour : `#${colour}`;
 
-            if( await checkIfNameAlreadyIncardTable( cardName ) !== null ){
+            if( await checkIfNameAlreadyInCardTable( cardName ) !== null ){
                 let errorMessage = `Record with name '${cardName}' already exists in the card table`;
                 logger.error( errorMessage );
                 throw new UserInputError( errorMessage );
@@ -155,7 +155,7 @@ async function addCard( cardName, type, description, serialNumber, frontImagePat
  * @returns The entry's id if the name already exists 
  * in the card table; Null otherwise.
  */
-async function checkIfNameAlreadyIncardTable( name ){
+async function checkIfNameAlreadyInCardTable( name ){
     try{
         name = name.toLowerCase(); // ensures that search name is in correct format
 
@@ -231,11 +231,11 @@ function getConnection(){
  * @param {*} name The name of the record to find in the card table.
  * @returns The object representation of the corresponding record; Null otherwise.
  */
-async function findcardRecord( name ){
+async function findCardRecord( name ){
     const NOT_FOUND = null;
 
     try{
-        let id = await checkIfNameAlreadyIncardTable( name );
+        let id = await checkIfNameAlreadyInCardTable( name );
 
         if (id === NOT_FOUND ){
             let errorMessage = `Record with name '${name} not found in card table`;
@@ -313,19 +313,19 @@ async function updateRowIncardTable( name, newName, newType, newPricePerYard, ne
     newColour = newColour.charAt(0) === '#' ? newColour : `#${newColour}`;
 
     try{
-        let id = await checkIfNameAlreadyIncardTable( name );
+        let id = await checkIfNameAlreadyInCardTable( name );
 
         if ( id === NO_ENTRY_FOUND ){
             let errorMessage = `Entry in card table with name '${name}' not found`;
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
         }
-        else if( !validator.isValid( newName, newType, newPricePerYard, newColour )){
+        else if( await !validator.isValid( newName, newType, newPricePerYard, newColour )){
             let errorMessage = 'New values to be inserted are invalid';
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
         }
-        else if( await checkIfNameAlreadyIncardTable( newName ) !== null && newName !== name ){
+        else if( await checkIfNameAlreadyInCardTable( newName ) !== null && newName !== name ){
             let errorMessage = `New name for record must be unique. The name '${newName}' already exists in the card table`;
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
@@ -344,7 +344,7 @@ async function updateRowIncardTable( name, newName, newType, newPricePerYard, ne
 
         logger.info( "Successfully updated record" );
 
-        return findcardRecord( newName );
+        return findCardRecord( newName );
     }
     catch( error ){
         logger.error( error );
@@ -363,7 +363,7 @@ async function deleteRowFromcardTable( name ){
     const NO_ENTRY_FOUND = null;
 
     try{
-        let id = await checkIfNameAlreadyIncardTable( name );
+        let id = await checkIfNameAlreadyInCardTable( name );
 
         if ( id === NO_ENTRY_FOUND ){
             let errorMessage = `Entry in card table with name '${name}' not found`;
@@ -432,7 +432,7 @@ module.exports = {
     addCard,
     dropCardTable,
     getConnection,
-    findcardRecord,
+    findCardRecord,
     readFromcardTable,
     updateRowIncardTable,
     deleteRowFromcardTable,

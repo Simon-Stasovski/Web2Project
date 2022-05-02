@@ -29,13 +29,13 @@ async function initialize( databaseFilename, resetFlag ){
             throw( error );
         });
 
-        await transactionModel.createCardTable().catch( (error) => {
+        await transactionModel.createTransactionTable().catch( (error) => {
             error = `Issue with creating fabric table: ${error}`;
             logger.error( error ); 
             throw( error );
         });
 
-        await userModel.createCardTable().catch( (error) => {
+        await userModel.createUserTable().catch( (error) => {
             error = `Issue with creating fabric table: ${error}`;
             logger.error( error ); 
             throw( error );
