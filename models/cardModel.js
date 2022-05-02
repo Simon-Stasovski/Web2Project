@@ -429,7 +429,8 @@ class UserInputError extends Error{
 
 module.exports = {
     initialize,
-    addcard,
+    addCard,
+    dropCardTable,
     getConnection,
     findcardRecord,
     readFromcardTable,
