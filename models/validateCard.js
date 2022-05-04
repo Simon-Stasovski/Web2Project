@@ -2,15 +2,23 @@ const validator = require( 'validator' );
 const VALID_CARD_TYPES = [ "pokemon", "yu-gi-oh", "hockey", "basketball", "baseball", "magic the gathering" ];
 
 /**
- * Validates the fabric data that will be inserted into the database.
- * Name can only be made up of letters and at most 50 characters long, 
- * the type must be one of the valid fabric types above, the price per 
- * yard must be a money value with only 2 decimals and the colour must 
- * be a valid hexadecimal colour value.
- * @param {*} name The name of the fabric 
- * @param {*} type The type of knit of the fabric
- * @param {*} pricePerYard The price of the fabric per yard
- * @param {*} colour The hexadecimal value of the fabric's colour
+ * Validates the data to be entered into the card table. cardName and serialNumber must be between 0 and 50 characters in length.
+ * description must be between 0 and 400 characters in length. frontImagePath, backImagePath and certificateImagePath 
+ * must be between 0 and 150 characters in length. cardType must be one of the 6 specified valid card types. cardCondition
+ * must be an integer value between 1 and 5. cardPrice must be a currency value. cardOwner must already exist in the user database
+ * and the card price must be specified if isForSale is true.
+ * @param {*} cardName 
+ * @param {*} description 
+ * @param {*} frontImagePath 
+ * @param {*} backImagePath 
+ * @param {*} cardType 
+ * @param {*} serialNumber 
+ * @param {*} cardCondition 
+ * @param {*} cardPrice 
+ * @param {*} cardOwner 
+ * @param {*} certificateImage 
+ * @param {*} isForSale 
+ * @returns 
  */
 async function isValid( cardName, description, frontImagePath, backImagePath, cardType, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale ){
     if(isForSale && cardPrice == null){
