@@ -45,3 +45,18 @@ async function initialize( databaseFilename, resetFlag ){
         logger.error( `Error: Unable to initialize database: ${error}` );
     }
 }
+
+/**
+ * Gets the connection to the current database and returns it.
+ * The database and connection are initialized before the
+ * function is called.
+ * @returns the connection to the database.
+ */
+ function getConnection(){
+    return connection;
+}
+
+module.exports = {
+    initialize,
+    getConnection
+};

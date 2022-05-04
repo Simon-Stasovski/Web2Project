@@ -12,11 +12,14 @@ const VALID_CARD_TYPES = [ "pokemon", "yu-gi-oh", "hockey", "basketball", "baseb
  * @param {*} pricePerYard The price of the fabric per yard
  * @param {*} colour The hexadecimal value of the fabric's colour
  */
-async function isValid( cardName, description, frontImagePath, backImagePath, cardType, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage ){
-    if ( checkIfContainsSpecialCharacters(serialNumber) || !validator.isLength( serialNumber, { min:0, max: 50 } )){
+async function isValid( cardName, description, frontImagePath, backImagePath, cardType, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale ){
+    if(isForSale && cardPrice == null){
         return false;
     }
-    else if( !validator.isCurrency( `${cardPrice}`, { allow_negatives: false } )){
+    if (checkIfContainsSpecialCharacters(serialNumber) || !validator.isLength( serialNumber, { min:0, max: 50 } )){
+        return false;
+    }
+    else if( cardCondition != null && !validator.isCurrency( `${cardPrice}`, { allow_negatives: false } )){
         return false;
     }
     else if( !validator.isLength( cardName, { min:0, max: 50 } ) ){
