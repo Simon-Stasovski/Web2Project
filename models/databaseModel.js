@@ -1,6 +1,8 @@
-const cardModel = require( './models/cardModel' );
-const transactionModel = require('./models/transactionModel');
-const userModel = require('./models/userModel');
+const mysql = require( 'mysql2/promise' );
+const cardModel = require( './cardModel' );
+const transactionModel = require('./transactionModel');
+const userModel = require('./userModel');
+var connection;
 
 
 async function initialize( databaseFilename, resetFlag ){
