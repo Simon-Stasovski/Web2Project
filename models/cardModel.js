@@ -1,6 +1,6 @@
 const mysql = require( 'mysql2/promise' );
 const validator = require( './validateCard' );
-const logger = require('../logger');
+const logger = require( '../logger' );
 const database = require( './databaseModel' );
 var connection;
 
@@ -113,7 +113,7 @@ class UserInputError extends Error{
             type = type.toLowerCase();
 
             const sqlQuery =  `INSERT INTO card 
-                                   VALUES ("${cardName}", "${type}", ${description}, "${serialNumber}", "${frontImagePath}", "${backImagePath}"), "${isForSale}", "${cardCondition}", "${certificateImage}", "${cardPrice}", "${cardOwner}"`;
+                                   VALUES ("${cardName}", "${type}", "${description}", "${serialNumber}", "${frontImagePath}", "${backImagePath}"), ${isForSale}, ${cardCondition}, "${certificateImage}", ${cardPrice}, "${cardOwner}"`;
 
                 await connection.execute( sqlQuery ).catch(( error ) => { 
                     let errorMessage = `Unable to add data to card table: ${error}`;

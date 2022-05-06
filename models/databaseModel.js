@@ -1,4 +1,4 @@
-const cardModel = require('./models/cardModel');
+const cardModel = require( './models/cardModel' );
 const transactionModel = require('./models/transactionModel');
 const userModel = require('./models/userModel');
 
@@ -29,17 +29,17 @@ async function initialize( databaseFilename, resetFlag ){
             throw( error );
         });
 
-        await transactionModel.createTransactionTable().catch( (error) => {
-            error = `Issue with creating fabric table: ${error}`;
-            logger.error( error ); 
-            throw( error );
-        });
+        // await transactionModel.createTransactionTable().catch( (error) => {
+        //     error = `Issue with creating fabric table: ${error}`;
+        //     logger.error( error ); 
+        //     throw( error );
+        // });
 
-        await userModel.createUserTable().catch( (error) => {
-            error = `Issue with creating fabric table: ${error}`;
-            logger.error( error ); 
-            throw( error );
-        });
+        // await userModel.createUserTable().catch( (error) => {
+        //     error = `Issue with creating fabric table: ${error}`;
+        //     logger.error( error ); 
+        //     throw( error );
+        // });
     }
     catch( error ){
         logger.error( `Error: Unable to initialize database: ${error}` );
