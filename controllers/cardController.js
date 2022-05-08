@@ -3,6 +3,7 @@ const router = express.Router();
 const routeRoot = '/';
 const model = require( '../models/cardModel' );
 const logger = require('../logger');
+const { REPL_MODE_STRICT } = require('repl');
 
 module.exports = {
     router,
@@ -34,3 +35,19 @@ async function addCard( request, response ) {
 }
 
 router.post( '/card', addCard );
+
+async function listAllCards( request, response ){
+    try{
+        let listOfCards = await model.readFromCardTable();
+        // const dataToSend = { fabric: listOfFabric };
+        // response.status( 200 );
+        // response.render( 'showAllFabric.hbs', dataToSend );
+        response.send( listOfCards );
+    }
+    catch( error ){
+        response.status( 500 );
+        // response.render( 'home.hbs', { errorClass: "alert alert-primary", alertMessage: 'Cannot get all fabric items from database' });
+    }
+}
+
+router.get( '/cards', listAllCards ); // can it be plural since the idea is multiple

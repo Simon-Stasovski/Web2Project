@@ -1,7 +1,7 @@
 const mysql = require( 'mysql2/promise' );
 const validator = require( './validateCard' );
 const logger = require( '../logger' );
-const database = require( './databaseModel' );
+// const database = require( './databaseModel' );
 var connection;
 
 //#region ERROR_CLASSES
@@ -22,12 +22,12 @@ class UserInputError extends Error{
  * created again. Only for use within the model.
  * A connection to the database is initialized before the function is called.
  */
- async function createCardTable(){
-    connection = database.getConnection();
+ async function createCardTable( databaseConnection ){
+    connection = databaseConnection;
 
     const sqlQuery =  'CREATE TABLE IF NOT EXISTS Card(CardID int AUTO_INCREMENT, CardName VARCHAR(50) NOT NULL, Type VARCHAR(50) NOT NULL,' +
-     'Description VARCHAR(400), SerialNumber VARCHAR(50), FrontImagePath VARCHAR(150), BackImagePath VARCHAR(150), IsForSale BIT, CardCondition int, '
-     'CertificateImage varchar(150), CardPrice DECIMAL(8, 2), CardOwner varchar(25), FOREIGN KEY (CardOwner) REFERENCES Username, PRIMARY KEY(CardID)';
+     'Description VARCHAR(400), SerialNumber VARCHAR(50), FrontImagePath VARCHAR(150), BackImagePath VARCHAR(150), IsForSale BIT, CardCondition int, ' +
+     'CertificateImage varchar(150), CardPrice DECIMAL(8, 2), CardOwner varchar(25), PRIMARY KEY(CardID), FOREIGN KEY (CardOwner) REFERENCES Users(Username));';
     
     try{
         await connection.execute( sqlQuery ).catch(( error ) => { throw( error ); }); 
@@ -57,14 +57,14 @@ class UserInputError extends Error{
  * is called.
  */
  async function dropCardTable(){
-    connection = database.getConnection();
+    // connection = database.getConnection();
 
     try{
         if ( connection === undefined ){
             throw( "Database or connection not initialized" );
         }
         else{
-            const sqlQuery =  "DROP TABLE IF EXISTS card";
+            const sqlQuery =  "DROP TABLE IF EXISTS Card";
 
             await connection.execute( sqlQuery ).catch(( error ) => { 
                 let errorMessage = `Unable to drop card table: ${error}`;
@@ -334,4 +334,4 @@ module.exports = {
     deleteRowFromCardTable,
     UserInputError,
     SystemError
-}
+};

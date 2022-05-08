@@ -13,7 +13,7 @@ module.exports = {
  * @param {*} response 
  */
 function showHome(request, response) {
-    response.send( "Welcome to the cardoholics website." );
+    response.send( "Welcome to cardoholics." );
     // response.render('home.hbs')
 }
 

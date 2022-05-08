@@ -2,6 +2,7 @@ const mysql = require( 'mysql2/promise' );
 const cardModel = require( './cardModel' );
 const transactionModel = require('./transactionModel');
 const userModel = require('./userModel');
+const logger = require( '../logger' );
 var connection;
 
 
@@ -16,17 +17,27 @@ async function initialize( databaseFilename, resetFlag ){
         });
     
         if( resetFlag ){
-            await cardModel.dropCardTable().catch( (error ) => { 
-                error = `Issue with clearing fabric table: ${error}`;
+            await userModel.dropUserTable().catch( (error ) => { 
+                error = `Issue with clearing user table: ${error}`;
                 logger.error( error ); 
                 throw( error );
             }); // have to throw here if not execution continues
-            
-            logger.info( 'Fabric table reset.' );
+
+            await cardModel.dropCardTable().catch( (error ) => { 
+                error = `Issue with clearing card table: ${error}`;
+                logger.error( error ); 
+                throw( error );
+            }); // have to throw here if not execution continues
         }
-               
-        await cardModel.createCardTable().catch( (error) => {
-            error = `Issue with creating fabric table: ${error}`;
+        
+        await userModel.createUserTable( connection ).catch( (error) => {
+            error = `Issue with creating user table: ${error}`;
+            logger.error( error ); 
+            throw( error );
+        });
+
+        await cardModel.createCardTable( connection ).catch( (error) => {
+            error = `Issue with creating card table: ${error}`;
             logger.error( error ); 
             throw( error );
         });

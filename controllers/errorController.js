@@ -8,7 +8,8 @@
  
  module.exports = {
      router,
-     routeRoot
+     routeRoot,
+     showError
  }
  
  /**
@@ -17,6 +18,7 @@
   * @param {*} response The http response object
   */
  function showError( request, response ){
+     response.send( "Error: Invalid endpoint" );
     //  response.render( 'addFabricForm.hbs' );
  }
  
