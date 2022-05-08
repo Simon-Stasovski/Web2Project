@@ -107,13 +107,20 @@ class UserInputError extends Error{
  */
  async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner){
     try{
-        if( await validator.isValid( cardName, description, frontImagePath, backImagePath, type, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale )){ 
+        if( await validator.isValid( cardName, description, frontImagePath, backImagePath, type, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection )){ 
             // add all the string values to lower case so they are inserted in lower case
             cardName = cardName.toLowerCase();
             type = type.toLowerCase();
 
-            const sqlQuery =  `INSERT INTO card 
-                                   VALUES ("${cardName}", "${type}", "${description}", "${serialNumber}", "${frontImagePath}", "${backImagePath}"), ${isForSale}, ${cardCondition}, "${certificateImage}", ${cardPrice}, "${cardOwner}"`;
+            description = description === "" ? null : `"${description}"`;
+            frontImagePath = frontImagePath === "" ? null : `"${frontImagePath}"`;
+            backImagePath = backImagePath === "" ? null : `"${backImagePath}"`;
+            serialNumber = serialNumber === "" ? null : `"${serialNumber}"`;
+            certificateImage = certificateImage === "" ? null : `"${certificateImage}"`;
+            isForSale = isForSale === true ? 1 : 0;
+
+            const sqlQuery =  `INSERT INTO Card(CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, CertificateImage, CardPrice, CardOwner)
+                                   VALUES ("${cardName}", "${type}", ${description}, ${serialNumber}, ${frontImagePath}, ${backImagePath}, ${isForSale}, ${cardCondition}, ${certificateImage}, ${cardPrice}, "${cardOwner}")`;
 
                 await connection.execute( sqlQuery ).catch(( error ) => { 
                     let errorMessage = `Unable to add data to card table: ${error}`;
@@ -126,7 +133,7 @@ class UserInputError extends Error{
                 let cardId = await getLastIdAddedToCardTable();
 
                 if(cardId != null){
-                    return await findCardRecord(  ); // make sure that this works properly
+                    return await findCardRecord( cardId ); // make sure that this works properly
                 }
                 else{
                     return null; // not sure what we want to do in this case.
@@ -154,7 +161,7 @@ class UserInputError extends Error{
  * @returns an array of all of the rows read from the card table.
  */
  async function readFromCardTable(){
-    const sqlQuery = "SELECT * FROM card";
+    const sqlQuery = "SELECT * FROM Card";
     const EMPTY_ARRAY = [];
 
     let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => {  
@@ -168,7 +175,7 @@ class UserInputError extends Error{
 
 
 async function getLastIdAddedToCardTable(){
-    const sqlQuery = "SELECT MAX(Id) FROM card";
+    const sqlQuery = "SELECT MAX(CardID) FROM Card";
 
     let id = await connection.execute( sqlQuery ).catch(( error ) => {  
         let errorMessage = `Error: Unable to get maximum id in card table: ${error}`;
@@ -176,7 +183,7 @@ async function getLastIdAddedToCardTable(){
         return null;
     });
 
-    return id;
+    return id[0][0]["MAX(CardID)"];
 }
 
 /**
@@ -192,7 +199,7 @@ async function getLastIdAddedToCardTable(){
     const NOT_FOUND = null;
 
     try{
-        const sqlQuery = `SELECT * FROM card WHERE Id = ${id}`;
+        const sqlQuery = `SELECT * FROM Card WHERE CardID = ${id}`;
         let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
             let errorMessage = `Unable to find card record due to error: ${error}`;
             logger.error( errorMessage );
@@ -205,7 +212,7 @@ async function getLastIdAddedToCardTable(){
             throw new UserInputError( errorMessage ); 
         }
 
-        logger.info( `Successfully retrieved card record with name '${name}'` );
+        logger.info( `Successfully retrieved card record with id '${id}'` );
 
         return rows[0];
     }
@@ -256,7 +263,7 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
         }
-        else if( await validator.isValid( newCardName, newDescription, newFrontImagePath, newBackImagePath, newType, newSerialNumber, newCardCondition, newCardPrice, newCardOwner, newCertificateImage, newIsForSale )){
+        else if( await validator.isValid( newCardName, newDescription, newFrontImagePath, newBackImagePath, newType, newSerialNumber, newCardCondition, newCardPrice, newCardOwner, newCertificateImage, newIsForSale, connection )){
             let errorMessage = 'New values to be inserted are invalid';
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
@@ -306,7 +313,7 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
             throw new UserInputError( errorMessage );
         }
 
-        const sqlQuery = `DELETE FROM card WHERE Id = ${id}`;
+        const sqlQuery = `DELETE FROM Card WHERE CardID = ${id}`;
 
         await connection.execute( sqlQuery ).catch(( error ) => {  
             let errorMessage = `Unable to delete entry in card table: ${error}`;

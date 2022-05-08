@@ -15,7 +15,8 @@ async function addCard( request, response ) {
     try{
         let card = await model.addCard( request.body.cardName, request.body.type, request.body.description, request.body.serialNumber, request.body.frontImagePath, request.body.backImagePath
             ,request.body.isForSale, request.body.cardCondition, request.body.certificateImage, request.body.cardPrice, request.body.cardOwner )
-        // response.status( 200 );
+        response.send( card );
+            // response.status( 200 );
     }
     catch( error ){
         if(error instanceof model.SystemError){

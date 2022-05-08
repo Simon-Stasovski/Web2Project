@@ -1,5 +1,6 @@
 const validator = require( 'validator' );
 const VALID_CARD_TYPES = [ "pokemon", "yu-gi-oh", "hockey", "basketball", "baseball", "magic the gathering" ];
+const logger = require( '../logger' );
 
 /**
  * Validates the data to be entered into the card table. cardName and serialNumber must be between 0 and 50 characters in length.
@@ -20,29 +21,29 @@ const VALID_CARD_TYPES = [ "pokemon", "yu-gi-oh", "hockey", "basketball", "baseb
  * @param {*} isForSale 
  * @returns 
  */
-async function isValid( cardName, description, frontImagePath, backImagePath, cardType, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale ){
+async function isValid( cardName, description, frontImagePath, backImagePath, cardType, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection ){
     if(isForSale && cardPrice == null){
         return false;
     }
-    if (checkIfContainsSpecialCharacters(serialNumber) || !validator.isLength( serialNumber, { min:0, max: 50 } )){
+    if (checkIfContainsSpecialCharacters(serialNumber) || !validator.isLength( `"${serialNumber}"`, { min:0, max: 50 } )){
         return false;
     }
-    else if( cardCondition != null && !validator.isCurrency( `${cardPrice}`, { allow_negatives: false } )){
+    else if( cardPrice != null && !validator.isCurrency( `${cardPrice}`, { allow_negatives: false } )){
         return false;
     }
-    else if( !validator.isLength( cardName, { min:0, max: 50 } ) ){
+    else if( !validator.isLength( `"${cardName}"`, { min:0, max: 50 } ) ){
         return false;
     }
-    else if( !validator.isLength( description, { min:0, max: 400 } ) ){
+    else if( !validator.isLength( `"${description}"`, { min:0, max: 400 } ) ){
         return false;
     }
-    else if( !validator.isLength( frontImagePath, { min:0, max: 150 } ) ){
+    else if( !validator.isLength( `"${frontImagePath}"`, { min:0, max: 150 } ) ){
         return false;
     }
-    else if( !validator.isLength( backImagePath, { min:0, max: 150 } ) ){
+    else if( !validator.isLength( `"${backImagePath}"`, { min:0, max: 150 } ) ){
         return false;
     }
-    else if( !validator.isLength( certificateImage, { min:0, max: 150 } ) ){
+    else if( !validator.isLength( `"${certificateImage}"`, { min:0, max: 150 } ) ){
         return false;
     }
     else if(!validateCardType( cardType )){
@@ -52,22 +53,23 @@ async function isValid( cardName, description, frontImagePath, backImagePath, ca
         return false;
     }
     
-    const sqlQuery =  `SELECT * FROM USERS WHERE username=${cardOwner}`;
+    const sqlQuery =  `SELECT * FROM Users WHERE Username="${cardOwner}"`;
 
     try{
         let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
             logger.error( error );
-            throw new SystemError( error ) 
+            throw error;
         });
     
-        if(rows.length >= 0){
+        if(rows.length <= 0){
             return false;
         }
+
+        return true;
     }
     catch(error){
         return false;
     }
-
 }
 
 // ask Chris about regex
