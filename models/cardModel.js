@@ -222,6 +222,26 @@ async function getLastIdAddedToCardTable(){
     }
 }
 
+async function getCardsByOwner( username ){
+    const NOT_FOUND = null;
+
+    try{
+        const sqlQuery = `SELECT * FROM Card WHERE CardOwner = '${username}'`;
+        let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
+            let errorMessage = `Unable to find card record due to error: ${error}`;
+            logger.error( errorMessage );
+            throw new SystemError( errorMessage ); 
+        });   
+
+        logger.info( `Successfully retrieved cards from user with username ${username}'` );
+
+        return rows;
+    }
+    catch( error ){
+        logger.error( error );
+        return NOT_FOUND;
+    }
+}
 
 /**
  * /**
@@ -286,7 +306,7 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
 
         logger.info( "Successfully updated record" );
 
-        return findCardRecord( id );
+        return await findCardRecord( id );
     }
     catch( error ){
         logger.error( error );
@@ -337,6 +357,7 @@ module.exports = {
     addCard, 
     readFromCardTable,
     findCardRecord,
+    getCardsByOwner,
     updateRowInCardTable,
     deleteRowFromCardTable,
     UserInputError,
