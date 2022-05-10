@@ -13,7 +13,8 @@ module.exports = {
  * @param {*} response 
  */
 function showHome(request, response) {
-    response.render('home.hbs')
+    response.send( "Welcome to cardoholics." );
+    // response.render('home.hbs')
 }
 
 router.get('/', showHome);
