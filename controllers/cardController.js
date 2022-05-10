@@ -8,7 +8,12 @@ const { REPL_MODE_STRICT } = require('repl');
 module.exports = {
     router,
     routeRoot,
-    addCard
+    addCard,
+    listAllCards, 
+    getSpecificCard,
+    listCardsByUser,
+    editSpecificCard,
+    deleteSpecificCard
 }
 
 async function addCard( request, response ) {
@@ -124,7 +129,8 @@ async function editSpecificCard( request, response ){
     try{
         let id = request.params.id;
         let card = await model.updateRowInCardTable( id, request.body.newCardName, request.body.newType, request.body.newDescription, request.body.newSerialNumber, 
-            request.body.newFrontImagePath, request.body.newBackImagePath, request.body.newIsForSale, request.body.newCardCondition, request.body.newCertificateImage, request.body.newCardPrice, request.body.newCardOwner );
+            request.body.newFrontImagePath, request.body.newBackImagePath, request.body.newIsForSale, request.body.newCardCondition, request.body.newCertificateImage, 
+            request.body.newCardPrice, request.body.newCardOwner );
         // const dataToSend = { fabric: listOfFabric };
         // response.status( 200 );
         // response.render( 'showAllFabric.hbs', dataToSend );
@@ -162,12 +168,12 @@ async function deleteSpecificCard( request, response ){
     }
     catch( error ){
         if( error instanceof model.SystemError ){
-            // response.status( 500 );
-            response.render( 'deleteFabricForm.hbs', { errorClass: "alert alert-primary", alertMessage: 'Deleting fabric with specified name failed' });
+            response.status( 500 );
+            // response.render( 'deleteFabricForm.hbs', { errorClass: "alert alert-primary", alertMessage: 'Deleting fabric with specified name failed' });
         }
         else if( error instanceof model.UserInputError ){
-            // response.status( 400 );
-            response.render( 'deleteFabricForm.hbs', { errorClass: "alert alert-secondary", alertMessage: `Fabric name: ${request.params.name} does not exist in database` });
+            response.status( 400 );
+            // response.render( 'deleteFabricForm.hbs', { errorClass: "alert alert-secondary", alertMessage: `Fabric name: ${request.params.name} does not exist in database` });
         } 
         else{
             logger.error( error.message );

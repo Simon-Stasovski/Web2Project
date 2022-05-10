@@ -265,7 +265,7 @@ async function getCardsByOwner( username ){
  * @param {*} newCardOwner 
  * @returns The object representation of the updated record.
  */
-async function updateRowInCardTable( id, newCardName, newType, newDescription, newSerialNumber, newFrontImagePath, newBackImagePath, newIsForSale, newCardCondition, newCertificateImage, newCardPrice, newCardOwner ){
+async function updateRowInCardTable( specifiedId, newCardName, newType, newDescription, newSerialNumber, newFrontImagePath, newBackImagePath, newIsForSale, newCardCondition, newCertificateImage, newCardPrice, newCardOwner ){
     //let sqlQuery = `SELECT Id FROM card WHERE name = '${name}'`;
     const NO_ENTRY_FOUND = null ;
 
@@ -276,27 +276,29 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
     
 
     try{
-        let id = await findCardRecord(id);
+        let id = await findCardRecord( specifiedId );
 
         if ( id === NO_ENTRY_FOUND ){
-            let errorMessage = `Entry in card table with id '${id}' not found`;
+            let errorMessage = `Entry in card table with id '${specifiedId}' not found`;
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
         }
-        else if( await validator.isValid( newCardName, newDescription, newFrontImagePath, newBackImagePath, newType, newSerialNumber, newCardCondition, newCardPrice, newCardOwner, newCertificateImage, newIsForSale, connection )){
+        else if(!(await validator.isValid( newCardName, newDescription, newFrontImagePath, newBackImagePath, newType, newSerialNumber, newCardCondition, newCardPrice, newCardOwner, newCertificateImage, newIsForSale, connection ))){
             let errorMessage = 'New values to be inserted are invalid';
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
         }
 
-        const sqlQuery = `UPDATE card 
+        newIsForSale = newIsForSale == true ? 1 : 0;
+
+        const sqlQuery = `UPDATE Card 
                           SET CardName = '${newCardName}', Type = '${newType}', 
                           Description = '${newDescription}', SerialNumber = '${newSerialNumber}',
                           FrontImagePath = '${newFrontImagePath}', BackImagePath = '${newBackImagePath}',
-                          IsForSale = '${newIsForSale}', CardCondition = '${newCardCondition}',
-                          CertificateImage = '${newCertificateImage}', CardPrice = '${newCardPrice}',
+                          IsForSale = ${newIsForSale}, CardCondition = ${newCardCondition},
+                          CertificateImage = '${newCertificateImage}', CardPrice = ${newCardPrice},
                           CardOwner = '${newCardOwner}'                        
-                          WHERE Id = ${id}`;
+                          WHERE CardID = ${id}`;
 
         await connection.execute( sqlQuery ).catch(( error ) => {  
             let errorMessage = `Unable to update entry in card table: ${error}`;
@@ -321,19 +323,19 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
  * @param {*} id The id of the row to delete.
  * @returns True if the row was deleted successfully; False otherwise.
  */
- async function deleteRowFromCardTable( id ){
+ async function deleteRowFromCardTable( specifiedId ){
     const NO_ENTRY_FOUND = null;
 
     try{
-        let id = await findCardRecord( id );
+        let id = await findCardRecord( specifiedId );
 
         if ( id === NO_ENTRY_FOUND ){
-            let errorMessage = `Entry in card table with id '${id}' not found`;
+            let errorMessage = `Entry in card table with id '${specifiedId}' not found`;
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
         }
 
-        const sqlQuery = `DELETE FROM Card WHERE CardID = ${id}`;
+        const sqlQuery = `DELETE FROM Card WHERE CardID = ${id.CardID}`;
 
         await connection.execute( sqlQuery ).catch(( error ) => {  
             let errorMessage = `Unable to delete entry in card table: ${error}`;
@@ -341,7 +343,7 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
             throw new SystemError( errorMessage );
         });
 
-        logger.info( `Successfully deleted record with id '${id}' from card table` );
+        logger.info( `Successfully deleted record with id '${specifiedId}' from card table` );
         
         return true;
     }
