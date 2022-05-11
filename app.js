@@ -1,3 +1,7 @@
+const errorController = require( './controllers/errorController' );
+const homeController = require( './controllers/homeController' );
+//const cardController = require( './controllers/cardController' );
+
 const express = require('express');
 const app = express();
 const {engine} = require('express-handlebars');
@@ -24,17 +28,17 @@ const expressListRoutes = require('express-list-routes');
 
 
 // Make sure errorController is last!
-const controllers = ['homeController', 'errorController','userController'] 
+const controllers = ['homeController', 'userController', 'errorController'] 
 
 // Register routes from all controllers 
 //  (Assumes a flat directory structure and common 'routeRoot' / 'router' export)
-controllers.forEach((controllerName) => {
+controllers.forEach(( controllerName ) => {
     try {
-        const controllerRoutes = require('./controllers/' + controllerName);
-        app.use(controllerRoutes.routeRoot, controllerRoutes.router);
-    } catch (error) {
+        const controllerRoutes = require( './controllers/' + controllerName );
+        app.use( controllerRoutes.routeRoot, controllerRoutes.router );
+    } catch ( error ) {
         //fail gracefully if no routes for this controller
-        console.log(error);
+        console.log( error );
     }    
 })
 module.exports = app

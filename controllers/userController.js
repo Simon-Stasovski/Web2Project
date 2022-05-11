@@ -1,13 +1,14 @@
 const express = require("express");
 const model = require("../models/userModel");
 const router = express.Router();
-const server = require("../server.js");
+const server = require("../server");
 const routeRoot = "/";
 module.exports = {
   router,
   routeRoot,
   showLoginPage
 };
+
 /**
  * Renders the default Home page of the website.
  * @param {*} request
@@ -16,9 +17,6 @@ module.exports = {
 function showLoginPage(request, response) {
   response.render("login.hbs");
 }
-function showHomePage(request, response) {
-  response.render("home.hbs");
-}
 function showCreateAccountPage(request, response) {
   response.render("create_account.hbs");
 }
@@ -26,6 +24,16 @@ function showAccountDetails(request, response) {
   let accountDetails = model.getUser(request.body.username);
   response.render("account_details.hbs", accountDetails);
 }
+
+async function createUser(request, response) {
+  const username = request.body.username; 
+  const password1 = request.body.password1;
+  const password2 = request.body.password2;
+  const email = request.body.email;
+  await model.addUser(username, password1, password2,email)
+  response.redirect("/login");
+}
+
 router.get("/loginUser", (request, response) => {
   let loginData = {
     AlertMessage: true,
@@ -94,7 +102,7 @@ function refreshSession(request, response) {
   return newSessionId;
 }
 
-router.get("/", showHomePage);
 router.get("/login", showLoginPage);
 router.get("/create", showCreateAccountPage);
+router.post("/createUser",createUser);
 router.get("/userinfo", showAccountDetails);

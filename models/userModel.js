@@ -15,9 +15,9 @@
 //User Sessions with cookies
 // add the cookie implementations along side the Login of the user
 const mysql = require("mysql2/promise");
-const validate = require("../validateUtils");
-const logger = require("../logger");
-var connection;
+const validate = require("./Validator/UserValidation");
+const logger = require('../logger')
+let dbconnection;
 
 /**  Error for 400-level issues */
 class InvalidInputError extends Error {}
@@ -26,8 +26,9 @@ class UserAlreadyExistsError extends Error{}
 /** Error for 500-level issues */
 class DBConnectionError extends Error {}
 
-async function dropUserTable() {
+async function dropUserTable(connection) {
   try{
+    dbconnection= connection;
       const dropQuery = "DROP TABLE IF EXISTS users;";
       await connection.execute(dropQuery);
       logger.info("Table users dropped");
@@ -39,14 +40,15 @@ async function dropUserTable() {
     throw new DBConnectionError();
   } 
 }
-async function createUserTable() {
+async function createUserTable(connection) {
   try {
-  const sqlQuery = "CREATE TABLE IF NOT EXISTS users(id int AUTO_INCREMENT, username VARCHAR(25), password VARCHAR(25),email VARCHAR(320),Balance DECIMAL(10,2),isprivate BOOL, PRIMARY KEY(id));";
+  dbconnection= connection;
+  const sqlQuery = "CREATE TABLE IF NOT EXISTS Users(id int AUTO_INCREMENT, username VARCHAR(25), password VARCHAR(25),email utf8(320),Balance DECIMAL(10,2),isprivate BOOL, PRIMARY KEY(id));";
   await connection.execute(sqlQuery);
-  logger.info("Table users created/exists");
+  console.info("Table users created/exists");
   }
   catch (error){
-    logger.error(error.message);
+    //logger.error(error.message);
     throw new DBConnectionError();
   }
 
@@ -61,12 +63,13 @@ async function createUserTable() {
  */
 
 function getConnection() {
-  return connection;
+  return dbconnection;
 }
 
 async function addUser(username, password1, password2,email) {
   if (!validate.isValid(username, password1, password2,email)){
-    throw new InvalidInputError();
+    //throw new InvalidInputError();
+    console.error("Invalid username")
   }
   if(!getUser(username)){
     throw new UserAlreadyExistsError();
@@ -74,19 +77,20 @@ async function addUser(username, password1, password2,email) {
   const DEFAULTPRIVATE = true;
   const DEFAULTBALANCE = 0;
   const sqlQuery =
-    `INSERT INTO users (username, password) VALUES (${username},${password1},${email},${DEFAULTPRIVATE},${DEFAULTBALANCE});`;
-  await connection
+    `INSERT INTO users (username,password,email,Balance,isprivate) VALUES ('${username}','${password1}','${email}','${DEFAULTBALANCE}',${DEFAULTPRIVATE});`;
+  await dbconnection
     .execute(sqlQuery)
     .then(logger.info("User added to database"))
     .catch((error) => {
-      throw new Error("cannot add user to database");
+      console.log(error)
+      //throw new Error("cannot add user to database");
     });
   return { Username: username, password: password1 };
 }
 async function deleteUser(username) {
   if (getUser(username)) {
     const sqlQuery = `DELTE FROM users WHERE username =${username};`;
-    return await connection
+    return await dbconnection
       .execute(sqlQuery)
       .then(logger.info("User deleted"))
       .catch((error) => {
@@ -106,13 +110,13 @@ async function updateUserBalance(originlaOwnerUsername,newOwnerUsername,price) {
     balanceOwner += price;
     const sqlQuery1 =`UPDATE users SET Balance = ${balanceOwner} WHERE username = ${originlaOwnerUsername};`;
     const sqlQuery2 =`UPDATE users SET Balance = ${balanceNewOwner} WHERE username = ${newOwnerUsername};`;
-    await connection
+    await dbconnection
       .execute(sqlQuery1)
       .then(logger.info("User's password updated successfully"))
       .catch((error) => {
         throw new Error("Unable to update User's password");
       });
-      await connection
+      await dbconnection
       .execute(sqlQuery2)
       .then(logger.info("User's password updated successfully"))
       .catch((error) => {
@@ -126,7 +130,7 @@ async function updateUserPassword(username, newPassword) {
     throw new InvalidInputError();
   } else {
     const sqlQuery =`UPDATE users SET password = ${newPassword} WHERE username = ${username};`;
-    return await connection
+    return await dbconnection
       .execute(sqlQuery)
       .then(logger.info("User's password updated successfully"))
       .catch((error) => {
@@ -137,7 +141,7 @@ async function updateUserPassword(username, newPassword) {
 async function getUserBalance(username){
   try{
   const sqlQuery = `SELECT Balance from users WHERE username =${username};`;
-  return await connection
+  return await dbconnection
     .execute(sqlQuery)
     .then(logger.info("Balance was found"))
     .catch((error) => {
@@ -152,7 +156,7 @@ async function getUserBalance(username){
 async function getUser(username) {
   try {
     const sqlQuery = `SELECT * from users WHERE username =${username};`;
-    return await connection
+    return await dbconnection
       .execute(sqlQuery)
       .then(logger.info("User was found"))
       .catch((error) => {
@@ -165,8 +169,8 @@ async function getUser(username) {
 }
 async function logInUser(username, password) {
   if(getUser(username)){
-    const sqlQuery = `SELECT password from users WHERE username =${username};`;
-    let userpassword = await connection
+    const sqlQuery = `SELECT password from users WHERE username ='${username}';`;
+    let userpassword = await dbconnection
       .execute(sqlQuery)
       .then(logger.info("password was found"))
       if(password == userpassword){
@@ -181,7 +185,7 @@ async function Updateprivacy(username,isPrivate) {
     throw new InvalidInputError();
   } else {
     const sqlQuery =`UPDATE users SET isprivate = ${isPrivate} WHERE username = ${username};`;
-    return await connection
+    return await dbconnection
       .execute(sqlQuery)
       .then(logger.info("User's privacy setting updated successfully"))
       .catch((error) => {
@@ -196,7 +200,7 @@ async function Updateprivacy(username,isPrivate) {
  */
 async function printAllUsers() {
   const sqlQuery = "SELECT username,password from users ;";
-  return await connection
+  return await dbconnection
     .execute(sqlQuery)
     .then(logger.info("All Users."))
     .catch((error) => {
