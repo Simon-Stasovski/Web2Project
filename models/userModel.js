@@ -6,7 +6,7 @@
     //a bool to see if its private*
     //Update for the account balance(two users, the value, two bools)*?
     //reset password update*
-    //update for IsPrivate(bool)
+    //update for IsPrivate(bool)*
 //views:
     //login page
     //create account page at login page

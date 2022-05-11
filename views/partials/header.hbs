@@ -8,8 +8,12 @@
         </form>
         <span id="login">
             <span>
-                <button>Log In</button>
-                <p>or <a>create an account</a></p>
+                <form action="/login" method="get" role="form">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <form action="/create" method="get" role="form">
+                    <p>or <a type="submit">create an account</a></p>
+                </form>
             </span>
         </span>
     </div>

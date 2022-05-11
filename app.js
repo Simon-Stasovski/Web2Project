@@ -24,7 +24,7 @@ const expressListRoutes = require('express-list-routes');
 
 
 // Make sure errorController is last!
-const controllers = ['homeController', 'errorController'] 
+const controllers = ['homeController', 'errorController','userController'] 
 
 // Register routes from all controllers 
 //  (Assumes a flat directory structure and common 'routeRoot' / 'router' export)

@@ -1,0 +1,13 @@
+<body>
+    {{#if AlertMessage}}
+        {{message}}
+    {{/if}}
+  <form action="/loginUser" method="get" role="form">
+    <legend>Please enter your username and password to login</legend>
+    <label for="username">Username:</label><br />
+    <input type="text" id="username" name="username" required /><br />
+    <label for="password">Password:</label><br />
+    <input type="password" id="password" name="password"minlength="8" required/>
+    <button type="submit" class="btn btn-primary">Login</button>
+  </form>
+</body>
