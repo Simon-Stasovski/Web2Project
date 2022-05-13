@@ -2,8 +2,49 @@
     <ul id="showCardsList">
         {{#each cards}}
         <li class="card">
-            <button class="viewCardBtn">View</button>
+            <form method="get" action="{{this.endpoint}}">
+                <input type="hidden" name="id" value="{{this.CardID}}" id="{{this.CardID}}">
+                <input type="submit" value="View" id="shopCardsBtn" class="viewCardBtn">
+            </form>
         </li>
         {{/each}}
+        {{#if specificCardData}}
+        <div id="viewCardExpandedView">
+                <form method="get" action="{{this.endpoint}}" id="exitDiv">
+                    <input type="submit" value="X" id="exitView">
+                </form>
+            <div id="cardContentDiv">
+                <div id="viewCardCol1">
+                    <div id="imgDiv">
+                        <img src="{{specificCardData.FrontImagePath}}" alt="image of card">
+                    </div>
+                    {{#if buyMode}}
+                    <button id="addToCartBtn">Add to Cart</button>
+                    {{/if}}
+                </div>
+                <div id="viewCardCol2">
+                    <div id="aboutCard">
+                        <h2>About</h2>
+                        <ul>
+                            <li>{{specificCardData.CardName}}</li>
+                            <li>{{specificCardData.Type}}</li>
+                            <li>{{specificCardData.Description}}</li>
+                            <li>{{specificCardData.Condition}}</li>
+                        </ul>
+                    </div>
+                    {{#if buyMode}}
+                    <div id="buyInfo">
+                        <h2>Sale Details</h2>
+                        <ul>
+                            <li>Seller: {{specificCardData.CardOwner}}</li>
+                            <li>Price: {{specificCardData.CardPrice}}</li>
+                            <li>Certificate of Authenticity Link: {{specificCardData.CertificateImage}}</li>
+                        </ul>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+        {{/if}}
     </ul>
 </body>

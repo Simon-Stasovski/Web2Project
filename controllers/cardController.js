@@ -128,7 +128,13 @@ async function listCardsForSale( request, response ){
     try{
         let cardsForSale = await model.getCardsForSale();
 
-        const dataToSend = { cards: cardsForSale };
+        let dataToSend = { cards: cardsForSale, cardEndpoint: "/cards/sale" }; 
+
+        if( request.query.id != null ){
+            let cardData = await model.findCardRecord( request.query.id );
+            dataToSend.specificCardData = cardData;
+            dataToSend.buyMode = true;
+        }
 
         if(cardsForSale != null){
             response.render( 'mainPageCards.hbs', dataToSend );
@@ -213,3 +219,13 @@ async function deleteSpecificCard( request, response ){
 }
 
 router.delete( '/card/:id', deleteSpecificCard );
+
+async function toggleExpandedCardView( request, response ){
+    let cardData = await model.findCardRecord( request.query.id );
+
+    const dataToSend = { card: cardData };
+
+    listCardsForSale();
+}
+
+router.get( '/mainCardView', toggleExpandedCardView );

@@ -12,7 +12,7 @@ module.exports = {
  * @param {*} request 
  * @param {*} response 
  */
-function showHome(request, response) {
+function showHome( request, response ) {
     response.render( 'home.hbs' );
 }
 
