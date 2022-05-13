@@ -13,7 +13,8 @@ module.exports = {
     getSpecificCard,
     listCardsByUser,
     editSpecificCard,
-    deleteSpecificCard
+    deleteSpecificCard,
+    listCardsForSale
 }
 
 async function addCard( request, response ) {
@@ -128,6 +129,10 @@ async function listCardsForSale( request, response ){
     try{
         let cardsForSale = await model.getCardsForSale();
 
+        if( request.query.cardType != null ){
+            cardsForSale = getFilterResults( request, cardsForSale );
+        }
+
         let dataToSend = { cards: cardsForSale, cardEndpoint: "/cards/sale" }; 
 
         if( request.query.id != null ){
@@ -152,6 +157,36 @@ async function listCardsForSale( request, response ){
 }
 
 router.get( '/cards/sale', listCardsForSale );
+
+function getFilterResults( request, cards ){
+    let type = request.query.cardType;
+    let minCondition = request.query.minCondition;
+    let maxCondition = request.query.maxCondition;
+    let minPrice = request.query.minPrice;
+    let maxPrice = request.query.maxPrice;
+
+    if(type != "All types"){
+        cards = cards.filter( ( card ) => {
+            return card.Type == type.toLower();
+        });
+    }
+
+    cards = cards.filter( ( card ) => {
+        return card.Condition >= minCondition && card.Condition <= maxCondition;
+    });
+
+    cards = cards.filter( ( card ) => {
+        if( card.CardPrice != null ){
+            return card.CardPrice >= minPrice && card.CardPrice <= maxPrice;
+        }
+        else{
+            return false;
+        }
+
+    });
+    
+    return cards;
+}
 
 async function editSpecificCard( request, response ){
     try{

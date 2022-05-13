@@ -2,11 +2,11 @@
     <div id="mainPage">
         <div id="filterSidebar">
             <h2>Filters</h2>
-            <form id="filterForm">
+            <form method="get" id="filterForm" action="/cards/sale">
                 {{!-- Ideally we would code this in --}}
                 <div class="optionDiv">
                     <label for="cardType">By Type</label>
-                    <select id="cardType" value="All cards">
+                    <select id="cardType">
                         <option id="pokemon">Pokemon</option>
                         <option id="yu-gi-oh">Yu-gi-oh</option>
                         <option id="baseball">Baseball</option>
@@ -21,23 +21,21 @@
                     <label for="conditionDiv">By Condition Range</label>
                     <p>(best to worst)</p>
                     <div id="conditionDiv">
-                            <input type="number" id="minCondition" min="1" max="5" value="1">
+                            <input type="number" id="minCondition" min="1" max="5">
                             <p>to</p>
-                            <input type="number" id="maxCondition" min="1" max="5" value="5">
+                            <input type="number" id="maxCondition" min="1" max="5">
                     </div>
                 </div>
                 <div class="optionDiv">
                     <label for="priceRangeDiv">By Price Range</label>
                     <div id="priceRangeDiv">
-                            <input type="number" id="minPrice" min="0" max="100000" value="0">
+                            <input type="number" id="minPrice" min="0" max="1000">
                             <p>to</p>
-                            <input type="number" id="maxPrice" min="0" max="100000" value="">
+                            <input type="number" id="maxPrice" min="0" max="1000">
                     </div>
                 </div>  
                 <input type="submit" value="Filter" id="filterSubmit">
             </form>
-
-
         </div>
         <ul id="showCardsList">
             {{#each cards}}
@@ -50,7 +48,7 @@
             {{/each}}
             {{#if specificCardData}}
             <div id="viewCardExpandedView">
-                <form method="get" action="{{this.endpoint}}" id="exitDiv">
+                <form method="get" action="{{cardEndpoint}}" id="exitDiv">
                     <input type="submit" value="X" id="exitView">
                 </form>
                 <div id="cardContentDiv">
