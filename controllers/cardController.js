@@ -219,13 +219,3 @@ async function deleteSpecificCard( request, response ){
 }
 
 router.delete( '/card/:id', deleteSpecificCard );
-
-async function toggleExpandedCardView( request, response ){
-    let cardData = await model.findCardRecord( request.query.id );
-
-    const dataToSend = { card: cardData };
-
-    listCardsForSale();
-}
-
-router.get( '/mainCardView', toggleExpandedCardView );
