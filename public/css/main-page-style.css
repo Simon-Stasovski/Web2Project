@@ -1,5 +1,15 @@
 /* Anna */
 
+#mainPage{
+    display: flex;
+}
+
+#filterSidebar{
+    width: 28%;
+    border: solid black 1px;
+    padding: 0.8em;
+}
+
 #showCardsList{
     list-style: none;
     display: flex;
@@ -22,6 +32,73 @@
 .viewCardBtn{
     margin: 2em;
 }
+
+/* Filter Form */
+#filterForm:nth-child(1){
+    grid-area: opt1;
+}
+
+#filterForm:nth-child(2){
+    grid-area: opt2;
+}
+
+#filterForm:nth-child(3){
+    grid-area: opt3;
+}
+
+
+#filterForm{
+    padding: 0.5em;
+    display: grid;
+    grid-template-rows: 25% 25% 25% 25%;
+    grid-template-columns: 100%;
+    grid-template: 'opt1'
+                   'opt2'
+                   'opt3'
+                   'submit';
+}
+
+#filterForm > *{
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#filterSidebar h2{
+    margin: 0;
+}
+
+.optionDiv{
+    display: flex;
+    flex-direction: column;
+}
+
+.optionDiv p{
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+}
+
+.optionDiv label{
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+}
+
+.optionDiv:nth-of-type(2) label{
+    margin-bottom: 0;
+} 
+
+#filterSubmit{
+    grid-area: submit;
+}
+
+#priceRangeDiv, #conditionDiv{
+    display: flex;
+}
+
+#priceRangeDiv p, #conditionDiv p{
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+}
+
 
 /* Expanded Card View */
 #viewCardExpandedView{

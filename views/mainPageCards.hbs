@@ -1,50 +1,92 @@
 <body>
-    <ul id="showCardsList">
-        {{#each cards}}
-        <li class="card">
-            <form method="get" action="{{this.endpoint}}">
-                <input type="hidden" name="id" value="{{this.CardID}}" id="{{this.CardID}}">
-                <input type="submit" value="View" id="shopCardsBtn" class="viewCardBtn">
+    <div id="mainPage">
+        <div id="filterSidebar">
+            <h2>Filters</h2>
+            <form id="filterForm">
+                {{!-- Ideally we would code this in --}}
+                <div class="optionDiv">
+                    <label for="cardType">By Type</label>
+                    <select id="cardType" value="All cards">
+                        <option id="pokemon">Pokemon</option>
+                        <option id="yu-gi-oh">Yu-gi-oh</option>
+                        <option id="baseball">Baseball</option>
+                        <option id="basketball">Basketball</option>
+                        <option id="hockey">Hockey</option>
+                        <option id="magic the gathering">Magic the Gathering</option>
+                        <option id="all cards">All cards</option>
+                    </select>
+                </div>
+    
+                <div class="optionDiv">
+                    <label for="conditionDiv">By Condition Range</label>
+                    <p>(best to worst)</p>
+                    <div id="conditionDiv">
+                            <input type="number" id="minCondition" min="1" max="5" value="1">
+                            <p>to</p>
+                            <input type="number" id="maxCondition" min="1" max="5" value="5">
+                    </div>
+                </div>
+                <div class="optionDiv">
+                    <label for="priceRangeDiv">By Price Range</label>
+                    <div id="priceRangeDiv">
+                            <input type="number" id="minPrice" min="0" max="100000" value="0">
+                            <p>to</p>
+                            <input type="number" id="maxPrice" min="0" max="100000" value="">
+                    </div>
+                </div>  
+                <input type="submit" value="Filter" id="filterSubmit">
             </form>
-        </li>
-        {{/each}}
-        {{#if specificCardData}}
-        <div id="viewCardExpandedView">
+
+
+        </div>
+        <ul id="showCardsList">
+            {{#each cards}}
+            <li class="card">
+                <form method="get" action="{{this.endpoint}}">
+                    <input type="hidden" name="id" value="{{this.CardID}}" id="{{this.CardID}}">
+                    <input type="submit" value="View" id="shopCardsBtn" class="viewCardBtn">
+                </form>
+            </li>
+            {{/each}}
+            {{#if specificCardData}}
+            <div id="viewCardExpandedView">
                 <form method="get" action="{{this.endpoint}}" id="exitDiv">
                     <input type="submit" value="X" id="exitView">
                 </form>
-            <div id="cardContentDiv">
-                <div id="viewCardCol1">
-                    <div id="imgDiv">
-                        <img src="{{specificCardData.FrontImagePath}}" alt="image of card">
+                <div id="cardContentDiv">
+                    <div id="viewCardCol1">
+                        <div id="imgDiv">
+                            <img src="{{specificCardData.FrontImagePath}}" alt="image of card">
+                        </div>
+                        {{#if buyMode}}
+                        <button id="addToCartBtn">Add to Cart</button>
+                        {{/if}}
                     </div>
-                    {{#if buyMode}}
-                    <button id="addToCartBtn">Add to Cart</button>
-                    {{/if}}
-                </div>
-                <div id="viewCardCol2">
-                    <div id="aboutCard">
-                        <h2>About</h2>
-                        <ul>
-                            <li>{{specificCardData.CardName}}</li>
-                            <li>{{specificCardData.Type}}</li>
-                            <li>{{specificCardData.Description}}</li>
-                            <li>{{specificCardData.Condition}}</li>
-                        </ul>
+                    <div id="viewCardCol2">
+                        <div id="aboutCard">
+                            <h2>About</h2>
+                            <ul>
+                                <li>{{specificCardData.CardName}}</li>
+                                <li>{{specificCardData.Type}}</li>
+                                <li>{{specificCardData.Description}}</li>
+                                <li>{{specificCardData.Condition}}</li>
+                            </ul>
+                        </div>
+                        {{#if buyMode}}
+                        <div id="buyInfo">
+                            <h2>Sale Details</h2>
+                            <ul>
+                                <li>Seller: {{specificCardData.CardOwner}}</li>
+                                <li>Price: {{specificCardData.CardPrice}}</li>
+                                <li>Certificate of Authenticity Link: {{specificCardData.CertificateImage}}</li>
+                            </ul>
+                        </div>
+                        {{/if}}
                     </div>
-                    {{#if buyMode}}
-                    <div id="buyInfo">
-                        <h2>Sale Details</h2>
-                        <ul>
-                            <li>Seller: {{specificCardData.CardOwner}}</li>
-                            <li>Price: {{specificCardData.CardPrice}}</li>
-                            <li>Certificate of Authenticity Link: {{specificCardData.CertificateImage}}</li>
-                        </ul>
-                    </div>
-                    {{/if}}
                 </div>
             </div>
-        </div>
-        {{/if}}
-    </ul>
+            {{/if}}
+        </ul>
+    </div>
+
 </body>
