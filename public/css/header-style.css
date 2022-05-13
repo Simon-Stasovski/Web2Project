@@ -16,7 +16,8 @@ header #nav-form-btns{
 }
 
 header #nav-form-btns > form{
-    flex: 1;
+    width: 15%;
+    margin: 0.8em;
 }
 
 header #nav-form-btns form{

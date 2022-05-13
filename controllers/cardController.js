@@ -27,13 +27,13 @@ async function addCard( request, response ) {
         if(error instanceof model.SystemError){
             //response.render( 'addFabricForm.hbs', { errorClass: "alert alert-primary", alertMessage: "Fabric add failed" });
             logger.error( error );
-            response.send( { error: error});
+            response.send( "Could not add card due to error" );
             response.status( 500 );
         }
         else if(error instanceof model.UserInputError){
             // response.render( 'addFabricForm.hbs', { errorClass: "alert alert-secondary", alertMessage: "Fabric add failed due to invalid input" });
             logger.error( error );
-            response.send( { error: error});
+            response.send( "Could not add card due to invalid input" );
             response.status( 400 );
         } 
         else{
@@ -54,7 +54,7 @@ async function listAllCards( request, response ){
     }
     catch( error ){
         logger.error( error );
-        response.send( { error: error});
+        response.send( error.message );
         response.status( 500 );
         // response.render( 'home.hbs', { errorClass: "alert alert-primary", alertMessage: 'Cannot get all fabric items from database' });
     }
@@ -70,22 +70,31 @@ async function getSpecificCard( request, response ){
         // const dataToSend = { fabric: listOfFabric };
         // response.status( 200 );
         // response.render( 'showAllFabric.hbs', dataToSend );
-        response.send( card );
+
+        if( card != null ){
+            response.send( card );
+        }
+        else{
+            response.send( `Could not find card with id ${id}` );
+        }
+
     }
     catch( error ){
         if( error instanceof model.SystemError ){
             logger.error( error );
-            response.send( { error: error});
+            response.send( "Could not find card due to error" );
             response.status( 500 );
             // response.render( 'showSpecificFabricForm.hbs', { errorClass: "alert alert-primary", alertMessage: 'Getting fabric with specified name failed' });
         }
         else if( error instanceof model.UserInputError ){
             logger.error( error );
-            response.send( { error: error});
+            response.send( `Could not find card with id ${id}` );
             response.status( 400 );
             // response.render( 'showSpecificFabricForm.hbs', { errorClass: "alert alert-secondary", alertMessage: `Fabric name: ${request.params.name} does not exist in database` });
         } 
         else{
+            response.send( `Could not find card with id ${id}` );
+            response.status( 500 );
             logger.error( error.message );
         }
     }
@@ -102,28 +111,41 @@ async function listCardsByUser( request, response ){
             response.send( cards );
         }
         else{
-            response.send( "Cards for user " + username + " not found" );
+            response.send( `Unable to retreive cards for user ${username}` );
         }
-
-
     }
     catch( error ){
-        if( error instanceof model.SystemError ){
-            logger.error( error );
-            response.send( { error: error});
-            response.status( 500 );
-            // response.render( 'showSpecificFabricForm.hbs', { errorClass: "alert alert-primary", alertMessage: 'Getting fabric with specified name failed' });
-        }
-        else{
-            logger.error( error );
-            response.send( { error: error});
-            response.status( 500 );
-            // response.render( 'home.hbs', { errorClass: "alert alert-primary", alertMessage: 'Cannot get all fabric items from database' });
-        }
+        logger.error( error );
+        response.send( `Unable to retreive cards for user ${username}` );
+        response.status( 500 );
+        // response.render( 'home.hbs', { errorClass: "alert alert-primary", alertMessage: 'Cannot get all fabric items from database' });
     }
 }
 
 router.get( '/card/user/:user', listCardsByUser );
+
+async function listCardsForSale( request, response ){
+    try{
+        let cardsForSale = await model.getCardsForSale();
+
+        const dataToSend = { cards: cardsForSale };
+
+        if(cardsForSale != null){
+            response.render( 'mainPageCards.hbs', dataToSend );
+        }
+        else{
+            response.send( `Unable to retreive cards for sale` );
+        }
+    }
+    catch( error ){
+        logger.error( error );
+        response.send( `Unable to retreive cards for sale` );
+        response.status( 500 );
+        // response.render( 'home.hbs', { errorClass: "alert alert-primary", alertMessage: 'Cannot get all fabric items from database' });
+    }
+}
+
+router.get( '/cards/sale', listCardsForSale );
 
 async function editSpecificCard( request, response ){
     try{
@@ -131,6 +153,8 @@ async function editSpecificCard( request, response ){
         let card = await model.updateRowInCardTable( id, request.body.newCardName, request.body.newType, request.body.newDescription, request.body.newSerialNumber, 
             request.body.newFrontImagePath, request.body.newBackImagePath, request.body.newIsForSale, request.body.newCardCondition, request.body.newCertificateImage, 
             request.body.newCardPrice, request.body.newCardOwner );
+
+        
         // const dataToSend = { fabric: listOfFabric };
         // response.status( 200 );
         // response.render( 'showAllFabric.hbs', dataToSend );
@@ -163,19 +187,26 @@ async function deleteSpecificCard( request, response ){
         if( result ){
             response.send( "Successfully deleted card with id " + id );
         }
+        else{
+            response.send( `Unable to delete card with id: ${id}` );
+        }
 
         // response.status( 200 );
     }
     catch( error ){
         if( error instanceof model.SystemError ){
+            response.send( `Could not find card with id: ${id} to delete` );
             response.status( 500 );
             // response.render( 'deleteFabricForm.hbs', { errorClass: "alert alert-primary", alertMessage: 'Deleting fabric with specified name failed' });
         }
         else if( error instanceof model.UserInputError ){
+            response.send( `Could not find card with id: ${id} to delete` );
             response.status( 400 );
             // response.render( 'deleteFabricForm.hbs', { errorClass: "alert alert-secondary", alertMessage: `Fabric name: ${request.params.name} does not exist in database` });
         } 
         else{
+            response.send( `Unable to delete card with id: ${id}` );
+            response.status( 500 );
             logger.error( error.message );
         }
     }

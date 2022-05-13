@@ -1,0 +1,24 @@
+/* Anna */
+
+#showCardsList{
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card{
+    width: 200px;
+    height: 300px;
+    border: solid black 1px;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 1.2em;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.viewCardBtn{
+    margin: 2em;
+}

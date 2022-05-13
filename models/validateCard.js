@@ -31,7 +31,7 @@ async function isValid( cardName, description, frontImagePath, backImagePath, ca
     else if( cardPrice != null && !validator.isCurrency( `${cardPrice}`, { allow_negatives: false } )){
         return false;
     }
-    else if( !validator.isLength( `"${cardName}"`, { min:0, max: 50 } ) ){
+    else if(  cardName === '' || !validator.isLength( `"${cardName}"`, { min:1, max: 50 } ) ){
         return false;
     }
     else if( !validator.isLength( `"${description}"`, { min:0, max: 400 } ) ){

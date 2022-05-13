@@ -15,34 +15,14 @@
     </div>
     <nav>
         <div id="nav-form-btns">
-            {{!-- Gets home page --}}
+            {{!-- Gets user's personnal cards page (hidden if not logged in) --}}
             <form method="get" action="/">
-                <input type="submit" value="Home" id="homeBtn">
+                <input type="submit" value="My Cards" id="myCardsBtn">
             </form>
 
             {{!-- Gets form for adding a player --}}
-            <form method="get" action="/nbaPlayers">
-                <input type="submit" value="Add Player" id="addBtn">
-            </form>
-
-            {{!-- Goes directly to list all input because no form is necessary --}}
-            <form method="get" action="/nbaPlayers/list">
-                <input type="submit" value="List All Players" id="showAllBtn">
-            </form>
-
-            {{!-- Gets form for getting specific player entry --}}
-            <form method="get" action="/nbaPlayers/displayQueriedPlayer">
-                <input type="submit" value="Find Specific Player" id="showBtn">
-            </form>
-
-            {{!-- Gets form to edit specific player entry --}}
-            <form method="get" action="/nbaPlayers/displayUpdatedPlayer" >
-                <input type="submit" value="Update Player Number" id="editBtn">
-            </form>
-
-            {{!-- Gets form to delete specific player entry --}}
-            <form method="get" action="/nbaPlayers/displayDeletedPlayer" >
-                <input type="submit" value="Remove Player" id="deleteBtn">
+            <form method="get" action="/cards/sale">
+                <input type="submit" value="Shop Cards" id="shopCardsBtn">
             </form>
         </div>
     </nav>

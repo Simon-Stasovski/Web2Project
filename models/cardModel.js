@@ -233,7 +233,40 @@ async function getCardsByOwner( username ){
             throw new SystemError( errorMessage ); 
         });   
 
+        if( rows.length <= 0 ){
+            let errorMessage = `Records for user with username ${username} does not found in the card table.`;
+            logger.error( errorMessage );
+            throw new UserInputError( errorMessage ); 
+        }
+
         logger.info( `Successfully retrieved cards from user with username ${username}'` );
+
+        return rows;
+    }
+    catch( error ){
+        logger.error( error );
+        return NOT_FOUND;
+    }
+}
+
+async function getCardsForSale( ){
+    const NOT_FOUND = null;
+
+    try{
+        const sqlQuery = `SELECT * FROM Card WHERE IsForSale = 1`;
+        let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
+            let errorMessage = `Unable to find card record due to error: ${error}`;
+            logger.error( errorMessage );
+            throw new SystemError( errorMessage ); 
+        });   
+
+        if( rows.length <= 0 ){
+            let errorMessage = `No cards for sale were found.`;
+            logger.error( errorMessage );
+            throw new UserInputError( errorMessage ); 
+        }
+
+        logger.info( `Successfully retrieved cards for sale` );
 
         return rows;
     }
@@ -360,6 +393,7 @@ module.exports = {
     readFromCardTable,
     findCardRecord,
     getCardsByOwner,
+    getCardsForSale,
     updateRowInCardTable,
     deleteRowFromCardTable,
     UserInputError,
