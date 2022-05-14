@@ -4,7 +4,14 @@
             <image id="logo" src="#" alt="logo"></image>
         </div>
         <form>
-            <input type="text" id="search" name="search" placeholder="Search...">
+            <div id="search">
+                <select id="searchCategory">
+                    <option>Card Name</option>
+                    <option>User</option>
+                </select>
+                <input type="search" placeholder="Search..." id="searchBar">
+            </div>
+            {{!-- <input type="text" id="search" name="search" placeholder="Search..."> --}}
         </form>
         <span id="login">
             <span>

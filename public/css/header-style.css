@@ -25,9 +25,15 @@ header #nav-form-btns form{
 }
 
 #search{
-    padding: 1em;
-    border-radius: 0.5em;
+    border: solid black 1px;
+    border-radius: 1em;
+    display: flex;
 }
+
+#searchBar{
+    padding: 1em;
+}
+
 header #nav-form-btns form input{
     padding: 0.8em;
     border-radius: 0.5em;
