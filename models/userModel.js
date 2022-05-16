@@ -43,7 +43,7 @@ async function dropUserTable(connection) {
 async function createUserTable(connection) {
   try {
   dbconnection= connection;
-  const sqlQuery = "CREATE TABLE IF NOT EXISTS Users(id int AUTO_INCREMENT, username VARCHAR(25), password VARCHAR(25),email utf8(320),Balance DECIMAL(10,2),isprivate BOOL, PRIMARY KEY(id));";
+  const sqlQuery = "CREATE TABLE IF NOT EXISTS users(id int AUTO_INCREMENT, username VARCHAR(25), password VARCHAR(25),email varchar(320),Balance DECIMAL(10,2),isprivate BOOL, PRIMARY KEY(id));";
   await connection.execute(sqlQuery);
   console.info("Table users created/exists");
   }
@@ -68,8 +68,7 @@ function getConnection() {
 
 async function addUser(username, password1, password2,email) {
   if (!validate.isValid(username, password1, password2,email)){
-    //throw new InvalidInputError();
-    console.error("Invalid username")
+    throw new InvalidInputError();
   }
   if(!getUser(username)){
     throw new UserAlreadyExistsError();
@@ -82,8 +81,7 @@ async function addUser(username, password1, password2,email) {
     .execute(sqlQuery)
     .then(logger.info("User added to database"))
     .catch((error) => {
-      console.log(error)
-      //throw new Error("cannot add user to database");
+      throw new Error("cannot add user to database");
     });
   return { Username: username, password: password1 };
 }
@@ -148,35 +146,38 @@ async function getUserBalance(username){
       throw new Error("Unable to get User balance");
     });
 } catch (error) {
-  console.log("cannot find user balance");
+  logger.error("cannot find user balance");
   return null;
 }
 
 }
 async function getUser(username) {
   try {
-    const sqlQuery = `SELECT * from users WHERE username =${username};`;
+    const sqlQuery = `SELECT * from users WHERE username ='${username}';`;
     return await dbconnection
       .execute(sqlQuery)
       .then(logger.info("User was found"))
       .catch((error) => {
         throw new Error("Unable to get User");
       });
+      
   } catch (error) {
-    console.log("cannot find user");
+    logger.error("cannot find user");
     return null;
   }
 }
 async function logInUser(username, password) {
-  if(getUser(username)){
+  if(getUser(username) != null){
     const sqlQuery = `SELECT password from users WHERE username ='${username}';`;
     let userpassword = await dbconnection
       .execute(sqlQuery)
       .then(logger.info("password was found"))
-      if(password == userpassword){
+      if(password === userpassword[0][0].password){
         return true;
       }
-      else return false
+      else {
+        return false
+      }
   }
   else return false
 }
@@ -221,5 +222,6 @@ module.exports = {
   getUserBalance,
   updateUserBalance,
   InvalidInputError,
+  UserAlreadyExistsError,
   DBConnectionError,
 };

@@ -8,8 +8,8 @@
         </form>
         <span id="login">
             <span>
-                <form action="/login" method="get" role="form">
-                    <button type="submit" class="btn btn-primary">Login</button>
+                <form action="/logout" method="get" role="form">
+                    <button type="submit" class="btn btn-primary">Log Out</button>
                 </form>
             </span>
         </span>
@@ -17,33 +17,28 @@
     <nav>
         <div id="nav-form-btns">
             {{!-- Gets home page --}}
-            <form method="get" action="/">
+            <form method="get" action="/login">
                 <input type="submit" value="Home" id="homeBtn">
             </form>
 
             {{!-- Gets form for adding a player --}}
-            <form method="get" action="/nbaPlayers">
-                <input type="submit" value="Add Player" id="addBtn">
+            <form method="post" action="/user">
+                <input type="submit" value="Add user" id="addBtn">
             </form>
 
             {{!-- Goes directly to list all input because no form is necessary --}}
-            <form method="get" action="/nbaPlayers/list">
-                <input type="submit" value="List All Players" id="showAllBtn">
-            </form>
-
-            {{!-- Gets form for getting specific player entry --}}
-            <form method="get" action="/nbaPlayers/displayQueriedPlayer">
-                <input type="submit" value="Find Specific Player" id="showBtn">
+            <form method="get" action="/users/list">
+                <input type="submit" value="List All user" id="showAllBtn">
             </form>
 
             {{!-- Gets form to edit specific player entry --}}
-            <form method="get" action="/nbaPlayers/displayUpdatedPlayer" >
-                <input type="submit" value="Update Player Number" id="editBtn">
+            <form method="get" action="/user/updateuserpassword" >
+                <input type="submit" value="Update User password" id="editBtn">
             </form>
 
             {{!-- Gets form to delete specific player entry --}}
-            <form method="get" action="/nbaPlayers/displayDeletedPlayer" >
-                <input type="submit" value="Remove Player" id="deleteBtn">
+            <form method="get" action="/user/deleteduser" >
+                <input type="submit" value="Remove user" id="deleteBtn">
             </form>
         </div>
     </nav>

@@ -11,4 +11,7 @@
     <input id="email" type="email" name="email"required/>
     <button type="submit" class="btn btn-primary">Create account</button>
   </form>
+    {{#if AlertMessage}}
+    {{message}}
+    {{/if}}
 </body>
