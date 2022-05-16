@@ -138,6 +138,7 @@ async function createUser(request, response) {
         message: "cannot conect to database",
       });
   }
+  response.redirect("/login");
 }
 async function showAccountDetails(request, response) {
   // const authenticatedSession = authenticateUser(request);
