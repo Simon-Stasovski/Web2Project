@@ -133,6 +133,10 @@ async function listCardsForSale( request, response ){
             cardsForSale = getFilterResults( request, cardsForSale );
         }
 
+        if( request.query.searchBar != null ){
+            cardsForSale = search( request, cardsForSale );
+        }
+
         let dataToSend = { cards: cardsForSale, cardEndpoint: "/cards/sale" }; 
 
         if( request.query.id != null ){
@@ -186,6 +190,10 @@ function getFilterResults( request, cards ){
     });
     
     return cards;
+}
+
+function search( request, cards ){
+
 }
 
 async function editSpecificCard( request, response ){
