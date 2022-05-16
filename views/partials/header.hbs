@@ -3,7 +3,7 @@
         <div id="logo-div">
             <image id="logo" src="#" alt="logo"></image>
         </div>
-        <form method="get" action="/searchbar" >
+        <form method="get" action="/searchbar">
             <div id="search">
                 <select id="searchCategory">
                     <option>Card Name</option>
@@ -11,11 +11,19 @@
                 </select>
                 <input type="hidden" id="searchBar" name="searchBar" value="true">
                 <input type="search" placeholder="Search..." name="searchBarSearch" id="searchBarSearch">
-                {{!-- attribution: <a href="https://www.flaticon.com/free-icons/search" title="search icons">Search icons created by Smashicons - Flaticon</a> --}}
+                {{!-- attribution: <a href="https://www.flaticon.com/free-icons/search" title="search icons">Search
+                    icons created by Smashicons - Flaticon</a> --}}
                 <button type="submit" id="searchSubmit"><img src="../images/search.png"></button>
             </div>
             {{!-- <input type="text" id="search" name="search" placeholder="Search..."> --}}
         </form>
+        <span id="cartSpan">
+            <form method="get" action="/cart" id="shoppingCart">
+                <button type="submit" id="cartSubmit"><img src="../images/shopping-cart.png"></button>
+                {{!-- <a href="https://www.flaticon.com/free-icons/shopping-cart" title="shopping cart icons">Shopping
+                    cart icons created by Freepik - Flaticon</a> --}}
+            </form>
+        </span>
         <span id="login">
             <span>
                 <button>Log In</button>
@@ -32,7 +40,7 @@
 
             {{!-- Gets form for adding a player --}}
             <form method="get" action="/cards/sale">
-                <input type="submit" value="Shop Cards" id="shopCardsBtn">
+                <input type="submit" value="Shop Cards" id="cartBtn">
             </form>
         </div>
     </nav>

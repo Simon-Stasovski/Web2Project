@@ -24,6 +24,8 @@ header #nav-form-btns form{
     justify-content: space-between;
 }
 
+/* Search bar */
+
 #search{
     border: solid black 1px;
     border-radius: 1em;
@@ -32,6 +34,20 @@ header #nav-form-btns form{
 
 #searchBar{
     padding: 1em;
+}
+
+#searchBarSearch{
+    padding: 1em;
+}
+
+#searchCategory{
+    border-top-left-radius: 0.5em;
+    border-bottom-left-radius: 0.5em;
+}
+
+#searchSubmit{
+    border-top-right-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
 }
 
 header #nav-form-btns form input{
@@ -66,7 +82,7 @@ header #nav-form-btns form input{
 }
 
 #login{
-    flex: 2;
+    flex: 1;
     display: flex;
     justify-content: flex-end;
     padding-right: 1.5em;
@@ -107,4 +123,24 @@ header #nav-form-btns form input{
 
 #nav-form-btns input:hover, .submit-btn:hover{
     background-color: #787A91;
+}
+
+/* Shopping cart */
+#cartSpan{
+    flex: 0;
+    padding-top: 0;
+}
+
+#shoppingCart {
+    flex: 1;
+    display: flex;
+    padding-left: 4em;
+}
+
+#shoppingCart button{
+    border-radius: 100%;
+}
+
+#shoppingCart img{
+    margin: 0.8em;
 }
