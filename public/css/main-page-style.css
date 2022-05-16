@@ -2,12 +2,34 @@
 
 #mainPage{
     display: flex;
+    min-height: 400px;
 }
 
-#filterSidebar{
-    width: 28%;
+/* #filterSidebar{
+    text-align: center;
+    width: 100px;
+    height: 40px;
+    overflow: hidden;
     border: solid black 1px;
     padding: 0.8em;
+    animation-fill-mode: forwards;
+    transition: width 3s, height 3s;
+}
+
+#filterSidebar:hover{
+    text-align: left;
+    width: 28%;
+    height: 500px;
+    border: solid black 1px;
+    padding: 0.8em;
+    animation-fill-mode: forwards;
+} */
+
+#filterSidebar{
+    text-align: left;
+    width: 28%;
+    border: solid black 1px;
+    padding: 1.6em;
 }
 
 #showCardsList{
@@ -97,6 +119,19 @@
 #priceRangeDiv p, #conditionDiv p{
     padding-right: 0.5em;
     padding-left: 0.5em;
+}
+
+#noCardsToDisplay{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 72%;
+}
+
+#noCardsToDisplay p{
+    border: solid black 1px;
+    border-radius: 0.5em;
+    padding: 1em;
 }
 
 

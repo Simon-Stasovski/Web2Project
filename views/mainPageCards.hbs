@@ -20,22 +20,28 @@
                     <label for="conditionDiv">By Condition Range</label>
                     <p>(best to worst)</p>
                     <div id="conditionDiv">
-                            <input type="number"  name="minCondition" id="minCondition" min="1" max="5">
-                            <p>to</p>
-                            <input type="number" name="maxCondition" id="maxCondition" min="1" max="5">
+                        <input type="number" name="minCondition" id="minCondition" min="1" max="5" value="1">
+                        <p>to</p>
+                        <input type="number" name="maxCondition" id="maxCondition" min="1" max="5" value="5">
                     </div>
                 </div>
                 <div class="optionDiv">
                     <label for="priceRangeDiv">By Price Range</label>
                     <div id="priceRangeDiv">
-                            <input type="number" id="minPrice" min="0" max="1000">
-                            <p>to</p>
-                            <input type="number" id="maxPrice" min="0" max="1000">
+                        <input type="number" id="minPrice" name="minPrice" min="0" max="100000" value="0">
+                        <p>to</p>
+                        <input type="number" id="maxPrice" name="maxPrice" min="0" max="100000" value="100000">
                     </div>
-                </div>  
+                </div>
                 <input type="submit" value="Filter" id="filterSubmit">
             </form>
         </div>
+        {{#if noCards}}
+        <div id="noCardsToDisplay">
+                    <p>{{noCardMessage}}</p>
+        </div>
+        {{/if}}
+        {{#if cards}}
         <ul id="showCardsList">
             {{#each cards}}
             <li class="card">
@@ -84,6 +90,7 @@
             </div>
             {{/if}}
         </ul>
+        {{/if}}
     </div>
 
 </body>

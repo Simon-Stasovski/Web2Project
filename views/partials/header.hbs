@@ -3,14 +3,14 @@
         <div id="logo-div">
             <image id="logo" src="#" alt="logo"></image>
         </div>
-        <form method="get" action="/cards/sale" >
+        <form method="get" action="/searchbar" >
             <div id="search">
                 <select id="searchCategory">
                     <option>Card Name</option>
                     <option>User</option>
                 </select>
-                <input type="hidden" id="searchBar" value="true">
-                <input type="search" placeholder="Search..." id="searchBar">
+                <input type="hidden" id="searchBar" name="searchBar" value="true">
+                <input type="search" placeholder="Search..." name="searchBarSearch" id="searchBarSearch">
                 {{!-- attribution: <a href="https://www.flaticon.com/free-icons/search" title="search icons">Search icons created by Smashicons - Flaticon</a> --}}
                 <button type="submit" id="searchSubmit"><img src="../images/search.png"></button>
             </div>

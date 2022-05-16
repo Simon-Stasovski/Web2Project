@@ -1,9 +1,12 @@
 const errorController = require( './controllers/errorController' );
 const homeController = require( './controllers/homeController' );
 const cardController = require( './controllers/cardController' );
+const uuid = require('uuid');
+var cookieParser = require('cookie-parser');
 
 const express = require('express');
 const app = express();
+app.use(cookieParser());
 const {engine} = require('express-handlebars');
 const bodyParser = require('body-parser')
 

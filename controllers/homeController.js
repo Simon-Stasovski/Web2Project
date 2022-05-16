@@ -5,7 +5,8 @@ const routeRoot = '/';
 module.exports = {
     router,
     routeRoot,
-    showHome
+    showHome,
+    executeSearchBarSearch
 }
 /**
  * Renders the default Home page of the website.
@@ -17,3 +18,9 @@ function showHome( request, response ) {
 }
 
 router.get('/', showHome);
+
+function executeSearchBarSearch( request, response ){
+    response.redirect( `${request.cookies['endpoint']}?searchBarSearch=${request.query.searchBarSearch}` );  
+}
+
+router.get('/searchbar', executeSearchBarSearch);
