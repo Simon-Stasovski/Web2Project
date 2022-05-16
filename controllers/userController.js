@@ -103,7 +103,7 @@ router.get("/logout", (request, response) => {
   console.log("Logged out user " + authenticatedSession.userSession.username);
   response.cookie("sessionId", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
   response.cookie("userName", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
-  response.redirect("/home");
+  response.redirect("/login");
 });
 
 function showCreateAccountPage(request, response) {

@@ -5,7 +5,9 @@ const homeController = require( './controllers/homeController' );
 const express = require('express');
 const app = express();
 const {engine} = require('express-handlebars');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 console.log("Creating app");
 
