@@ -1,21 +1,56 @@
 <body>
-    <h2>Your Cart</h2>
-    {{#if emptyCart}}
-    <p>Your shopping cart is empty.</p>
-    {{/if}}
-    <table>
-        <tr>
-            <th>Card</th>
-            <th>Seller</th>
-            <th>Price</th>
-        </tr>
-        {{#each cartItems}}
-        <tr>
-            <td>{{this.CardName}}</td>
-            <td>{{this.CardOwner}}</td>
-            <td>{{this.CardPrice}}</td>
-        </tr>
-        {{/each}}
-    </table>
-
+    <h2 id="cartHeader">Your Cart</h2>
+    <div id="cartDiv">
+        {{#if emptyCart}}
+        <p>Your shopping cart is empty.</p>
+        {{/if}}
+        {{#if cartItems}}
+        <div id="cartItems">
+            {{#each cartItems}}
+            <div class="cartItem">
+                <div class="cardImage">
+                    <div class="cardImageContainer">
+                        <img src="{{this.FrontImagePath}}">
+                    </div>
+                </div>
+                <span class="itemInfo">
+                    <span class="itemName">
+                        <p>{{this.CardName}}</p>
+                        <p>sold by {{this.CardOwner}}</p>
+                    </span>
+                    <p class="desc">{{this.Description}}</p>
+                </span>
+                <p class="cardPrice">${{this.CardPrice}}</p>
+            </div>
+            {{/each}}
+        </div>
+        <span id="checkout">
+            <span id="orderSummary">
+                <p id="summaryTitle">Order Summary</p>
+                <table>
+                    <tr>
+                        <td>Subtotal</td>
+                        <td>${{subtotal}}</td>
+                    </tr>
+                    <tr>
+                        <td>Tax</td>
+                        <td>${{tax}}</td>
+                    </tr>
+                    <tr>
+                        <td>Total</td>
+                        <td>${{total}}</td>
+                    </tr>
+                </table>
+            </span>
+            <span id="buttons">
+                <form method="get" action="/cards/sale">
+                    <button type="submit">Continue Shopping</button>
+                </form>
+                <form method="get">
+                    <button type="submit">Checkout</button>
+                </form>
+            </span>
+        </span>
+        {{/if}}
+    </div>
 </body>

@@ -40,7 +40,10 @@ function addToCart( request, response ){
         cart = Object.values( cart );
     } 
 
-    cart.push( request.query.item );
+    let id = request.query.item;
+    if( !cart.includes( id )){
+        cart.push( id );
+    }
 
     response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
     response.redirect( `${request.cookies['endpoint']}?numItemsInCart=${cart.length}` ); 
@@ -59,14 +62,21 @@ async function getCartItems( request, response ){
     else{
         let items = [];
         cart = Object.values( cart );
+        let subtotal = 0;
 
         for( let i = 0; i < cart.length; i++ ){
             if( !items.includes( cart[i] )){
-                items.push( await cardModel.findCardRecord( cart[i] ));
+                let item = await cardModel.findCardRecord( cart[i] );
+                items.push( item );
+                subtotal += parseFloat( item.CardPrice );
             }
         }
 
         dataToSend.cartItems = items; 
+        dataToSend.subtotal = subtotal;
+        dataToSend.tax = ( subtotal*15 )/100;
+        dataToSend.total = ( dataToSend.subtotal + dataToSend.tax ).toFixed( 2 );
+        dataToSend.tax = dataToSend.tax.toFixed( 2 );
     }
 
     response.render( 'cart.hbs', dataToSend );
