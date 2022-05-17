@@ -1,0 +1,21 @@
+<body>
+    <h2>Your Cart</h2>
+    {{#if emptyCart}}
+    <p>Your shopping cart is empty.</p>
+    {{/if}}
+    <table>
+        <tr>
+            <th>Card</th>
+            <th>Seller</th>
+            <th>Price</th>
+        </tr>
+        {{#each cartItems}}
+        <tr>
+            <td>{{this.CardName}}</td>
+            <td>{{this.CardOwner}}</td>
+            <td>{{this.CardPrice}}</td>
+        </tr>
+        {{/each}}
+    </table>
+
+</body>
