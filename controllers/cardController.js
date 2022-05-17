@@ -101,15 +101,26 @@ async function getSpecificCard( request, response ){
     }
 }
 
-router.get( '/card/:id', getSpecificCard ); 
+// router.get( '/card/:id', getSpecificCard ); 
 
 async function listCardsByUser( request, response ){
     try{
-        let username = request.params.user;
-        let cards = await model.getCardsByOwner( username );
+        // let username = request.cookies['username'];
+        let username = 'joe123'; // HARDCODED FOR NOW - CHANGE TO COOKIES ONCE YOU MERGE
+        let userCards = await model.getCardsByOwner( username );
+        let dataToSend = { cards: userCards, endpoint: "/cards/user", userMode: true }; 
 
-        if(cards != null){
-            response.send( cards );
+        if( request.query.addCard != null ){
+            dataToSend.addCard = true; 
+        }
+
+        if( request.query.id != null ){
+            let cardData = await model.findCardRecord( request.query.id );
+            dataToSend.specificCardData = cardData;
+        }
+        
+        if( userCards != null ){
+            response.render( 'mainPageCards.hbs', dataToSend );  
         }
         else{
             response.send( `Unable to retreive cards for user ${username}` );
@@ -123,7 +134,7 @@ async function listCardsByUser( request, response ){
     }
 }
 
-router.get( '/card/user/:user', listCardsByUser );
+router.get( '/cards/user', listCardsByUser );
 
 async function listCardsForSale( request, response ){
     try{
@@ -139,17 +150,16 @@ async function listCardsForSale( request, response ){
             cardsForSale = getFilterResults( request, cardsForSale );
         }
 
-        let dataToSend = { cards: cardsForSale, cardEndpoint: "/cards/sale" }; 
+        let dataToSend = { cards: cardsForSale, cardEndpoint: "/cards/sale", buyMode: true }; 
 
-        if( request.query.numItemsInCart != null ){
-            dataToSend.numItemsInCart = request.query.numItemsInCart;
-        }
+        // if( request.query.numItemsInCart != null ){
+        //     dataToSend.numItemsInCart = request.query.numItemsInCart;
+        // }
 
 
         if( request.query.id != null ){
             let cardData = await model.findCardRecord( request.query.id );
             dataToSend.specificCardData = cardData;
-            dataToSend.buyMode = true;
         }
 
         response.cookie( "endpoint", '/cards/sale', { expires: new Date(Date.now() + 560 * 60000) }); 

@@ -51,6 +51,10 @@
     justify-content: center;
 }
 
+#addCard.card{
+    align-items: center;
+}
+
 .viewCardBtn{
     margin: 2em;
 }
@@ -136,7 +140,7 @@
 
 
 /* Expanded Card View */
-#viewCardExpandedView{
+#viewCardExpandedView, .popup-window{
     background-color: white;
     border: solid black 1px;
     border-radius: 0.5em;
@@ -230,3 +234,4 @@
 #viewCardCol2 li{
     padding: 0.3em;
 }
+
