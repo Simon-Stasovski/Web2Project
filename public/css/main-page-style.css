@@ -187,9 +187,16 @@
 #addToCartBtn{
     flex: 1;
     margin: 1.2em;
-    max-height: 65px;
+    /* max-height: 65px; */
+    width: 100%;
+    text-align: center;
+}
+
+#addToCartBtn button{
+    height: 60%;
     width: 100%;
 }
+
 
 #viewCardCol2{
     flex: 3;

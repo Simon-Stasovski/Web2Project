@@ -141,6 +141,11 @@ async function listCardsForSale( request, response ){
 
         let dataToSend = { cards: cardsForSale, cardEndpoint: "/cards/sale" }; 
 
+        if( request.query.numItemsInCart != null ){
+            dataToSend.numItemsInCart = request.query.numItemsInCart;
+        }
+
+
         if( request.query.id != null ){
             let cardData = await model.findCardRecord( request.query.id );
             dataToSend.specificCardData = cardData;

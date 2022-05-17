@@ -18,10 +18,13 @@
             {{!-- <input type="text" id="search" name="search" placeholder="Search..."> --}}
         </form>
         <span id="cartSpan">
-            <form method="get" action="/cart" id="shoppingCart">
+            <form method="get" action="" id="shoppingCart">
                 <button type="submit" id="cartSubmit"><img src="../images/shopping-cart.png"></button>
                 {{!-- <a href="https://www.flaticon.com/free-icons/shopping-cart" title="shopping cart icons">Shopping
                     cart icons created by Freepik - Flaticon</a> --}}
+                {{#if ../cartItemAmount}}
+                <div id="cartItemAmount">{{cartItemAmount}}</div>
+                {{/if}}
             </form>
         </span>
         <span id="login">

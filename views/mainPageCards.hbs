@@ -62,7 +62,10 @@
                             <img src="{{specificCardData.FrontImagePath}}" alt="image of card">
                         </div>
                         {{#if buyMode}}
-                        <button id="addToCartBtn">Add to Cart</button>
+                        <form method="get" action="/cart" id="addToCartBtn">
+                            <input type="hidden" value="{{specificCardData.CardID}}" name="item">
+                            <button type="submit">Add to Cart</button>
+                        </form>              
                         {{/if}}
                     </div>
                     <div id="viewCardCol2">

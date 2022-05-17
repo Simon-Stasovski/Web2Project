@@ -135,6 +135,7 @@ header #nav-form-btns form input{
     flex: 1;
     display: flex;
     padding-left: 4em;
+    position: relative;
 }
 
 #shoppingCart button{
@@ -143,4 +144,15 @@ header #nav-form-btns form input{
 
 #shoppingCart img{
     margin: 0.8em;
+}
+
+#cartItemAmount{
+    background-color: white;
+    border: solid black 1px;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 40px;
+    right: 35px;
 }
