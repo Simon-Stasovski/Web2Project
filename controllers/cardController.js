@@ -114,7 +114,10 @@ async function listCardsByUser( request, response ){
         let dataToSend = { cards: userCards, endpoint: "/cards/user", userMode: true, currentUser: username }; 
 
         if( request.query.addCard != null ){
-            dataToSend.addCard = true; 
+            dataToSend.addCardOrEditCard = true; 
+            dataToSend.addOrEditMessage = 'Add Card to Your Collection';
+            dataToSend.addOrEditEndpoint = '/card';
+            dataToSend.inputMessage = 'Add Card';
         }
         
 

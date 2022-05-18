@@ -2,7 +2,12 @@
     <h2 id="cartHeader">Your Cart</h2>
     <div id="cartDiv">
         {{#if emptyCart}}
-        <p>Your shopping cart is empty.</p>
+        <div id="emptyCartDiv">
+            <p id="emptyCart">Your shopping cart is empty.</p>
+            <form method="get" action="/cards/sale">
+                <button type="submit">Continue Shopping</button>
+            </form>
+        </div>
         {{/if}}
         {{#if cartItems}}
         <div id="cartItems">
@@ -20,7 +25,13 @@
                     </span>
                     <p class="desc">{{this.Description}}</p>
                 </span>
-                <p class="cardPrice">${{this.CardPrice}}</p>
+                <span class="cardPrice">
+                    <p>${{this.CardPrice}}</p>
+                    <form method="post" action="/cart/items">
+                        <input type="hidden" value="{{this.CardID}}" name="itemToRemove">
+                        <input class="removeCartItem" type="submit" value="remove">
+                    </form>
+                </span>
             </div>
             {{/each}}
         </div>

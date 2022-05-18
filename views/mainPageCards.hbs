@@ -115,7 +115,7 @@
             {{/if}}
         </ul>
         {{/if}}
-        {{#if addCard}}
+        {{#if addCardOrEditCard}}
         <div id="addCardSection" class="popup-window">
             {{#if errorMessage}}
             <span class="errorMsg">
@@ -125,8 +125,8 @@
             <form method="get" action="{{endpoint}}" id="exitDiv">
                 <input type="submit" value="X" id="exitView">
             </form>
-            <h2>Add Card to Your Collection</h2>
-            <form id="addCardForm" method="post" action="/card">
+            <h2>{{addOrEditMessage}}</h2>
+            <form id="addCardForm" method="post" action="{{addOrEditEndpoint}}">
                 <input type="hidden" value="{{currentUser}}" name="cardOwner">
                 <input name="cardName" type="text" placeholder="Card Name" required>
                 <select name="type" required>
@@ -169,7 +169,7 @@
                         <input type="file" id="certificateImage" name="certificateImage">
                     </span>
                 </span>
-                <button type="submit" id="addCardBtn">Add Card</button>
+                <button type="submit" id="addCardBtn">{{inputMessage}}</button>
             </form>
         </div>
         {{/if}}

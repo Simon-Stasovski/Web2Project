@@ -54,14 +54,14 @@ router.get( '/cart', addToCart );
 async function getCartItems( request, response ){
     let cart = serialize.unserialize( request.cookies['cart'] );
     let dataToSend = {};
+    cart = Object.values( cart );
 
-    if( cart == null ){
+    if( cart == null || cart.length == 0 ){
         cart = [];
         dataToSend.emptyCart = true;
     }
     else{
         let items = [];
-        cart = Object.values( cart );
         let subtotal = 0;
 
         for( let i = 0; i < cart.length; i++ ){
@@ -83,4 +83,25 @@ async function getCartItems( request, response ){
 }
 
 router.get( '/cart/items', getCartItems );
+
+function removeCartItem( request, response ){
+    let cart = serialize.unserialize( request.cookies['cart'] );
+    cart = Object.values( cart );
+    let cardToRemove = request.body.itemToRemove;
+    let indexToSplice;
+
+    for( let i = 0; i < cart.length; i++ ){
+        if( cart[i] == cardToRemove ){
+            indexToSplice = i;
+            break;
+        }
+    }
+
+    cart.splice( indexToSplice, 1 );
+
+    response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
+    response.redirect( '/cart/items' );
+}
+
+router.post( '/cart/items', removeCartItem );
 //#endregion
