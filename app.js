@@ -1,6 +1,7 @@
 const errorController = require( './controllers/errorController' );
 const homeController = require( './controllers/homeController' );
 const cardController = require( './controllers/cardController' );
+const transactionController = require( './controllers/transactionController' );
 const uuid = require('uuid');
 var cookieParser = require('cookie-parser');
 
@@ -31,7 +32,7 @@ const expressListRoutes = require('express-list-routes');
 
 
 // Make sure errorController is last!
-const controllers = ['homeController', 'cardController', 'errorController'] 
+const controllers = ['homeController', 'cardController', 'transactionController', 'errorController'] 
 
 // Register routes from all controllers 
 //  (Assumes a flat directory structure and common 'routeRoot' / 'router' export)
@@ -43,7 +44,8 @@ controllers.forEach(( controllerName ) => {
         //fail gracefully if no routes for this controller
         console.log( error );
     }    
-})
+});
+
 module.exports = app
 // List out all created routes 
 expressListRoutes(app, { prefix: '/' });

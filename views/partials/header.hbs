@@ -1,7 +1,16 @@
 <header>
     <div id="site-header">
-        <div id="logo-div">
-            <image id="logo" src="#" alt="logo"></image>
+        <div class="card">
+            <div class="card__content">
+
+                <div class="card__front">
+                </div>
+
+                <div class="card__back">
+                    <p class="card__body"></p>
+                </div>
+
+            </div>
         </div>
         <form method="get" action="/searchbar">
             <div id="search">
@@ -27,6 +36,14 @@
                 {{/if}}
             </form>
         </span>
+        <div class="toggle">
+            <p>Animations</p>
+
+            <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider round"></span>
+            </label>
+        </div>
         <span id="login">
             <span>
                 <button>Log In</button>
