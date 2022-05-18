@@ -20,22 +20,25 @@ module.exports = {
 async function addCard( request, response ) {
     try{
         let card = await model.addCard( request.body.cardName, request.body.type, request.body.description, request.body.serialNumber, request.body.frontImagePath, request.body.backImagePath
-            ,request.body.isForSale, request.body.cardCondition, request.body.certificateImage, request.body.cardPrice, request.body.cardOwner )
-        response.send( card );
-            // response.status( 200 );
+            ,request.body.isForSale, request.body.cardCondition, request.body.certificateImage, request.body.cardPrice, request.body.cardOwner );
+        
+        response.redirect( '/cards/user' );
+        // response.send( card );
+        // response.status( 200 );
     }
     catch( error ){
         if(error instanceof model.SystemError){
-            //response.render( 'addFabricForm.hbs', { errorClass: "alert alert-primary", alertMessage: "Fabric add failed" });
+            response.redirect( '/cards/user?addCard=true&errorMessage=system' );
             logger.error( error );
-            response.send( "Could not add card due to error" );
-            response.status( 500 );
+            // response.send( "Could not add card due to error" );
+            // response.status( 500 );
         }
         else if(error instanceof model.UserInputError){
-            // response.render( 'addFabricForm.hbs', { errorClass: "alert alert-secondary", alertMessage: "Fabric add failed due to invalid input" });
+            response.redirect( '/cards/user?addCard=true&errorMessage=input' );
+            // response.render( 'mainPageCards.hbs', { addCard: true, errorMessage: "Card add failed due to invalid input" });
             logger.error( error );
-            response.send( "Could not add card due to invalid input" );
-            response.status( 400 );
+            // response.send( "Could not add card due to invalid input" );
+            // response.status( 400 );
         } 
         else{
             logger.error( error.message );
@@ -108,14 +111,19 @@ async function listCardsByUser( request, response ){
         // let username = request.cookies['username'];
         let username = 'joe123'; // HARDCODED FOR NOW - CHANGE TO COOKIES ONCE YOU MERGE
         let userCards = await model.getCardsByOwner( username );
-        let dataToSend = { cards: userCards, endpoint: "/cards/user", userMode: true }; 
+        let dataToSend = { cards: userCards, endpoint: "/cards/user", userMode: true, currentUser: username }; 
 
         if( request.query.addCard != null ){
             dataToSend.addCard = true; 
         }
 
+        if( request.query.errorMessage != null ){
+            dataToSend.errorMessage = request.query.errorMessage == 'system' ? "Card add failed due to system error" : "Card add failed due to invalid input";
+        }
+
         if( request.query.id != null ){
             let cardData = await model.findCardRecord( request.query.id );
+            cardData.IsForSale = cardData.IsForSale == 1 ? 'Yes' : 'No';
             dataToSend.specificCardData = cardData;
         }
         

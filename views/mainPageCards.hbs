@@ -62,7 +62,7 @@
             </li>
             {{/if}}
             {{#if specificCardData}}
-            <div id="viewCardExpandedView" class="popup-window">
+            <div id="viewCardExpandedView">
                 <form method="get" action="{{endpoint}}" id="exitDiv">
                     <input type="submit" value="X" id="exitView">
                 </form>
@@ -91,7 +91,12 @@
                                 <li>{{specificCardData.CardName}}</li>
                                 <li>{{specificCardData.Type}}</li>
                                 <li>{{specificCardData.Description}}</li>
-                                <li>{{specificCardData.Condition}}</li>
+                                <li>Serial Number: {{specificCardData.SerialNumber}}</li>
+                                <li>Condition: {{specificCardData.CardCondition}}</li>
+                                {{#if userMode}}
+                                <li>Price: ${{specificCardData.CardPrice}}</li>
+                                <li>Is For Sale: {{specificCardData.IsForSale}}</li>
+                                {{/if}}
                             </ul>
                         </div>
                         {{#if buyMode}}
@@ -112,10 +117,17 @@
         {{/if}}
         {{#if addCard}}
         <div id="addCardSection" class="popup-window">
+            {{#if errorMessage}}
+            <span class="errorMsg">
+                {{errorMessage}}
+            </span>
+            {{/if}}
             <form method="get" action="{{endpoint}}" id="exitDiv">
                 <input type="submit" value="X" id="exitView">
             </form>
-            <form id="addCardForm" method="post" action="card">
+            <h2>Add Card to Your Collection</h2>
+            <form id="addCardForm" method="post" action="/card">
+                <input type="hidden" value="{{currentUser}}" name="cardOwner">
                 <input name="cardName" type="text" placeholder="Card Name" required>
                 <select name="type" required>
                     <option id="pokemon">Pokemon</option>
@@ -126,12 +138,13 @@
                     <option id="magic the gathering">Magic the Gathering</option>
                     <option id="all cards">All cards</option>
                 </select>
-                <input name="description" type="text" placeholder="Description...">
+                <textarea rows="4" cols="50" id="description" name="description" type="text"
+                    placeholder="Description..."></textarea>
                 <input name="serialNumber" type="text" placeholder="Serial Number">
-                <label for="cardPrice">Price</label>
-                <input type="number" id="cardPrice" name="cardPrice" min="0" max="100000">
-                <label for="condition">Card Condition (1 is best 5 is worst)</label>
-                <select name="cardCondition" id="condition">
+                <input type="number" id="cardPrice" name="cardPrice" min="0" max="100000" placeholder="Price"
+                    step="any">
+                <select name="cardCondition" id="condition" required>
+                    <option disabled selected hidden>Card Condition (1 is best condition)</option>
                     <option>1</option>
                     <option>2</option>
                     <option>3</option>
@@ -143,13 +156,20 @@
                     <label for="isForSale">For sale</label>
                 </span>
                 <span id="imageInputs">
-                    <label for="frontImagePath">Upload Front Image of Card</label>
-                    <input type="file" id="frontImagePath" name="frontImagePath">
-                    <label for="backImagePath">Upload Back Image of Card</label>
-                    <input type="file" id="backImagePath" name="backImagePath">
-                    <label for="certificateImage">Upload Certificate of Authenticity</label>
-                    <input type="file" id="certificateImage" name="certificateImage">
+                    <span>
+                        <label for="frontImagePath">Upload Front Image of Card</label>
+                        <input type="file" id="frontImagePath" name="frontImagePath">
+                    </span>
+                    <span>
+                        <label for="backImagePath">Upload Back Image of Card</label>
+                        <input type="file" id="backImagePath" name="backImagePath">
+                    </span>
+                    <span>
+                        <label for="certificateImage">Upload Certificate of Authenticity</label>
+                        <input type="file" id="certificateImage" name="certificateImage">
+                    </span>
                 </span>
+                <button type="submit" id="addCardBtn">Add Card</button>
             </form>
         </div>
         {{/if}}

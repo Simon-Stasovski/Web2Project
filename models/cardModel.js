@@ -107,6 +107,8 @@ class UserInputError extends Error{
  */
  async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner){
     try{
+        isForSale = isForSale == 'on' ? true : false;
+        
         if( await validator.isValid( cardName, description, frontImagePath, backImagePath, type, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection )){ 
             // add all the string values to lower case so they are inserted in lower case
             cardName = cardName.toLowerCase();
