@@ -111,8 +111,11 @@
     flex: 1;
     font-weight: 700;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 }
-
 .cartItem .cardImage{
     flex: 2;
     padding: 1em;
@@ -121,6 +124,17 @@
 .cartItem .cardImageContainer{
     border: solid black 1px;
     height: 100%;
+}
+
+.cardPrice input{
+    font-weight: 500;
+    text-decoration: underline;
+    border: none;
+    background-color: white;
+}
+
+.cardPrice form{
+    margin-bottom: 1.4em;
 }
 
 #buttons:first-child{
@@ -142,6 +156,23 @@
 
 #buttons button{
     width: 100%;
+}
+
+#emptyCartDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#emptyCart{
+    font-size: 1.2em;
+    border: solid black 1px;
+    border-radius: 0.5em;
+    padding: 4em 1.2em 4em 1.2em;
+}
+
+#emptyCartDiv form button{
+    padding: 0.8em;
 }
 /* #cartTable{
     border: solid black 1px;
