@@ -116,6 +116,7 @@ async function listCardsByUser( request, response ){
         if( request.query.addCard != null ){
             dataToSend.addCard = true; 
         }
+        
 
         if( request.query.errorMessage != null ){
             dataToSend.errorMessage = request.query.errorMessage == 'system' ? "Card add failed due to system error" : "Card add failed due to invalid input";
@@ -125,6 +126,10 @@ async function listCardsByUser( request, response ){
             let cardData = await model.findCardRecord( request.query.id );
             cardData.IsForSale = cardData.IsForSale == 1 ? 'Yes' : 'No';
             dataToSend.specificCardData = cardData;
+        }
+
+        if( request.query.cardType != null ){
+            userCards = getFilterResults( request, userCards );
         }
         
         if( userCards != null ){
@@ -211,15 +216,17 @@ function getFilterResults( request, cards ){
         return card.CardCondition >= minCondition && card.CardCondition <= maxCondition;
     });
 
-    cards = cards.filter( ( card ) => {
-        if( card.CardPrice != null ){
-            return card.CardPrice >= minPrice && card.CardPrice <= maxPrice;
-        }
-        else{
-            return false;
-        }
-
-    });
+    if( minPrice != null ){
+        cards = cards.filter( ( card ) => {
+            if( card.CardPrice != null ){
+                return card.CardPrice >= minPrice && card.CardPrice <= maxPrice;
+            }
+            else{
+                return false;
+            }
+    
+        });
+    }
     
     return cards;
 }
