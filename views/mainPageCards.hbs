@@ -78,10 +78,16 @@
                         </form>
                         {{/if}}
                         {{#if userMode}}
-                        <form method="get" action="" id="addToCartBtn">
-                            <input type="hidden" value="{{specificCardData.CardID}}" name="item">
-                            <button type="submit">Edit Card</button>
-                        </form>
+                        <div id="userCardButtons">
+                            <form method="get" action="">
+                                <input type="hidden" value="{{specificCardData.CardID}}" name="item">
+                                <button type="submit">Edit Card</button>
+                            </form>
+                            <form method="get" action="">
+                                <input type="hidden" value="{{specificCardData.CardID}}" name="item">
+                                <button type="submit">Delete Card</button>
+                            </form>
+                        </div>
                         {{/if}}
                     </div>
                     <div id="viewCardCol2">
