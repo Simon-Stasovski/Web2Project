@@ -270,6 +270,24 @@
     text-align: center;
 }
 
+#userCardButtons{
+    flex: 1;
+    display: flex;
+    padding: 0.5em;
+    width: 100%;
+}
+
+#userCardButtons form{
+    flex: 1;
+    padding: 0.8em;
+    width: 50%;
+}
+
+#userCardButtons button{
+    width: 100%;
+    padding: 0.6em;
+}
+
 #addToCartBtn button{
     height: 60%;
     width: 100%;

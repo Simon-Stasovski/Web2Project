@@ -4,8 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "jest --verbose /tests"
   },
   "repository": {
     "type": "git",
@@ -30,6 +29,7 @@
     "npm": "^8.8.0",
     "pino": "^7.11.0",
     "handlebars": "^4.7.7",
+    "jest": "^28.1.0",
     "logger": "0.0.1",
     "mysql2": "^2.3.3",
     "mysql2-promise": "^0.1.4",
@@ -38,6 +38,7 @@
     "pino": "^7.11.0",
     "pino-caller": "^3.2.0",
     "pino-http": "^7.0.0",
+    "supertest": "^6.2.3",
     "uuid": "^8.3.2",
     "validator": "^13.7.0"
   }
