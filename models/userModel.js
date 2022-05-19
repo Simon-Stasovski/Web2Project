@@ -42,7 +42,10 @@ async function dropUserTable(connection) {
     throw new DBConnectionError();
   } 
 }
+
+
 //will create the database table needed to store all the users account information
+
 async function createUserTable(connection) {
   try {
   dbconnection= connection;
@@ -300,3 +303,4 @@ module.exports = {
   UserAlreadyExistsError,
   DBConnectionError,
 };
+

@@ -1,0 +1,177 @@
+<body>
+    <div id="mainPage">
+        <div id="filterSidebar">
+            <h2>Filters</h2>
+            <form method="get" id="filterForm" action="{{endpoint}}">
+                {{!-- Ideally we would code this in --}}
+                <div class="optionDiv">
+                    <label for="cardType">By Type</label>
+                    <select name="cardType" id="cardType">
+                        <option id="pokemon">Pokemon</option>
+                        <option id="yu-gi-oh">Yu-gi-oh</option>
+                        <option id="baseball">Baseball</option>
+                        <option id="basketball">Basketball</option>
+                        <option id="hockey">Hockey</option>
+                        <option id="magic the gathering">Magic the Gathering</option>
+                        <option id="all cards">All cards</option>
+                    </select>
+                </div>
+                <div class="optionDiv">
+                    <label for="conditionDiv">By Condition Range</label>
+                    <p>(best to worst)</p>
+                    <div id="conditionDiv">
+                        <input type="number" name="minCondition" id="minCondition" min="1" max="5" value="1">
+                        <p>to</p>
+                        <input type="number" name="maxCondition" id="maxCondition" min="1" max="5" value="5">
+                    </div>
+                </div>
+                {{#if buyMode}}
+                <div class="optionDiv">
+                    <label for="priceRangeDiv">By Price Range</label>
+                    <div id="priceRangeDiv">
+                        <input type="number" id="minPrice" name="minPrice" min="0" max="100000" value="0">
+                        <p>to</p>
+                        <input type="number" id="maxPrice" name="maxPrice" min="0" max="100000" value="100000">
+                    </div>
+                </div>
+                {{/if}}
+                <input type="submit" value="Filter" id="filterSubmit">
+            </form>
+        </div>
+        {{#if noCards}}
+        <div id="noCardsToDisplay">
+            <p>{{noCardMessage}}</p>
+        </div>
+        {{/if}}
+        {{#if cards}}
+        <ul id="showCardsList">
+            {{#each cards}}
+            <li class="card" class="img">
+                <form method="get" action="{{this.endpoint}}">
+                    <input type="hidden" name="id" value="{{this.CardID}}" id="{{this.CardID}}">
+                    <input type="submit" value="View" id="shopCardsBtn" class="viewCardBtn">
+                </form>
+            </li>
+            {{/each}}
+            {{#if userMode}}
+            <li class="card" id="addCard">
+                <form method="get" action="{{endpoint}}">
+                    <input type="hidden" name="addCard">
+                    <input type="submit" value="Add Card" id="addCardBtn">
+                </form>
+            </li>
+            {{/if}}
+            {{#if specificCardData}}
+            <div id="viewCardExpandedView">
+                <form method="get" action="{{endpoint}}" id="exitDiv">
+                    <input type="submit" value="X" id="exitView">
+                </form>
+                <div id="cardContentDiv">
+                    <div id="viewCardCol1">
+                        <div id="imgDiv">
+                            <img src="{{specificCardData.FrontImagePath}}" alt="image of card">
+                        </div>
+                        {{#if buyMode}}
+                        <form method="get" action="/cart" id="addToCartBtn">
+                            <input type="hidden" value="{{specificCardData.CardID}}" name="item">
+                            <button type="submit">Add to Cart</button>
+                        </form>
+                        {{/if}}
+                        {{#if userMode}}
+                        <form method="get" action="" id="addToCartBtn">
+                            <input type="hidden" value="{{specificCardData.CardID}}" name="item">
+                            <button type="submit">Edit Card</button>
+                        </form>
+                        {{/if}}
+                    </div>
+                    <div id="viewCardCol2">
+                        <div id="aboutCard">
+                            <h2>About</h2>
+                            <ul>
+                                <li>{{specificCardData.CardName}}</li>
+                                <li>{{specificCardData.Type}}</li>
+                                <li>{{specificCardData.Description}}</li>
+                                <li>Serial Number: {{specificCardData.SerialNumber}}</li>
+                                <li>Condition: {{specificCardData.CardCondition}}</li>
+                                {{#if userMode}}
+                                <li>Price: ${{specificCardData.CardPrice}}</li>
+                                <li>Is For Sale: {{specificCardData.IsForSale}}</li>
+                                {{/if}}
+                            </ul>
+                        </div>
+                        {{#if buyMode}}
+                        <div id="buyInfo">
+                            <h2>Sale Details</h2>
+                            <ul>
+                                <li>Seller: {{specificCardData.CardOwner}}</li>
+                                <li>Price: {{specificCardData.CardPrice}}</li>
+                                <li>Certificate of Authenticity Link: {{specificCardData.CertificateImage}}</li>
+                            </ul>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+        </ul>
+        {{/if}}
+        {{#if addCardOrEditCard}}
+        <div id="addCardSection" class="popup-window">
+            {{#if errorMessage}}
+            <span class="errorMsg">
+                {{errorMessage}}
+            </span>
+            {{/if}}
+            <form method="get" action="{{endpoint}}" id="exitDiv">
+                <input type="submit" value="X" id="exitView">
+            </form>
+            <h2>{{addOrEditMessage}}</h2>
+            <form id="addCardForm" method="post" action="{{addOrEditEndpoint}}">
+                <input type="hidden" value="{{currentUser}}" name="cardOwner">
+                <input name="cardName" type="text" placeholder="Card Name" required>
+                <select name="type" required>
+                    <option id="pokemon">Pokemon</option>
+                    <option id="yu-gi-oh">Yu-gi-oh</option>
+                    <option id="baseball">Baseball</option>
+                    <option id="basketball">Basketball</option>
+                    <option id="hockey">Hockey</option>
+                    <option id="magic the gathering">Magic the Gathering</option>
+                    <option id="all cards">All cards</option>
+                </select>
+                <textarea rows="4" cols="50" id="description" name="description" type="text"
+                    placeholder="Description..."></textarea>
+                <input name="serialNumber" type="text" placeholder="Serial Number">
+                <input type="number" id="cardPrice" name="cardPrice" min="0" max="100000" placeholder="Price"
+                    step="any">
+                <select name="cardCondition" id="condition" required>
+                    <option disabled selected hidden>Card Condition (1 is best condition)</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+                <span id="ckbxSale">
+                    <input type="checkbox" name="isForSale" id="isForSale">
+                    <label for="isForSale">For sale</label>
+                </span>
+                <span id="imageInputs">
+                    <span>
+                        <label for="frontImagePath">Upload Front Image of Card</label>
+                        <input type="file" id="frontImagePath" name="frontImagePath">
+                    </span>
+                    <span>
+                        <label for="backImagePath">Upload Back Image of Card</label>
+                        <input type="file" id="backImagePath" name="backImagePath">
+                    </span>
+                    <span>
+                        <label for="certificateImage">Upload Certificate of Authenticity</label>
+                        <input type="file" id="certificateImage" name="certificateImage">
+                    </span>
+                </span>
+                <button type="submit" id="addCardBtn">{{inputMessage}}</button>
+            </form>
+        </div>
+        {{/if}}
+    </div>
+</body>

@@ -1,0 +1,189 @@
+*{
+    /* margin: 0;
+    padding: 0; */
+    box-sizing: border-box;
+}
+
+#cartHeader{
+    margin: 1em;
+}
+
+/* Anna */
+#cartDiv{
+    margin: 1em;
+    min-height: 60vh;
+    display: flex;
+    gap: 40px;
+}
+
+#cartItems{
+    flex: 3;
+}
+
+#checkout{
+    flex: 1;
+    padding: 0.8em;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#orderSummary{
+    border: solid black 1px;
+    padding: 0.8em;
+}
+
+#summaryTitle{
+    font-weight: 700;
+}
+
+#orderSummary tr{
+    display: flex;
+    justify-content: space-between;
+    margin: 0.4em 0 0.4em 0;
+}
+
+#orderSummary tr:last-child{
+    font-weight: 600;
+    padding: 0.6em 0 0.6em 0;
+    border-top: solid gray 1px;
+    border-bottom: solid gray 1px;
+}
+
+#orderSummary table{
+    width: 100%;
+}
+
+.cartItem{
+    border-top: solid gray 1px;
+    display: flex;
+    gap: 60px;
+    height: 200px;
+    margin: 0.5em;
+}
+
+.cartItem:last-child{
+    border-bottom: solid gray 1px;
+}
+
+.cartItem img{
+    border: solid black 1px;
+}
+
+.cartItem .itemInfo{
+    flex: 8;
+    padding: 1em;
+}
+
+.cartItem .itemInfo{
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+}
+
+.cartItem .itemName > *, .cartItem .itemInfo > *{
+    margin: 0;
+}
+
+.cartItem .desc{
+    flex: 3;
+    margin: 1em 0em 1em 0em;
+    border: solid black 1px;
+    border-radius: 0.5em;
+    padding: 0.8em;
+    overflow-y: auto;
+}
+
+.itemName{
+    flex: 1;
+}
+
+.cartItem .itemName p:first-child{
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.cartItem .itemName p:last-child{
+    font-size: 0.9em;
+}
+
+.cartItem .cardPrice{
+    flex: 1;
+    font-weight: 700;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.cartItem .cardImage{
+    flex: 2;
+    padding: 1em;
+}
+
+.cartItem .cardImageContainer{
+    border: solid black 1px;
+    height: 100%;
+}
+
+.cardPrice input{
+    font-weight: 500;
+    text-decoration: underline;
+    border: none;
+    background-color: white;
+}
+
+.cardPrice form{
+    margin-bottom: 1.4em;
+}
+
+#buttons:first-child{
+    grid-area: b1;
+}
+
+#buttons:last-child{
+    grid-area: b2;
+}
+
+
+#buttons{
+    margin: 1em 0em 1em 0em;
+    display: grid; 
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'b1 b2'; 
+    gap: 10px;
+}
+
+#buttons button{
+    width: 100%;
+}
+
+#emptyCartDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#emptyCart{
+    font-size: 1.2em;
+    border: solid black 1px;
+    border-radius: 0.5em;
+    padding: 4em 1.2em 4em 1.2em;
+}
+
+#emptyCartDiv form button{
+    padding: 0.8em;
+}
+/* #cartTable{
+    border: solid black 1px;
+    height: 50%;
+    flex: 2;
+}
+
+#cartTable tr{
+    display: flex;
+}
+
+#cartTable tr > *{
+    flex: 1;
+} */

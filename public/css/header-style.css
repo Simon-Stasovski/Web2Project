@@ -16,17 +16,42 @@ header #nav-form-btns{
 }
 
 header #nav-form-btns > form{
-    flex: 1;
+    width: 15%;
+    margin: 0.8em;
 }
 
 header #nav-form-btns form{
     justify-content: space-between;
 }
 
+/* Anna */
+/* Search bar */
+
 #search{
-    padding: 1em;
-    border-radius: 0.5em;
+    border: solid black 1px;
+    border-radius: 1em;
+    display: flex;
+    margin-top: 0.8em;
 }
+
+#searchBar{
+    padding: 1em;
+}
+
+#searchBarSearch{
+    padding: 1em;
+}
+
+#searchCategory{
+    border-top-left-radius: 0.5em;
+    border-bottom-left-radius: 0.5em;
+}
+
+#searchSubmit{
+    border-top-right-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
+}
+
 header #nav-form-btns form input{
     padding: 0.8em;
     border-radius: 0.5em;
@@ -38,6 +63,7 @@ header #nav-form-btns form input{
 #site-header{
     display:flex;
     justify-content: space-between;
+    align-items: flex-start;
     padding: 1em;
 }
 
@@ -59,7 +85,7 @@ header #nav-form-btns form input{
 }
 
 #login{
-    flex: 2;
+    flex: 1;
     display: flex;
     justify-content: flex-end;
     padding-right: 1.5em;
@@ -100,3 +126,194 @@ header #nav-form-btns form input{
 #nav-form-btns input:hover, .submit-btn:hover{
     background-color: #787A91;
 }
+
+/* Shopping cart */
+#cartSpan{
+    flex: 0;
+    padding-top: 0;
+}
+
+#shoppingCart {
+    flex: 1;
+    display: flex;
+    padding: 0 2em 0 2em;
+    position: relative;
+    margin-top: 0.4em;
+}
+
+#shoppingCart button{
+    border-radius: 100%;
+}
+
+#shoppingCart img{
+    margin: 0.8em;
+}
+
+#cartItemAmount{
+    background-color: white;
+    border: solid black 1px;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 40px;
+    right: 35px;
+}
+
+/* Anna End */
+/* Simon */
+#nav-form-btns input:hover, .submit-btn:hover{
+    background-color: #787A91;
+}
+  
+header, header > *::before, header > *::after {
+    box-sizing: border-box;
+    margin: 0;
+}
+  
+  
+  header .card {
+    margin-bottom: 80px;
+    margin-right: 40px;
+    height: 80px;
+    width: 80px;
+  }
+  
+  header .card__content {
+    text-align: center;
+    position: relative;
+    padding: 5em 5em;
+    transition: transform 5s;
+    transform-style: preserve-3d;
+    height: 80px;
+    padding: 0px;
+  }
+  
+  header .card:hover .card__content {
+    transform: rotateY(-1turn);
+} 
+
+header .card__front,
+header .card__back {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 40px 40px;
+    backface-visibility: visible;
+    transform-style: preserve-3d;
+    display: grid;
+    align-content: center;
+    border-radius: 15px;
+    height: 40px;
+    width: 80px;
+  }
+  
+  header .card__front {
+    background-image: url(../images/logoImg.jpg);
+    background-size: cover;
+    background-blend-mode: overlay;
+    border-radius: 15px;
+    color: black;
+  }
+
+  
+  header .card__body {
+    transform: var(--level-two);
+    font-weight: var(fw-normal);
+    font-size: 1.5rem;
+    line-height: 1.6;
+  }
+  
+  
+  header .card__title{
+    position: relative;
+    align-items: center;
+}
+header .card__back {
+    color: var(--clr);
+    background: black;
+    background-image: url(../images/logoImg.jpg);
+    background-size: cover;
+  }
+  
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+ 
+  .switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  header input:checked + .slider {
+    background-color: #141E61;
+  }
+  
+  header input:focus + .slider {
+    box-shadow: 0 0 1px ;
+  }
+  
+  header input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  .toggle{
+    margin: 0 0.8em 0 0.8em;
+    display: flex;
+    flex-direction: column;
+    padding: 0.4em;
+  }
+
+  .toggle p{
+    margin: 0;
+    margin-bottom:5px;
+    font-weight: bold;
+
+  }
+
+  .toggle label{
+    margin-left: auto;
+    margin-right: auto;
+  }
+/* Simon End */
