@@ -101,6 +101,7 @@ router.post("/loginUser", async (request, response) => {
     AlertMessage: true,
     message: "Incorrect username or password",
   };
+  
   const username = request.body.username;
   const password = request.body.password;
   try{

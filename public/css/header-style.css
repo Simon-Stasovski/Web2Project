@@ -101,10 +101,9 @@ header #nav-form-btns form input{
 #login button{
     min-width: 100px;
     font-weight: 500;
-    padding: 1.2em;
     border-radius: 0.5em;
     background-color: #0F044C;
-    color: #EEEEEE;
+    padding: 1.2em;
 }
 
 #login button:hover{
@@ -116,9 +115,20 @@ header #nav-form-btns form input{
     text-decoration-thickness: 5%;
 }
 
-#login a:hover{
-    color: #0F044C;
+#logInBtn a{
+  text-decoration: none;
+  padding: 1.2em;
+  color: #EEEEEE;
 }
+
+#createAccountHeaderLink a:hover{
+  color: #EEEEEE;
+}
+
+#logInBtn a:hover{
+  color: #0F044C;
+}
+
 #nav-form-btns input{
     width: 100%;
 }

@@ -1,8 +1,8 @@
 const errorController = require( './controllers/errorController' );
 const homeController = require( './controllers/homeController' );
-
 const cardController = require( './controllers/cardController' );
 const transactionController = require( './controllers/transactionController' );
+const userController = require( './controllers/userController' );
 const uuid = require('uuid');
 var cookieParser = require('cookie-parser');
 

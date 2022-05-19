@@ -27,7 +27,7 @@ class UserInputError extends Error{
 
     const sqlQuery =  'CREATE TABLE IF NOT EXISTS Card(CardID int AUTO_INCREMENT, CardName VARCHAR(50) NOT NULL, Type VARCHAR(50) NOT NULL,' +
      'Description VARCHAR(400), SerialNumber VARCHAR(50), FrontImagePath VARCHAR(150), BackImagePath VARCHAR(150), IsForSale BIT, CardCondition int, ' +
-     'CertificateImage varchar(150), CardPrice DECIMAL(8, 2), CardOwner varchar(25), PRIMARY KEY(CardID), FOREIGN KEY (CardOwner) REFERENCES Users(Username));';
+     'CertificateImage varchar(150), CardPrice DECIMAL(8, 2), CardOwner varchar(25), PRIMARY KEY(CardID), FOREIGN KEY (CardOwner) REFERENCES users(username));';
     
     try{
         await connection.execute( sqlQuery ).catch(( error ) => { throw( error ); }); 

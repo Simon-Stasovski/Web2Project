@@ -15,5 +15,34 @@
     {{>header}}
     {{{body}}}
     {{>footer}}
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            changeLoginText();
+        });
+
+        function changeLoginText(){
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let isSessionOpen = decodedCookie.includes( 'userName' );
+
+            console.log( isSessionOpen );
+            
+            let loginBtn = document.getElementById( 'logInBtn' ).getElementsByTagName( 'a' )[0];
+            let createAccountHeaderLink = document.getElementById( 'createAccountHeaderLink' );
+
+            console.log( loginBtn );
+
+            if( isSessionOpen ){
+                loginBtn.innerHTML = 'Log Out';
+                loginBtn.href = 'http://localhost:1339/logout';
+                createAccountHeaderLink.style.display = 'none';
+
+            }
+            else{
+                loginBtn.innerHTML = 'Log In';
+                loginBtn.href = 'http://localhost:1339/login';
+                createAccountHeaderLink.style.display = 'block';
+            }
+        }
+    </script>
 </body>
 </html>

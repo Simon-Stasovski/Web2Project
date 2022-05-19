@@ -18,7 +18,7 @@ module.exports = {
  * @param {*} response 
  */
 function showHome(request, response) {
-    response.render('login.hbs')
+    response.render('login.hbs');
 }
 
 router.get( '/', showHome );
