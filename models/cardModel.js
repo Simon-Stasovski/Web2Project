@@ -105,8 +105,10 @@ class UserInputError extends Error{
  * @param {*} cardOwner The owner of the card's username.
  * @returns The object representation of the added card.
  */
- async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner){
+ async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner, dbConnection ){
     try{
+        connection = dbConnection == null ? connection : dbConnection;
+        
         isForSale = isForSale == 'on' ? true : false;
         
         if( await validator.isValid( cardName, description, frontImagePath, backImagePath, type, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection )){ 
