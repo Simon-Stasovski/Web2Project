@@ -1,21 +1,25 @@
 const express = require("express");
+var cookieParser = require('cookie-parser')
 const model = require("../models/userModel");
 const router = express.Router();
 const server = require("../server");
 const routeRoot = "/";
+
+/** Error for 500-level issues */
+class DBConnectionError extends Error {}
 module.exports = {
   router,
   routeRoot,
   showLoginPage,
+  authenticateUser,
+  refreshSession,
 };
 function authenticateUser(request) {
-  console.log(request)
   // If this request doesn't have any cookies, that means it isn't authenticated. Return null.
   if (!request.cookies) {
     return null;
   } // We can obtain the session token from the requests cookies, which come with every request
   const sessionId = request.cookies["sessionId"];
-  console.log(sessionId);
   if (!sessionId) {
     // If the cookie is not set, return null
     return null;
@@ -65,13 +69,20 @@ function createSession(username, numMinutes) {
 }
 const sessions = {};
 const uuid = require("uuid");
+const res = require("express/lib/response");
 /**
  * Renders the default Home page of the website.
  * @param {*} request
  * @param {*} response
  */
 function showLoginPage(request, response) {
-  response.render("login.hbs");
+  if(request.query.expired != null){
+    response.render("login.hbs",{ AlertMessage: true,
+      message: "Session expired Log in to continue",});
+  }
+  else{
+    response.render("login.hbs");
+  }
 }
 router.post("/loginUser", async (request, response) => {
   let loginData = {
@@ -80,7 +91,8 @@ router.post("/loginUser", async (request, response) => {
   };
   const username = request.body.username;
   const password = request.body.password;
-  if (await model.logInUser(username, password)) {
+  try{
+  await model.logInUser(username, password)
     const sessionId = createSession(username, 2); // Save cookie that will expire.
     response.cookie("sessionId", sessionId, {
       expires: sessions[sessionId].expiresAt,
@@ -89,9 +101,10 @@ router.post("/loginUser", async (request, response) => {
       expires: sessions[sessionId].expiresAt,
     });
     response.redirect("/userinfo");
-  } else {
-    response.render("login.hbs", loginData);
   }
+catch(error){
+  response.render("login.hbs", loginData);
+}
 });
 router.get("/logout", (request, response) => {
   const authenticatedSession = authenticateUser(request);
@@ -125,6 +138,7 @@ async function createUser(request, response) {
   const email = request.body.email;
   try {
     await model.addUser(username, password1, password2, email);
+    response.redirect("/login");
   } catch (error) {
     if (error instanceof model.InvalidInputError) {
       response.render("create_account.hbs", loginDataNotAccepted);
@@ -138,29 +152,122 @@ async function createUser(request, response) {
         message: "cannot conect to database",
       });
   }
-  response.redirect("/login");
+  
 }
 async function showAccountDetails(request, response) {
-  // const authenticatedSession = authenticateUser(request);
-  // if(authenticatedSession!= null){
-  let accountDetails = await model.getUser(request.query.username);
-  //console.log(response.cookies);
-  response.render("accountpage.hbs", accountDetails);
-  // }
+   const authenticatedSession = authenticateUser(request);
+   if(authenticatedSession!= null){
+    refreshSession(request,response)
+    let accountDetails = await model.getUser(request.cookies["userName"]);
+    response.render("accountpage.hbs", accountDetails);
+   }
+   else{
+    response.redirect("/login?expired=true");
+   }
 }
-function showUserbalance(request, response) {
-  let accountBalance = model.getUserBalance(request.body.username);
+async function updateUserBalance(request, response) {
+  const authenticatedSession = authenticateUser(request);
+  if(authenticatedSession!= null){
+  refreshSession(request,response);
+  let username = request.cookies["userName"];
+  try{
+  await model.updateUserBalance(username,100);
+    response.redirect("/userinfo");
+  }
+  catch (error){
+    response.render("accountpage.hbs",{AlertMessage: true,message: "Balance was unchanged"}); 
+  }
 }
-function updateUserBalance(request, response) {}
-function updateUserPassword(request, response) {}
-function deleteUser(request, response) {
-  model.deleteUser(request.query.username);
+else{
+ response.redirect("/login?expired=true");
+}
+}
+function updateUserPassword(request, response) {
+  let username = request.cookies["userName"];
+  let oldPassword = request.body.oldpassword;
+  let newPassword1 = request.body.newpassword1;
+  let newPassword2 = request.body.newpassword2;
+  const authenticatedSession = authenticateUser(request);
+  if(authenticatedSession!= null){
+   refreshSession(request,response)
+    if(newPassword1 != oldPassword && newPassword1 === newPassword2){
+      try{
+        model.updateUserPassword(username,oldPassword, newPassword1);
+        response.render("updatePassword.hbs",{AlertMessage: true,message: "Password was changed"});
+      }
+      catch (error){
+        response.render("updatePassword.hbs",{AlertMessage: true,message: "Your Incorect original password"})
+      }
+    }
+    else{
+      response.render("updatePassword.hbs",{AlertMessage: true,message: "Passwords doesn't match"})
+    }
+  }
+  else{
+    response.redirect("/login?expired=true");
+  }
+}
+function renderupdateUserPassword(request, response){
+  response.render("updatePassword.hbs");
+}
+async function deleteUser(request, response) {
+  const authenticatedSession = authenticateUser(request);
+  if(authenticatedSession!= null){
+  refreshSession(request,response)
+  let username = request.cookies["userName"];
+  let password = request.body.password;
+  const authenticatedSession = authenticateUser(request);
+  if(authenticatedSession!= null){
+    try{
+      await model.deleteUser(username, password);
+      response.render("login.hbs",{ AlertMessage: true,message: "User deleted successfully"})
+    }
+    catch(err){
+      response.render("deleteaccount.hbs",{
+        AlertMessage: true,
+        message: "Incorrect password please try again",
+      });
+    }
+  }
+  else{
+    response.redirect("/login?expired=true");
+   }
+  }
+}
+function renderDeleteUser(request, response){
+  response.render("deleteaccount.hbs");
+}
+async function makeAccountPrivate(request, response) {
+const authenticatedSession = authenticateUser(request);
+if(authenticatedSession!= null){
+   refreshSession(request,response)
+  let username = request.cookies["userName"];
+  model.Updateprivacy(username,1)
+  response.redirect("/userinfo");
+}
+else{
+  response.redirect("/login?expired=true");
+}
+}
+async function makeAccountPublic(request, response) {
+  const authenticatedSession = authenticateUser(request);
+  if(authenticatedSession!= null){
+    let username = request.cookies["userName"];
+    model.Updateprivacy(username,0)
+    response.redirect("/userinfo");
+  }
+  else{
+    response.redirect("/login?expired=true");
+  }
 }
 router.post("/createUser", createUser);
 router.get("/login", showLoginPage);
 router.get("/create", showCreateAccountPage);
 router.get("/userinfo", showAccountDetails);
-router.get("/user/:username", showUserbalance);
-router.put("/user/:username", updateUserPassword);
-router.put("/user/:username/balance", updateUserBalance);
-router.delete("/user/:username", deleteUser);
+router.post("/user/:password", updateUserPassword);
+router.get("/user/:password", renderupdateUserPassword);
+router.get("/user/:username/balance", updateUserBalance);
+router.post("/userDeletion", deleteUser);
+router.get("/userDeletion",renderDeleteUser);
+router.post("/private",makeAccountPrivate);
+router.post("/public",makeAccountPublic);

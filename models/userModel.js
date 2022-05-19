@@ -22,6 +22,7 @@ let dbconnection;
 /**  Error for 400-level issues */
 class InvalidInputError extends Error {}
 class UserAlreadyExistsError extends Error{}
+class UserCannotBeFoundError extends Error {}
 
 /** Error for 500-level issues */
 class DBConnectionError extends Error {}
@@ -65,29 +66,70 @@ async function createUserTable(connection) {
 function getConnection() {
   return dbconnection;
 }
+async function logInUser(username, password) {
+  try{
+    const sqlQuery = `SELECT password from users WHERE username ='${username}';`;
+    let userpassword = await dbconnection
+      .execute(sqlQuery)
+      .then(logger.info("password was found"));
+      if(password === userpassword[0][0].password){
+        return true;
+      }
+      else {
+        return false
+      }
+  }
+  catch(error){
+    throw error;
+  }
+}
+async function getUser(username) {
+  try{
+    const sqlQuery = `SELECT username,email,Balance,isprivate from users WHERE username ='${username}';`;
+    let user = await dbconnection
+      .execute(sqlQuery)
+      .then(logger.info("User was found"))
+      .catch((error) => {
+        throw new UserCannotBeFoundError;
+      });
+      console.log(user);
+      return user[0][0];
 
+  }
+  catch ( error ){
+   throw error;
+  }
+}
 async function addUser(username, password1, password2,email) {
   if (!validate.isValid(username, password1, password2,email)){
     throw new InvalidInputError();
   }
-  if(!getUser(username)){
-    throw new UserAlreadyExistsError();
+  try{
+      if(!await getUser(username)){
+      const DEFAULTPRIVATE = true;
+      const DEFAULTBALANCE = 0;
+      const sqlQuery =
+        `INSERT INTO users (username,password,email,Balance,isprivate) VALUES ('${username}','${password1}','${email}','${DEFAULTBALANCE}',${DEFAULTPRIVATE});`;
+      await dbconnection
+        .execute(sqlQuery)
+        .then(logger.info("User added to database"))
+        .catch((error) => {
+          throw new Error("cannot add user to database");
+        });
+      
+    return { Username: username, password: password1 };
+    }
+    else{
+      throw new UserAlreadyExistsError;
+    }
+  }
+  catch(error){
+    throw error;
   }  
-  const DEFAULTPRIVATE = true;
-  const DEFAULTBALANCE = 0;
-  const sqlQuery =
-    `INSERT INTO users (username,password,email,Balance,isprivate) VALUES ('${username}','${password1}','${email}','${DEFAULTBALANCE}',${DEFAULTPRIVATE});`;
-  await dbconnection
-    .execute(sqlQuery)
-    .then(logger.info("User added to database"))
-    .catch((error) => {
-      throw new Error("cannot add user to database");
-    });
-  return { Username: username, password: password1 };
 }
-async function deleteUser(username) {
-  if (getUser(username)) {
-    const sqlQuery = `DELTE FROM users WHERE username =${username};`;
+async function deleteUser(username, password) {
+if (logInUser(username, password)) {
+    const sqlQuery = `DELETE FROM users WHERE username ='${username}';`;
     return await dbconnection
       .execute(sqlQuery)
       .then(logger.info("User deleted"))
@@ -98,7 +140,22 @@ async function deleteUser(username) {
     throw new Error("User Not found");
   }
 }
-async function updateUserBalance(originlaOwnerUsername,newOwnerUsername,price) {
+
+async function updateUserBalance(username,addedbalance){
+  let userBalance = await getUserBalance(username);
+  let userBalancePostparse =userBalance[0][0].Balance;
+  userBalancePostparse = parseFloat(userBalancePostparse);
+  userBalancePostparse += addedbalance;
+  const sqlQuery =`UPDATE users SET Balance = '${userBalancePostparse}' WHERE username = '${username}';`;
+  await dbconnection
+  .execute(sqlQuery)
+  .then(logger.info("User's Balance updated successfully"))
+  .catch((error) => {
+    throw new Error("Unable to update User's Balance");
+  });
+  return true;
+}
+async function userTransaction(originlaOwnerUsername,newOwnerUsername,price) {
   if (!getUser(originlaOwnerUsername)&&!getUser(newOwnerUsername)) {
     throw new InvalidInputError();
   } else {
@@ -110,9 +167,9 @@ async function updateUserBalance(originlaOwnerUsername,newOwnerUsername,price) {
     const sqlQuery2 =`UPDATE users SET Balance = ${balanceNewOwner} WHERE username = ${newOwnerUsername};`;
     await dbconnection
       .execute(sqlQuery1)
-      .then(logger.info("User's password updated successfully"))
+      .then(logger.info("User's balance updated successfully"))
       .catch((error) => {
-        throw new Error("Unable to update User's password");
+        throw new Error("Unable to update User's balance");
       });
       await dbconnection
       .execute(sqlQuery2)
@@ -123,11 +180,15 @@ async function updateUserBalance(originlaOwnerUsername,newOwnerUsername,price) {
       return true;
   }
 }
-async function updateUserPassword(username, newPassword) {
-  if (!validate.isValid(username, newPassword)) {
+async function updateUserPassword(username,oldPassword, newPassword) {
+  if (!validate.isValid(username, newPassword,newPassword,"test@test.test")) {
     throw new InvalidInputError();
-  } else {
-    const sqlQuery =`UPDATE users SET password = ${newPassword} WHERE username = ${username};`;
+  }
+  else if(!logInUser(username, oldPassword)){
+    throw new InvalidInputError();
+  } 
+  else {
+    const sqlQuery =`UPDATE users SET password = '${newPassword}' WHERE username = '${username}';`;
     return await dbconnection
       .execute(sqlQuery)
       .then(logger.info("User's password updated successfully"))
@@ -138,7 +199,7 @@ async function updateUserPassword(username, newPassword) {
 }
 async function getUserBalance(username){
   try{
-  const sqlQuery = `SELECT Balance from users WHERE username =${username};`;
+  const sqlQuery = `SELECT Balance from users WHERE username ='${username}';`;
   return await dbconnection
     .execute(sqlQuery)
     .then(logger.info("Balance was found"))
@@ -151,41 +212,12 @@ async function getUserBalance(username){
 }
 
 }
-async function getUser(username) {
-  try {
-    const sqlQuery = `SELECT * from users WHERE username ='${username}';`;
-    return await dbconnection
-      .execute(sqlQuery)
-      .then(logger.info("User was found"))
-      .catch((error) => {
-        throw new Error("Unable to get User");
-      });
-      
-  } catch (error) {
-    logger.error("cannot find user");
-    return null;
-  }
-}
-async function logInUser(username, password) {
-  if(getUser(username) != null){
-    const sqlQuery = `SELECT password from users WHERE username ='${username}';`;
-    let userpassword = await dbconnection
-      .execute(sqlQuery)
-      .then(logger.info("password was found"))
-      if(password === userpassword[0][0].password){
-        return true;
-      }
-      else {
-        return false
-      }
-  }
-  else return false
-}
+
 async function Updateprivacy(username,isPrivate) {
   if (!getUser(username)) {
     throw new InvalidInputError();
   } else {
-    const sqlQuery =`UPDATE users SET isprivate = ${isPrivate} WHERE username = ${username};`;
+    const sqlQuery =`UPDATE users SET isprivate = '${isPrivate}' WHERE username = '${username}';`;
     return await dbconnection
       .execute(sqlQuery)
       .then(logger.info("User's privacy setting updated successfully"))
@@ -217,9 +249,11 @@ module.exports = {
   updateUserPassword,
   getConnection,
   getUser,
+  Updateprivacy,
   printAllUsers,
   logInUser,
   getUserBalance,
+  userTransaction,
   updateUserBalance,
   InvalidInputError,
   UserAlreadyExistsError,
