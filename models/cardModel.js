@@ -312,6 +312,7 @@ async function updateRowInCardTable( specifiedId, newCardName, newType, newDescr
 
     try{
         let id = await findCardRecord( specifiedId );
+        id = id.CardID;
 
         if ( id === NO_ENTRY_FOUND ){
             let errorMessage = `Entry in card table with id '${specifiedId}' not found`;
