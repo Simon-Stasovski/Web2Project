@@ -92,7 +92,6 @@ async function getUser(username) {
       .catch((error) => {
         throw new UserCannotBeFoundError;
       });
-      console.log(user);
       return user[0][0];
 
   }
