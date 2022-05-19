@@ -46,8 +46,9 @@
         </div>
         <span id="login">
             <span>
-                <button>Log In</button>
-                <p>or <a>create an account</a></p>
+                <form action="/logout" method="get" role="form">
+                    <button type="submit" class="btn btn-primary">Log Out</button>
+                </form>
             </span>
         </span>
     </div>
@@ -57,7 +58,6 @@
             <form method="get" action="/cards/user">
                 <input type="submit" value="My Cards" id="myCardsBtn">
             </form>
-
             {{!-- Gets form for adding a player --}}
             <form method="get" action="/cards/sale">
                 <input type="submit" value="Shop Cards" id="cartBtn">
