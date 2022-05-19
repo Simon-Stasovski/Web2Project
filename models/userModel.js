@@ -27,6 +27,7 @@ class UserCannotBeFoundError extends Error {}
 /** Error for 500-level issues */
 class DBConnectionError extends Error {}
 
+//will drop the table if need be
 async function dropUserTable(connection) {
   try{
     dbconnection= connection;
@@ -41,6 +42,7 @@ async function dropUserTable(connection) {
     throw new DBConnectionError();
   } 
 }
+//will create the database table needed to store all the users account information
 async function createUserTable(connection) {
   try {
   dbconnection= connection;
@@ -66,6 +68,12 @@ async function createUserTable(connection) {
 function getConnection() {
   return dbconnection;
 }
+/**
+ * will confirm that the users provided information and the information that is in database match to allow the user to log in
+ * @param {*} username // the username for the account
+ * @param {*} password  // the matching password of the account
+ * @returns // true if user can log in, false if the information is incorect
+ */
 async function logInUser(username, password) {
   try{
     const sqlQuery = `SELECT password from users WHERE username ='${username}';`;
@@ -83,6 +91,11 @@ async function logInUser(username, password) {
     throw error;
   }
 }
+/**
+ * will get basic information about the user
+ * @param {*} username // the username that the information will be retrived about
+ * @returns // the said information
+ */
 async function getUser(username) {
   try{
     const sqlQuery = `SELECT username,email,Balance,isprivate from users WHERE username ='${username}';`;
@@ -99,6 +112,14 @@ async function getUser(username) {
    throw error;
   }
 }
+/**
+ * Will add a new user to the database but not befor confirming their information is correct
+ * @param {*} username // they new username must be unique to them
+ * @param {*} password1 // their password assosiated with their account
+ * @param {*} password2 // the confirmed password
+ * @param {*} email //the users email that will be linked to their account
+ * @returns 
+ */
 async function addUser(username, password1, password2,email) {
   if (!validate.isValid(username, password1, password2,email)){
     throw new InvalidInputError();
@@ -126,6 +147,12 @@ async function addUser(username, password1, password2,email) {
     throw error;
   }  
 }
+/**
+ * Will permanently delete the users account after 1 confirming that they want to delete they account, validating they password to  make sure it is them that want to delete it
+ * @param {*} username // the username of the account that needs to be deleted
+ * @param {*} password // the password of the same account to confirm
+ * @returns 
+ */
 async function deleteUser(username, password) {
 if (logInUser(username, password)) {
     const sqlQuery = `DELETE FROM users WHERE username ='${username}';`;
@@ -139,7 +166,12 @@ if (logInUser(username, password)) {
     throw new Error("User Not found");
   }
 }
-
+/**
+ *  this will allow the user to add money to they account
+ * @param {*} username // the username of the account that money will be added to
+ * @param {*} addedbalance // the amout that will be added to the balance
+ * @returns 
+ */
 async function updateUserBalance(username,addedbalance){
   let userBalance = await getUserBalance(username);
   let userBalancePostparse =userBalance[0][0].Balance;
@@ -154,6 +186,13 @@ async function updateUserBalance(username,addedbalance){
   });
   return true;
 }
+/**
+ *  it wil adjust the balances of the users per the price of the item that they are selling
+ * @param {*} originlaOwnerUsername //username of the seller of the card
+ * @param {*} newOwnerUsername //username of the buyer
+ * @param {*} price // the price of the item the transaction will be based on
+ * @returns 
+ */
 async function userTransaction(originlaOwnerUsername,newOwnerUsername,price) {
   if (!getUser(originlaOwnerUsername)&&!getUser(newOwnerUsername)) {
     throw new InvalidInputError();
@@ -179,8 +218,15 @@ async function userTransaction(originlaOwnerUsername,newOwnerUsername,price) {
       return true;
   }
 }
+/**
+ * will update the password of the user, will authenticate the user then update the password with the confirmed new password
+ * @param {*} username //user name of the account
+ * @param {*} oldPassword // the old password of the user
+ * @param {*} newPassword  // the new password of the user
+ * @returns 
+ */
 async function updateUserPassword(username,oldPassword, newPassword) {
-  if (!validate.isValid(username, newPassword,newPassword,"test@test.test")) {
+  if (!validate.isValid(username, newPassword,newPassword,"test@test.test")) { // must include an email
     throw new InvalidInputError();
   }
   else if(!logInUser(username, oldPassword)){
@@ -196,6 +242,11 @@ async function updateUserPassword(username,oldPassword, newPassword) {
       });
   }
 }
+/**
+ * will retrive the balance of the user from the database
+ * @param {*} username // the username of the user
+ * @returns // the balance of the user
+ */
 async function getUserBalance(username){
   try{
   const sqlQuery = `SELECT Balance from users WHERE username ='${username}';`;
@@ -211,7 +262,12 @@ async function getUserBalance(username){
 }
 
 }
-
+/**
+ * will change the privacy of the user from private to public or vise versa
+ * @param {*} username // the username of the user that needed its privacy setting changed
+ * @param {*} isPrivate // the state that user wants its privacy setting to be
+ * @returns 
+ */
 async function Updateprivacy(username,isPrivate) {
   if (!getUser(username)) {
     throw new InvalidInputError();
@@ -226,19 +282,6 @@ async function Updateprivacy(username,isPrivate) {
   }
 
 }
-/**
- *
- * @returns the eintire database
- */
-async function printAllUsers() {
-  const sqlQuery = "SELECT username,password from users ;";
-  return await dbconnection
-    .execute(sqlQuery)
-    .then(logger.info("All Users."))
-    .catch((error) => {
-      throw new Error("Unable to print user data base");
-    });
-}
 
 module.exports = {
   createUserTable,
@@ -249,7 +292,6 @@ module.exports = {
   getConnection,
   getUser,
   Updateprivacy,
-  printAllUsers,
   logInUser,
   getUserBalance,
   userTransaction,

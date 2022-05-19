@@ -14,6 +14,11 @@ module.exports = {
   authenticateUser,
   refreshSession,
 };
+/**
+ * Will authenticate the user via cookies to make sure that their session is valid
+ * @param {*} request will store the cookie
+ * @returns 
+ */
 function authenticateUser(request) {
   // If this request doesn't have any cookies, that means it isn't authenticated. Return null.
   if (!request.cookies) {
@@ -34,6 +39,12 @@ function authenticateUser(request) {
   }
   return { sessionId, userSession }; // Successfully validated.
 }
+/**
+ * will refresh the session of the user that is currently logged in
+ * @param {*} request 
+ * @param {*} response 
+ * @returns 
+ */
 function refreshSession(request, response) {
   const authenticatedSession = authenticateUser(request);
   if (!authenticatedSession) {
@@ -59,6 +70,12 @@ class Session {
     this.expiresAt < new Date();
   }
 }
+/**
+ * will create a session for the user to have authentication capabilities
+ * @param {*} username //the username to store in the array
+ * @param {*} numMinutes //the number of mintues the session will last
+ * @returns //return the sessionID
+ */
 function createSession(username, numMinutes) {
   // Generate a random UUID as the sessionId
   const sessionId = uuid.v4(); // Set the expiry time as numMinutes (in milliseconds) after the current time
@@ -75,15 +92,10 @@ const res = require("express/lib/response");
  * @param {*} request
  * @param {*} response
  */
-function showLoginPage(request, response) {
-  if(request.query.expired != null){
-    response.render("login.hbs",{ AlertMessage: true,
-      message: "Session expired Log in to continue",});
-  }
-  else{
-    response.render("login.hbs");
-  }
-}
+
+/**
+ * will authenticate the user via the modle then will create a new session, set 2 cookies a session id for authetication and a username cookie for ease of use
+ */
 router.post("/loginUser", async (request, response) => {
   let loginData = {
     AlertMessage: true,
@@ -106,6 +118,18 @@ catch(error){
   response.render("login.hbs", loginData);
 }
 });
+function showLoginPage(request, response) {
+  if(request.query.expired != null){
+    response.render("login.hbs",{ AlertMessage: true,
+      message: "Session expired Log in to continue",});
+  }
+  else{
+    response.render("login.hbs");
+  }
+}
+/**
+ * will delete the session from the array, and then will also force expire all of the cookies
+ */
 router.get("/logout", (request, response) => {
   const authenticatedSession = authenticateUser(request);
   if (!authenticatedSession) {
@@ -118,10 +142,17 @@ router.get("/logout", (request, response) => {
   response.cookie("userName", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
   response.redirect("/login");
 });
+/**
+ * will show the page to create an account
+ * @param {*} request 
+ * @param {*} response 
+ */
 
-function showCreateAccountPage(request, response) {
-  response.render("create_account.hbs");
-}
+/**
+ * will create a user from the information given via the forms, will send the information to the model
+ * @param {*} request 
+ * @param {*} response 
+ */
 async function createUser(request, response) {
   let loginDataUserExists = {
     AlertMessage: true,
@@ -154,6 +185,14 @@ async function createUser(request, response) {
   }
   
 }
+function showCreateAccountPage(request, response) {
+  response.render("create_account.hbs");
+}
+/**
+ * will get all the info of the user that logged in and will display it to the view
+ * @param {*} request 
+ * @param {*} response 
+ */
 async function showAccountDetails(request, response) {
    const authenticatedSession = authenticateUser(request);
    if(authenticatedSession!= null){
@@ -165,6 +204,11 @@ async function showAccountDetails(request, response) {
     response.redirect("/login?expired=true");
    }
 }
+/**
+ * will send username and the money ammount to the model to for it to be added to the account
+ * @param {*} request 
+ * @param {*} response 
+ */
 async function updateUserBalance(request, response) {
   const authenticatedSession = authenticateUser(request);
   if(authenticatedSession!= null){
@@ -182,6 +226,11 @@ else{
  response.redirect("/login?expired=true");
 }
 }
+/**
+ * Will get the user password and the new password from the form then will send the information to model
+ * @param {*} request 
+ * @param {*} response 
+ */
 function updateUserPassword(request, response) {
   let username = request.cookies["userName"];
   let oldPassword = request.body.oldpassword;
@@ -207,9 +256,15 @@ function updateUserPassword(request, response) {
     response.redirect("/login?expired=true");
   }
 }
+// will display the update password form to show the user
 function renderupdateUserPassword(request, response){
   response.render("updatePassword.hbs");
 }
+/**
+ * will ask the user to put in their account info to confirm that they want to delete their account
+ * @param {*} request 
+ * @param {*} response 
+ */
 async function deleteUser(request, response) {
   const authenticatedSession = authenticateUser(request);
   if(authenticatedSession!= null){
@@ -234,9 +289,19 @@ async function deleteUser(request, response) {
    }
   }
 }
+/**
+ * will show the form for the user to confirm that they want to delete their account
+ * @param {*} request 
+ * @param {*} response 
+ */
 function renderDeleteUser(request, response){
   response.render("deleteaccount.hbs");
 }
+/**
+ * will change the account from private to public via a button click
+ * @param {*} request 
+ * @param {*} response 
+ */
 async function makeAccountPrivate(request, response) {
 const authenticatedSession = authenticateUser(request);
 if(authenticatedSession!= null){
@@ -249,6 +314,11 @@ else{
   response.redirect("/login?expired=true");
 }
 }
+/**
+ * will change the account from private to public via a button click
+ * @param {*} request 
+ * @param {*} response 
+ */
 async function makeAccountPublic(request, response) {
   const authenticatedSession = authenticateUser(request);
   if(authenticatedSession!= null){
@@ -260,14 +330,14 @@ async function makeAccountPublic(request, response) {
     response.redirect("/login?expired=true");
   }
 }
+router.get("/create", showCreateAccountPage);
 router.post("/createUser", createUser);
 router.get("/login", showLoginPage);
-router.get("/create", showCreateAccountPage);
 router.get("/userinfo", showAccountDetails);
-router.post("/user/:password", updateUserPassword);
 router.get("/user/:password", renderupdateUserPassword);
+router.post("/user/:password", updateUserPassword);
 router.get("/user/:username/balance", updateUserBalance);
-router.post("/userDeletion", deleteUser);
 router.get("/userDeletion",renderDeleteUser);
+router.post("/userDeletion", deleteUser);
 router.post("/private",makeAccountPrivate);
 router.post("/public",makeAccountPublic);
