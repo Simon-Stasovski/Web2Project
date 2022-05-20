@@ -38,20 +38,17 @@ async function initialize( databaseFilename, resetFlag ){
         }
         
         await userModel.createUserTable( connection ).catch( (error) => {
-            error = `Issue with creating user table: ${error}`;
             logger.error( error ); 
             throw( error );
         });
 
 
         await cardModel.createCardTable( connection ).catch( (error) => {
-            error = `Issue with creating card table: ${error}`;
             logger.error( error ); 
             throw( error );
         });
 
          await transactionModel.createTransactionTable( connection ).catch( (error) => {
-             error = `Issue with creating transaction table: ${error}`;
              logger.error( error ); 
              throw( error );
          });
@@ -70,6 +67,20 @@ async function initialize( databaseFilename, resetFlag ){
  */
  function getConnection(){
     return connection;
+}
+
+async function clearDatabase(){
+    await userModel.dropUserTable().catch( (error ) => { 
+        error = `Issue with clearing user table: ${error}`;
+        logger.error( error ); 
+        throw( error );
+    });
+
+    await cardModel.dropCardTable().catch( (error ) => { 
+        error = `Issue with clearing card table: ${error}`;
+        logger.error( error ); 
+        throw( error );
+    });
 }
 
 module.exports = {

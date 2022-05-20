@@ -15,5 +15,42 @@
     {{>header}}
     {{{body}}}
     {{>footer}}
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            changeLoginText();
+        });
+
+        function changeLoginText(){
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let isSessionOpen = decodedCookie.includes( 'userName' );
+
+            {{!-- console.log( isSessionOpen ); --}}
+            
+            let loginBtn = document.getElementById( 'logInBtn' ).getElementsByTagName( 'a' )[0];
+            let createAccountHeaderLink = document.getElementById( 'createAccountHeaderLink' );
+            let myCardsBtn = document.getElementById( 'myCardsBtn' );
+            let shoppingCart = document.getElementById( 'cartSpan' );
+            let myAccountBtn = document.getElementById( 'myAccountBtn' );
+
+            {{!-- console.log( loginBtn ); --}}
+
+            if( isSessionOpen ){
+                loginBtn.innerHTML = 'Log Out';
+                loginBtn.href = 'http://localhost:1339/logout';
+                createAccountHeaderLink.style.display = 'none';
+                myCardsBtn.style.display = 'block';
+                myAccountBtn.style.display = 'block';
+                shoppingCart.style.display = 'inline';
+            }
+            else{
+                loginBtn.innerHTML = 'Log In';
+                loginBtn.href = 'http://localhost:1339/login';
+                createAccountHeaderLink.style.display = 'block';
+                myCardsBtn.style.display = 'none';
+                shoppingCart.style.display = 'none';
+                myAccountBtn.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -26,8 +26,8 @@ class UserInputError extends Error{
     connection = databaseConnection;
 
     const sqlQuery =  'CREATE TABLE IF NOT EXISTS Card(CardID int AUTO_INCREMENT, CardName VARCHAR(50) NOT NULL, Type VARCHAR(50) NOT NULL,' +
-     'Description VARCHAR(400), SerialNumber VARCHAR(50), FrontImagePath VARCHAR(150), BackImagePath VARCHAR(150), IsForSale BIT, CardCondition int, ' +
-     'CertificateImage varchar(150), CardPrice DECIMAL(8, 2), CardOwner varchar(25), PRIMARY KEY(CardID), FOREIGN KEY (CardOwner) REFERENCES Users(Username));';
+     'Description VARCHAR(400), SerialNumber VARCHAR(50), FrontImagePath VARCHAR(150), BackImagePath VARCHAR(150), IsForSale TINYINT(1), CardCondition int, ' +
+     'CertificateImage varchar(150), CardPrice DECIMAL(8, 2), CardOwner varchar(25), PRIMARY KEY(CardID), FOREIGN KEY (CardOwner) REFERENCES users(username));';
     
     try{
         await connection.execute( sqlQuery ).catch(( error ) => { throw( error ); }); 
@@ -105,8 +105,10 @@ class UserInputError extends Error{
  * @param {*} cardOwner The owner of the card's username.
  * @returns The object representation of the added card.
  */
- async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner){
+ async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner, dbConnection ){
     try{
+        connection = dbConnection == null ? connection : dbConnection;
+        
         isForSale = isForSale == 'on' ? true : false;
         
         if( await validator.isValid( cardName, description, frontImagePath, backImagePath, type, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection )){ 
@@ -224,6 +226,13 @@ async function getLastIdAddedToCardTable(){
     }
 }
 
+/**
+ * Gets all of the card records that's owner matches the specified username. 
+ * The database msut be initialized to use the method.
+ * @param {*} username the username of the user who's cards should be selected
+ * @returns An array of object representations of the cards if the user exists in the database
+ * or if the specified user has more than one card; Null otherwise. 
+ */
 async function getCardsByOwner( username ){
     const NOT_FOUND = null;
 
@@ -251,6 +260,12 @@ async function getCardsByOwner( username ){
     }
 }
 
+/**
+ * Gets all of the card records in the card table that are marked for sale. The database
+ * must be initialized to use the method.
+ * @returns An array of object representations of the cards if there are cards marked for sale 
+ * in the database; Null otherwise. 
+ */
 async function getCardsForSale( ){
     const NOT_FOUND = null;
 
@@ -286,18 +301,18 @@ async function getCardsForSale( ){
  * Returns the object representation of the updated record.
  * The database, connection and card table are initialized before the function
  * is called.
- * @param {*} id 
- * @param {*} newCardName 
- * @param {*} newType 
- * @param {*} newDescription 
- * @param {*} newSerialNumber 
- * @param {*} newFrontImagePath 
- * @param {*} newBackImagePath 
- * @param {*} newIsForSale 
- * @param {*} newCardCondition 
- * @param {*} newCertificateImage 
- * @param {*} newCardPrice 
- * @param {*} newCardOwner 
+ * @param {*} id The card record to update's id
+ * @param {*} newCardName The card record to update's new name
+ * @param {*} newType The card record to update's new type
+ * @param {*} newDescription The card record to update's new description
+ * @param {*} newSerialNumber The card record to update's new serial number
+ * @param {*} newFrontImagePath The card record to update's new front image path
+ * @param {*} newBackImagePath The card record to update's new back image path
+ * @param {*} newIsForSale whether or not the card record is for sale
+ * @param {*} newCardCondition The card record to update's new condition
+ * @param {*} newCertificateImage The card record to update's certificate image
+ * @param {*} newCardPrice The card record to update's new price
+ * @param {*} newCardOwner The card record to update's new owner
  * @returns The object representation of the updated record.
  */
 async function updateRowInCardTable( specifiedId, newCardName, newType, newDescription, newSerialNumber, newFrontImagePath, newBackImagePath, newIsForSale, newCardCondition, newCertificateImage, newCardPrice, newCardOwner ){
@@ -308,10 +323,10 @@ async function updateRowInCardTable( specifiedId, newCardName, newType, newDescr
     newCardName = newCardName.toLowerCase();
     newType = newType.toLowerCase();
     newCardPrice = parseFloat( newCardPrice );
-    
 
     try{
         let id = await findCardRecord( specifiedId );
+        id = id.CardID;
 
         if ( id === NO_ENTRY_FOUND ){
             let errorMessage = `Entry in card table with id '${specifiedId}' not found`;
@@ -387,6 +402,26 @@ async function updateRowInCardTable( specifiedId, newCardName, newType, newDescr
         throw error;
     }
 }
+/**
+ * Gives ownership to cards to new uservate
+ * sets card to pri
+ * @param {*} buyer the previous owner
+ * @param {*} seller the new/current owner
+ */
+async function SetOwnerShip(buyer, cardId){
+    try{
+        const sqlQuery = `UPDATE Card SET CardOwner = '${buyer}', IsForSale = 0 WHERE CardID = '${cardId}'`;
+        await connection
+          .execute(sqlQuery)
+          .then(logger.info(""))
+          .catch((error) => {
+            throw new Error("");
+          });
+      } catch (error) {
+        logger.error(error);
+        null;
+      }
+}
 
 module.exports = {
     createCardTable,
@@ -398,6 +433,7 @@ module.exports = {
     getCardsForSale,
     updateRowInCardTable,
     deleteRowFromCardTable,
+    SetOwnerShip,
     UserInputError,
     SystemError
 };

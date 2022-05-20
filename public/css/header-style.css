@@ -7,8 +7,10 @@ header{
 header #nav-form-btns{
     display: flex;
     /* max-width: 750px; */
-    padding: 1em;
+    padding: 0.5em;
     border-top: solid black 1px;
+    align-items: center;
+    justify-content: center;
     /* grid-template-columns: repeat(6, 1fr);
     grid-template-rows: 1fr; */
     /* grid-template-areas: "a b c d e f"; */
@@ -52,7 +54,7 @@ header #nav-form-btns form{
     border-bottom-right-radius: 0.5em;
 }
 
-header #nav-form-btns form input{
+header #nav-form-btns form input, #aboutUs{
     padding: 0.8em;
     border-radius: 0.5em;
     background-color: #0F044C;
@@ -101,10 +103,9 @@ header #nav-form-btns form input{
 #login button{
     min-width: 100px;
     font-weight: 500;
-    padding: 1.2em;
     border-radius: 0.5em;
     background-color: #0F044C;
-    color: #EEEEEE;
+    padding: 1.2em;
 }
 
 #login button:hover{
@@ -116,9 +117,20 @@ header #nav-form-btns form input{
     text-decoration-thickness: 5%;
 }
 
-#login a:hover{
-    color: #0F044C;
+#logInBtn a{
+  text-decoration: none;
+  padding: 1.2em;
+  color: #EEEEEE;
 }
+
+#createAccountHeaderLink a:hover{
+  color: #EEEEEE;
+}
+
+#logInBtn a:hover{
+  color: #0F044C;
+}
+
 #nav-form-btns input{
     width: 100%;
 }
@@ -173,7 +185,7 @@ header, header > *::before, header > *::after {
   
   
   header .card {
-    margin-bottom: 80px;
+    margin-bottom: 2.5px;
     margin-right: 40px;
     height: 80px;
     width: 80px;

@@ -38,7 +38,7 @@
                 <input type="submit" value="Filter" id="filterSubmit">
             </form>
         </div>
-        {{#if noCards}}
+        {{#if noCardMessage}}
         <div id="noCardsToDisplay">
             <p>{{noCardMessage}}</p>
         </div>
@@ -47,7 +47,8 @@
         <ul id="showCardsList">
             {{#each cards}}
             <li class="card" class="img">
-                <form method="get" action="{{this.endpoint}}">
+                <img src="../images/cards/{{this.FrontImagePath}}" class="cardImage">
+                <form method="get" action="{{this.endpoint}}" class="cardViewBtnForm">
                     <input type="hidden" name="id" value="{{this.CardID}}" id="{{this.CardID}}">
                     <input type="submit" value="View" id="shopCardsBtn" class="viewCardBtn">
                 </form>
@@ -69,7 +70,7 @@
                 <div id="cardContentDiv">
                     <div id="viewCardCol1">
                         <div id="imgDiv">
-                            <img src="{{specificCardData.FrontImagePath}}" alt="image of card">
+                            <img src="../images/cards/{{specificCardData.FrontImagePath}}" class="cardImage" alt="image of card">
                         </div>
                         {{#if buyMode}}
                         <form method="get" action="/cart" id="addToCartBtn">
@@ -78,10 +79,16 @@
                         </form>
                         {{/if}}
                         {{#if userMode}}
-                        <form method="get" action="" id="addToCartBtn">
-                            <input type="hidden" value="{{specificCardData.CardID}}" name="item">
-                            <button type="submit">Edit Card</button>
-                        </form>
+                        <div id="userCardButtons">
+                            <form method="get" action="/cards/user">
+                                <input type="hidden" value="{{specificCardData.CardID}}" name="editCard">
+                                <button type="submit">Edit Card</button>
+                            </form>
+                            <form method="post" action="/card/delete">
+                                <input type="hidden" value="{{specificCardData.CardID}}" name="deleteCard">
+                                <button type="submit">Delete Card</button>
+                            </form>
+                        </div>
                         {{/if}}
                     </div>
                     <div id="viewCardCol2">
@@ -127,22 +134,25 @@
             </form>
             <h2>{{addOrEditMessage}}</h2>
             <form id="addCardForm" method="post" action="{{addOrEditEndpoint}}">
+                <input type="hidden" value="{{cardToEdit.CardID}}" name="editId">
                 <input type="hidden" value="{{currentUser}}" name="cardOwner">
-                <input name="cardName" type="text" placeholder="Card Name" required>
+                <input name="cardName" type="text" placeholder="Card Name" value="{{cardToEdit.CardName}}" required>
                 <select name="type" required>
+                    {{#if cardToEdit}}
+                    <option hidden selected>{{cardToEdit.Type}}</option>
+                    {{/if}}
                     <option id="pokemon">Pokemon</option>
                     <option id="yu-gi-oh">Yu-gi-oh</option>
                     <option id="baseball">Baseball</option>
                     <option id="basketball">Basketball</option>
                     <option id="hockey">Hockey</option>
                     <option id="magic the gathering">Magic the Gathering</option>
-                    <option id="all cards">All cards</option>
                 </select>
-                <textarea rows="4" cols="50" id="description" name="description" type="text"
-                    placeholder="Description..."></textarea>
-                <input name="serialNumber" type="text" placeholder="Serial Number">
-                <input type="number" id="cardPrice" name="cardPrice" min="0" max="100000" placeholder="Price"
-                    step="any">
+                <textarea rows="4" cols="50" id="description" name="description"
+                    type="text" placeholder="Description...">{{cardToEdit.Description}}</textarea>
+                <input name="serialNumber" value="{{cardToEdit.SerialNumber}}" type="text" placeholder="Serial Number">
+                <input type="number" value="{{cardToEdit.CardPrice}}" id="cardPrice" name="cardPrice" min="0"
+                    max="100000" placeholder="Price" step="any">
                 <select name="cardCondition" id="condition" required>
                     <option disabled selected hidden>Card Condition (1 is best condition)</option>
                     <option>1</option>
@@ -157,16 +167,43 @@
                 </span>
                 <span id="imageInputs">
                     <span>
+                        {{#if addCard}}
                         <label for="frontImagePath">Upload Front Image of Card</label>
                         <input type="file" id="frontImagePath" name="frontImagePath">
+                        {{/if}}
+                        {{#if cardToEdit}}
+                        <span class="editImage">
+                            <label for="frontImagePath">Edit Front Image of Card</label>
+                            <input type="checkbox" name="editFrontImagePath" id="editFrontImagePath">
+                        </span>
+                        <input type="file" id="frontImagePath" name="frontImagePath">
+                        {{/if}}
                     </span>
                     <span>
+                        {{#if addCard}}
                         <label for="backImagePath">Upload Back Image of Card</label>
                         <input type="file" id="backImagePath" name="backImagePath">
+                        {{/if}}
+                        {{#if cardToEdit}}
+                        <span class="editImage">
+                            <label for="backImagePath">Edit Back Image of Card</label>
+                            <input type="checkbox" name="editBackImagePath" id="editBackImagePath">
+                        </span>
+                        <input type="file" id="backImagePath" name="backImagePath">
+                        {{/if}}
                     </span>
                     <span>
+                        {{#if addCard}}
                         <label for="certificateImage">Upload Certificate of Authenticity</label>
                         <input type="file" id="certificateImage" name="certificateImage">
+                        {{/if}}
+                        {{#if cardToEdit}}
+                        <span class="editImage">
+                            <label for="certificateImage">Edit Certificate of Authenticity</label>
+                            <input type="checkbox" name="editCertificate" id="editCertificate">
+                        </span>
+                        <input type="file" id="certificateImage" name="certificateImage">
+                        {{/if}}
                     </span>
                 </span>
                 <button type="submit" id="addCardBtn">{{inputMessage}}</button>

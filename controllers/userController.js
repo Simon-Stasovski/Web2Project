@@ -99,13 +99,14 @@ const res = require("express/lib/response");
 router.post("/loginUser", async (request, response) => {
   let loginData = {
     AlertMessage: true,
-    message: "Incorrect password",
+    message: "Incorrect Password"
   };
+
   const username = request.body.username;
   const password = request.body.password;
   try{
   if(await model.logInUser(username, password)){
-    const sessionId = createSession(username, 2); // Save cookie that will expire.
+    const sessionId = createSession(username, 50); // Save cookie that will expire.
     response.cookie("sessionId", sessionId, {
       expires: sessions[sessionId].expiresAt,
     });
@@ -117,13 +118,14 @@ router.post("/loginUser", async (request, response) => {
   else{
     response.render("login.hbs", loginData);
   }
-
 }
-catch(error){
-  response.render("login.hbs", { AlertMessage: true,
-    message: "Username wasn't regognized"});
-}
+  catch(error){
+    response.render("login.hbs", { AlertMessage: true,
+      message: "Username wasn't regognized"});
+  }
 });
+
+
 function showLoginPage(request, response) {
   if(request.query.expired != null){
     response.render("login.hbs",{ AlertMessage: true,
@@ -143,9 +145,11 @@ router.get("/logout", (request, response) => {
     return;
   }
   delete sessions[authenticatedSession.sessionId];
+  
   console.log("Logged out user " + authenticatedSession.userSession.username);
   response.cookie("sessionId", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
   response.cookie("userName", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
+  response.cookie("cart", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
   response.redirect("/login");
 });
 /**

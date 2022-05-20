@@ -14,43 +14,78 @@ module.exports = {
 }
 /**
  * Renders the default Home page of the website.
- * @param {*} request 
- * @param {*} response 
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response
  */
 function showHome(request, response) {
-    response.render('login.hbs')
+    response.render('login.hbs');
 }
 
 router.get( '/', showHome );
 
 //#region ANNA
+/**
+ * redirects the search bar search item to the last visited endpoint (either shopping page or card page)
+ * @param {*} request The object representation of the http request. The endpoint cookie is set before this
+ * method is called.
+ * @param {*} response The object representation of the http response
+ */
 function executeSearchBarSearch( request, response ){
     response.redirect( `${request.cookies['endpoint']}?searchBarSearch=${request.query.searchBarSearch}` );  
 }
 
 router.get( '/searchbar', executeSearchBarSearch );
 
-function addToCart( request, response ){
-    let cart = serialize.unserialize( request.cookies['cart'] );
+function showAboutUs( request, response ){
+    response.render( 'aboutUs.hbs' );
+}
 
-    if( cart == null ){
-        cart = [];
+router.get( '/aboutus', showAboutUs );
+
+/**
+ * Adds the card id passed in the request to the shopping cart cookie if the user is logged in.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response
+ */
+function addToCart( request, response ){
+    let username = request.cookies['userName'];
+
+    if( username != null ){
+        let cart = serialize.unserialize( request.cookies['cart'] );
+
+        if( cart == null ){
+            cart = [];
+        }
+        else{
+            cart = Object.values( cart );
+        } 
+    
+        let id = request.query.item;
+        if( !cart.includes( id )){
+            cart.push( id );
+        }
+    
+        response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
+        response.redirect( `${request.cookies['endpoint']}?numItemsInCart=${cart.length}` ); 
     }
     else{
-        cart = Object.values( cart );
-    } 
-
-    let id = request.query.item;
-    if( !cart.includes( id )){
-        cart.push( id );
+        alert( "You must be logged in to shop. Log in or create an account to proceed." );
+        response.redirect( `${request.cookies['endpoint']}` );
     }
-
-    response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
-    response.redirect( `${request.cookies['endpoint']}?numItemsInCart=${cart.length}` ); 
+   
 }
 
 router.get( '/cart', addToCart );
 
+
+/**
+ * Gets all of the items in the shopping cart cookies by passing the cardId in each index of the cookie's
+ * array to the findSpecificRecord card model method. Also sums the total prices of the cards in the shopping
+ * cart and calculates the 15% tax. Renders the shopping cart view with the object representations of each 
+ * card in the shopping cart, the sum of all the card prices in the shopping cart and the tax.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response
+ */
 async function getCartItems( request, response ){
     let cart = serialize.unserialize( request.cookies['cart'] );
     let dataToSend = {};
@@ -84,6 +119,12 @@ async function getCartItems( request, response ){
 
 router.get( '/cart/items', getCartItems );
 
+/**
+ * Removes the specified card id from the shopping cart cookie and redirects
+ * to the shopping cart view.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 function removeCartItem( request, response ){
     let cart = serialize.unserialize( request.cookies['cart'] );
     cart = Object.values( cart );
@@ -99,7 +140,7 @@ function removeCartItem( request, response ){
 
     cart.splice( indexToSplice, 1 );
 
-    response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
+    response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000), overwrite: true});
     response.redirect( '/cart/items' );
 }
 

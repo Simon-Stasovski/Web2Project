@@ -1,8 +1,8 @@
 const errorController = require( './controllers/errorController' );
 const homeController = require( './controllers/homeController' );
-
 const cardController = require( './controllers/cardController' );
 const transactionController = require( './controllers/transactionController' );
+const userController = require( './controllers/userController' );
 const uuid = require('uuid');
 var cookieParser = require('cookie-parser');
 
@@ -10,9 +10,7 @@ const express = require('express');
 const app = express();
 app.use(cookieParser());
 const {engine} = require('express-handlebars');
-const bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-app.use(cookieParser());
+const bodyParser = require('body-parser')
 
 console.log("Creating app");
 

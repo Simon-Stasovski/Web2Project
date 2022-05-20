@@ -81,10 +81,10 @@
     background-color: #0F044C;
     color: #EEEEEE;
     padding: 5px 5px;
-    margin: 8px 0;
+    margin: 8px 15px;
     border: none;
     cursor: pointer;
-    width: 50%;
+    width: 35%;
 }
 .AccountMenu{
     display: flex;
@@ -127,7 +127,7 @@
 }
 .transaction{
     border: 3px solid black;
-    height: 275px;
+    height: 375px;
     width: 75%;
     padding-left: 5px;
     padding-right: 5px;

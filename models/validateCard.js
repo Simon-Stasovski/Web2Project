@@ -22,6 +22,7 @@ const logger = require( '../logger' );
  * @returns 
  */
 async function isValid( cardName, description, frontImagePath, backImagePath, cardType, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection ){
+
     if(isForSale && cardPrice == null){
         return false;
     }
@@ -53,7 +54,7 @@ async function isValid( cardName, description, frontImagePath, backImagePath, ca
         return false;
     }
     
-    const sqlQuery =  `SELECT * FROM Users WHERE Username="${cardOwner}"`;
+    const sqlQuery =  `SELECT * FROM users WHERE username="${cardOwner}"`;
 
     try{
         let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
