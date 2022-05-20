@@ -1,6 +1,6 @@
 <body>
-  <div class="split left">
-    <div class="centered">
+  <div class="accountInfoContainer">
+    <div class="AccountMenu">
       <form action="/cards" method="get" role="form">
         <button type="submit" class="btn btn-primary">My cards</button>
       </form>
@@ -17,12 +17,12 @@
         <button type="submit" class="btn btn-primary">delete account</button>
       </form>
     </div>
+<div class="AccountInfo">
+  <div class="AlertMessage">
+      {{#if AlertMessage}}
+          {{message}}
+      {{/if}}
   </div>
-  <div class="split right">
-    <div class="centered">
-    {{#if AlertMessage}}
-        {{message}}
-    {{/if}}
       <form action="/userDeletion" method="post" role="form">
         <legend>Please enter your password to delete the account</legend>
         <label for="password">Password:</label>
@@ -32,7 +32,7 @@
           name="password"
           minlength="8"
           required
-        />
+        /><br/>
         <button type="submit" class="btn btn-primary">DELTE ACCOUNT</button>
         <br />
       </form>
