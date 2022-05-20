@@ -120,7 +120,8 @@ router.post("/loginUser", async (request, response) => {
   }
 }
 catch(error){
-  response.render("login.hbs", loginData);
+  response.render("login.hbs", { AlertMessage: true,
+    message: "Username wasn't regognized"});
 }
 });
 function showLoginPage(request, response) {
@@ -138,7 +139,7 @@ function showLoginPage(request, response) {
 router.get("/logout", (request, response) => {
   const authenticatedSession = authenticateUser(request);
   if (!authenticatedSession) {
-    response.sendStatus(401); // Unauthorized access
+    response.redirect("/login?expired=true"); // Unauthorized access
     return;
   }
   delete sessions[authenticatedSession.sessionId];
@@ -238,7 +239,7 @@ else{
  * @param {*} request 
  * @param {*} response 
  */
-function updateUserPassword(request, response) {
+async function updateUserPassword(request, response) {
   let username = request.cookies["userName"];
   let oldPassword = request.body.oldpassword;
   let newPassword1 = request.body.newpassword1;
@@ -248,7 +249,7 @@ function updateUserPassword(request, response) {
    refreshSession(request,response)
     if(newPassword1 != oldPassword && newPassword1 === newPassword2){
       try{
-        model.updateUserPassword(username,oldPassword, newPassword1);
+        await model.updateUserPassword(username,oldPassword, newPassword1);
         response.render("updatePassword.hbs",{AlertMessage: true,message: "Password was changed"});
       }
       catch (error){
@@ -279,7 +280,6 @@ async function deleteUser(request, response) {
   let username = request.cookies["userName"];
   let password = request.body.password;
   const authenticatedSession = authenticateUser(request);
-  if(authenticatedSession!= null){
     try{
       await model.deleteUser(username, password);
       response.render("login.hbs",{ AlertMessage: true,message: "User deleted successfully"})
@@ -294,7 +294,6 @@ async function deleteUser(request, response) {
   else{
     response.redirect("/login?expired=true");
    }
-  }
 }
 /**
  * will show the form for the user to confirm that they want to delete their account
@@ -314,7 +313,7 @@ const authenticatedSession = authenticateUser(request);
 if(authenticatedSession!= null){
    refreshSession(request,response)
   let username = request.cookies["userName"];
-  model.Updateprivacy(username,1)
+  await model.Updateprivacy(username,1)
   response.redirect("/userinfo");
 }
 else{
@@ -330,7 +329,7 @@ async function makeAccountPublic(request, response) {
   const authenticatedSession = authenticateUser(request);
   if(authenticatedSession!= null){
     let username = request.cookies["userName"];
-    model.Updateprivacy(username,0)
+    await model.Updateprivacy(username,0)
     response.redirect("/userinfo");
   }
   else{
