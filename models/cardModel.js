@@ -323,7 +323,6 @@ async function updateRowInCardTable( specifiedId, newCardName, newType, newDescr
     newCardName = newCardName.toLowerCase();
     newType = newType.toLowerCase();
     newCardPrice = parseFloat( newCardPrice );
-    
 
     try{
         let id = await findCardRecord( specifiedId );
