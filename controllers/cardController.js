@@ -311,6 +311,22 @@ async function deleteSpecificCard( request, response ){
         let result = await model.deleteRowFromCardTable( id )
 
         if( result ){
+            let cart = serialize.unserialize( request.cookies['cart'] );
+            cart = Object.values( cart );
+            let cardToRemove = id;
+            let indexToSplice;
+        
+            for( let i = 0; i < cart.length; i++ ){
+                if( cart[i] == cardToRemove ){
+                    indexToSplice = i;
+                    break;
+                }
+            }
+        
+            cart.splice( indexToSplice, 1 );
+        
+            response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
+
             response.redirect( '/cards/user' );
         }
 

@@ -120,8 +120,27 @@
     margin-bottom: 0;
 } 
 
+#filterSidebar{
+    background-color: #0F044C;
+    color: #EEEEEE;
+}
+
+
 #filterSubmit{
     grid-area: submit;
+    background-color: #9D2235;
+    color: #EEEEEE;  
+    font-size: 1em;
+    padding: 0.6em;
+    border-radius: 0.5em;
+}
+
+#filterSubmit input{
+    color: #EEEEEE; 
+}
+
+#filterSubmit:hover{
+    background-color: #1c088f;;
 }
 
 #priceRangeDiv, #conditionDiv{
@@ -361,7 +380,7 @@
     justify-content:space-evenly;
     left: 0;
   }
-  
+
   /* .left button {
     justify-self: ;
   } */
