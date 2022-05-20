@@ -378,19 +378,23 @@ async function deleteSpecificCard( request, response ){
             cart = Object.values( cart );
             let cardToRemove = id;
             let indexToSplice;
+            let isInCart = false;
         
             for( let i = 0; i < cart.length; i++ ){
                 if( cart[i] == cardToRemove ){
                     indexToSplice = i;
+                    isInCart = true;
                     break;
                 }
             }
         
-            cart.splice( indexToSplice, 1 );
+            if( isInCart ){
+                cart.splice( indexToSplice, 1 );
         
-            response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
-
-            response.redirect( '/cards/user' );
+                response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
+    
+                response.redirect( '/cards/user' );
+            }
         }
 
         // if( result ){
