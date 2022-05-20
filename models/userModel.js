@@ -49,7 +49,7 @@ async function dropUserTable(connection) {
 async function createUserTable(connection) {
   try {
   dbconnection= connection;
-  const sqlQuery = "CREATE TABLE IF NOT EXISTS users(id int AUTO_INCREMENT, username VARCHAR(25), password VARCHAR(25),email varchar(320),Balance DECIMAL(10,2),isprivate BOOL, PRIMARY KEY(id));";
+  const sqlQuery = "CREATE TABLE IF NOT EXISTS users(username VARCHAR(25), password VARCHAR(25),email varchar(320),Balance DECIMAL(10,2),isprivate BOOL, PRIMARY KEY(username));";
   await connection.execute(sqlQuery);
   console.info("Table users created/exists");
   }
@@ -253,15 +253,35 @@ async function updateUserPassword(username,oldPassword, newPassword) {
 async function getUserBalance(username){
   try{
   const sqlQuery = `SELECT Balance from users WHERE username ='${username}';`;
-  return await dbconnection
+  let balance = await dbconnection
     .execute(sqlQuery)
     .then(logger.info("Balance was found"))
     .catch((error) => {
       throw new Error("Unable to get User balance");
     });
+    return balance[0][0].Balance;
 } catch (error) {
   logger.error("cannot find user balance");
   return null;
+}
+}
+/**
+ *  Sets the balance of the user 
+ * @param {*} username // the username of the user
+ * @param {*} newBalance the new balance to be set
+ */
+ async function setUserBalance(username, newBalance){
+  try{
+  const sqlQuery = `UPDATE users SET Balance = ${newBalance} WHERE username = '${username}'`;
+  await dbconnection
+    .execute(sqlQuery)
+    .then(logger.info(""))
+    .catch((error) => {
+      throw new Error("");
+    });
+} catch (error) {
+  logger.error("");
+  null;
 }
 
 }
@@ -299,8 +319,8 @@ module.exports = {
   getUserBalance,
   userTransaction,
   updateUserBalance,
+  setUserBalance,
   InvalidInputError,
   UserAlreadyExistsError,
   DBConnectionError,
 };
-

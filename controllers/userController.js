@@ -104,8 +104,8 @@ router.post("/loginUser", async (request, response) => {
   const username = request.body.username;
   const password = request.body.password;
   try{
-  if(await model.logInUser(username, password)){
-    const sessionId = createSession(username, 2); // Save cookie that will expire.
+  await model.logInUser(username, password)
+    const sessionId = createSession(username, 50); // Save cookie that will expire.
     response.cookie("sessionId", sessionId, {
       expires: sessions[sessionId].expiresAt,
     });
