@@ -108,12 +108,19 @@ async function getSpecificCard( request, response ){
 
 async function listCardsByUser( request, response ){
     try{
-
+        response.cookie( "endpoint", '/cards/user', { expires: new Date(Date.now() + 560 * 60000) }); 
+        
         // let username = request.cookies['username'];
         let username = request.cookies['userName'];
         let userCards = await model.getCardsByOwner( username );
         let dataToSend = { cards: userCards, endpoint: "/cards/user", userMode: true, currentUser: username }; 
         let isSearch = false;
+
+        if( (request.query.searchBarSearch != '') && (request.query.searchBarSearch != null ) && ( userCards != null )){
+            userCards = search( request, userCards );
+            isSearch = true;
+            dataToSend.cards = userCards;
+        }
 
         if( request.query.addCard != null ){
             dataToSend.addCardOrEditCard = true; 
@@ -172,6 +179,8 @@ router.get( '/cards/user', listCardsByUser );
 
 async function listCardsForSale( request, response ){
     try{
+        response.cookie( "endpoint", '/cards/sale', { expires: new Date(Date.now() + 560 * 60000) }); 
+
         let cardsForSale = await model.getCardsForSale();
         let isSearch = false;
 
@@ -196,7 +205,6 @@ async function listCardsForSale( request, response ){
             dataToSend.specificCardData = cardData;
         }
 
-        response.cookie( "endpoint", '/cards/sale', { expires: new Date(Date.now() + 560 * 60000) }); 
 
         if(cardsForSale != null){ 
             if( cardsForSale.length == 0 ){
