@@ -212,7 +212,14 @@ async function listCardsByUser( request, response ){
 router.get( '/cards/user', listCardsByUser );
 
 /**
- * 
+ * Lists all of the cards that are marked as for sale in the database. If a query parameter 
+ * called searchBarSearch is passed in, the user cards that will
+ * be displayed are set to whichever one's names match the search string in the searchBarSearch
+ * query parameter.  If a query parameter called id is passed in, the expanded 
+ * card view is rendered for with the information about that specific card. If the a query
+ * parameter called cardType is passed in, the selected filters passed into the request object
+ * are applied. If no cards are received from the model, a corresponding message is displayed.
+ * Otherwise, the cards received from the model are displayed. 
  * @param {*} request The object representation of the http request
  * @param {*} response The object representation of the http response 
  */
@@ -267,6 +274,12 @@ async function listCardsForSale( request, response ){
 
 router.get( '/cards/sale', listCardsForSale );
 
+/**
+ * 
+ * @param {*} request The object representation of the http request
+ * @param {*} cards An array of object representations of cards
+ * @returns 
+ */
 function getFilterResults( request, cards ){
     let type = request.query.cardType;
     let minCondition = parseInt( request.query.minCondition );
