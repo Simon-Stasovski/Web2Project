@@ -157,7 +157,7 @@ async function addUser(username, password1, password2,email) {
  * @returns 
  */
 async function deleteUser(username, password) {
-if (logInUser(username, password)) {
+if (await logInUser(username, password)) {
     const sqlQuery = `DELETE FROM users WHERE username ='${username}';`;
     return await dbconnection
       .execute(sqlQuery)
@@ -232,7 +232,7 @@ async function updateUserPassword(username,oldPassword, newPassword) {
   if (!validate.isValid(username, newPassword,newPassword,"test@test.test")) { // must include an email
     throw new InvalidInputError();
   }
-  else if(!logInUser(username, oldPassword)){
+  else if(!await logInUser(username, oldPassword)){
     throw new InvalidInputError();
   } 
   else {
@@ -272,7 +272,7 @@ async function getUserBalance(username){
  * @returns 
  */
 async function Updateprivacy(username,isPrivate) {
-  if (!getUser(username)) {
+  if (!await getUser(username)) {
     throw new InvalidInputError();
   } else {
     const sqlQuery =`UPDATE users SET isprivate = '${isPrivate}' WHERE username = '${username}';`;
