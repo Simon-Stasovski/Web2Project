@@ -49,7 +49,7 @@ async function dropUserTable(connection) {
 async function createUserTable(connection) {
   try {
   dbconnection= connection;
-  const sqlQuery = "CREATE TABLE IF NOT EXISTS users(id int AUTO_INCREMENT, username VARCHAR(25), password VARCHAR(25),email varchar(320),Balance DECIMAL(10,2),isprivate BOOL, PRIMARY KEY(id));";
+  const sqlQuery = "CREATE TABLE IF NOT EXISTS users(username VARCHAR(25), password VARCHAR(25),email varchar(320),Balance DECIMAL(10,2),isprivate BOOL, PRIMARY KEY(username));";
   await connection.execute(sqlQuery);
   console.info("Table users created/exists");
   }

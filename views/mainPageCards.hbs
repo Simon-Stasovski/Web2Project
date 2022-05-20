@@ -38,7 +38,7 @@
                 <input type="submit" value="Filter" id="filterSubmit">
             </form>
         </div>
-        {{#if noCards}}
+        {{#if noCardMessage}}
         <div id="noCardsToDisplay">
             <p>{{noCardMessage}}</p>
         </div>
@@ -47,7 +47,8 @@
         <ul id="showCardsList">
             {{#each cards}}
             <li class="card" class="img">
-                <form method="get" action="{{this.endpoint}}">
+                <img src="../images/cards/{{this.FrontImagePath}}" class="cardImage">
+                <form method="get" action="{{this.endpoint}}" class="cardViewBtnForm">
                     <input type="hidden" name="id" value="{{this.CardID}}" id="{{this.CardID}}">
                     <input type="submit" value="View" id="shopCardsBtn" class="viewCardBtn">
                 </form>
@@ -69,7 +70,7 @@
                 <div id="cardContentDiv">
                     <div id="viewCardCol1">
                         <div id="imgDiv">
-                            <img src="{{specificCardData.FrontImagePath}}" alt="image of card">
+                            <img src="../images/cards/{{specificCardData.FrontImagePath}}" class="cardImage" alt="image of card">
                         </div>
                         {{#if buyMode}}
                         <form method="get" action="/cart" id="addToCartBtn">

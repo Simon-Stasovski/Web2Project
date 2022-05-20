@@ -53,13 +53,12 @@
     </div>
     <nav>
         <div id="nav-form-btns">
+            <form method="get" action="/cards/sale">
+                <input type="submit" value="Shop Cards" id="cartBtn">
+            </form>
             {{!-- Gets user's personnal cards page (hidden if not logged in) --}}
             <form method="get" action="/cards/user">
                 <input type="submit" value="My Cards" id="myCardsBtn">
-            </form>
-            {{!-- Gets form for adding a player --}}
-            <form method="get" action="/cards/sale">
-                <input type="submit" value="Shop Cards" id="cartBtn">
             </form>
         </div>
     </nav>

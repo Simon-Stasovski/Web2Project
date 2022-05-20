@@ -31,22 +31,31 @@ function executeSearchBarSearch( request, response ){
 router.get( '/searchbar', executeSearchBarSearch );
 
 function addToCart( request, response ){
-    let cart = serialize.unserialize( request.cookies['cart'] );
+    let username = request.cookies['userName'];
 
-    if( cart == null ){
-        cart = [];
+    if( username != null ){
+        let cart = serialize.unserialize( request.cookies['cart'] );
+
+        if( cart == null ){
+            cart = [];
+        }
+        else{
+            cart = Object.values( cart );
+        } 
+    
+        let id = request.query.item;
+        if( !cart.includes( id )){
+            cart.push( id );
+        }
+    
+        response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
+        response.redirect( `${request.cookies['endpoint']}?numItemsInCart=${cart.length}` ); 
     }
     else{
-        cart = Object.values( cart );
-    } 
-
-    let id = request.query.item;
-    if( !cart.includes( id )){
-        cart.push( id );
+        alert( "You must be logged in to shop. Log in or create an account to proceed." );
+        response.redirect( `${request.cookies['endpoint']}` );
     }
-
-    response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
-    response.redirect( `${request.cookies['endpoint']}?numItemsInCart=${cart.length}` ); 
+   
 }
 
 router.get( '/cart', addToCart );

@@ -24,23 +24,25 @@
             let decodedCookie = decodeURIComponent(document.cookie);
             let isSessionOpen = decodedCookie.includes( 'userName' );
 
-            console.log( isSessionOpen );
+            {{!-- console.log( isSessionOpen ); --}}
             
             let loginBtn = document.getElementById( 'logInBtn' ).getElementsByTagName( 'a' )[0];
             let createAccountHeaderLink = document.getElementById( 'createAccountHeaderLink' );
+            let myCardsBtn = document.getElementById( 'myCardsBtn' );
 
-            console.log( loginBtn );
+            {{!-- console.log( loginBtn ); --}}
 
             if( isSessionOpen ){
                 loginBtn.innerHTML = 'Log Out';
                 loginBtn.href = 'http://localhost:1339/logout';
                 createAccountHeaderLink.style.display = 'none';
-
+                myCardsBtn.style.display = 'block';
             }
             else{
                 loginBtn.innerHTML = 'Log In';
                 loginBtn.href = 'http://localhost:1339/login';
                 createAccountHeaderLink.style.display = 'block';
+                myCardsBtn.style.display = 'none';
             }
         }
     </script>

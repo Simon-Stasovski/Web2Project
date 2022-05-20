@@ -108,10 +108,12 @@ async function getSpecificCard( request, response ){
 
 async function listCardsByUser( request, response ){
     try{
+
         // let username = request.cookies['username'];
-        let username = 'joe123'; // HARDCODED FOR NOW - CHANGE TO COOKIES ONCE YOU MERGE
+        let username = request.cookies['userName'];
         let userCards = await model.getCardsByOwner( username );
         let dataToSend = { cards: userCards, endpoint: "/cards/user", userMode: true, currentUser: username }; 
+        let isSearch = false;
 
         if( request.query.addCard != null ){
             dataToSend.addCardOrEditCard = true; 
@@ -140,15 +142,22 @@ async function listCardsByUser( request, response ){
             dataToSend.specificCardData = cardData;
         }
 
-        if( request.query.cardType != null ){
+        if( request.query.cardType != null && userCards != null ){
             userCards = getFilterResults( request, userCards );
         }
         
         if( userCards != null ){
+            if( userCards.length == 0 ){
+                let message = isSearch ? `No Cards Matching "${request.query.searchBarSearch}" Found In Your Collection` : "No Cards Matching Applied Filters Found";
+                dataToSend = { cardEndpoint: "/cards/sale", noCardMessage: message };
+            }
+
             response.render( 'mainPageCards.hbs', dataToSend );  
         }
         else{
-            response.send( `Unable to retreive cards for user ${username}` );
+            dataToSend.noCardMessage = "You don't have any cards! Add a card to your collection to start.";
+            dataToSend.cards = true;
+            response.render( 'mainPageCards.hbs', dataToSend );  
         }
     }
     catch( error ){
@@ -166,7 +175,7 @@ async function listCardsForSale( request, response ){
         let cardsForSale = await model.getCardsForSale();
         let isSearch = false;
 
-        if( (request.query.searchBarSearch != '') && (request.query.searchBarSearch != null) ){
+        if( (request.query.searchBarSearch != '') && (request.query.searchBarSearch != null ) && ( cardsForSale != null )){
             cardsForSale = search( request, cardsForSale );
             isSearch = true;
         }
@@ -192,14 +201,14 @@ async function listCardsForSale( request, response ){
         if(cardsForSale != null){ 
             if( cardsForSale.length == 0 ){
                 let message = isSearch ? `No Cards For Sale Matching "${request.query.searchBarSearch}" Found` : "No Cards Matching Applied Filters Found";
-                dataToSend = { noCards: true, cardEndpoint: "/cards/sale", noCardMessage: message };
+                dataToSend = { cardEndpoint: "/cards/sale", noCardMessage: message };
             }
 
             response.render( 'mainPageCards.hbs', dataToSend );                   
         }
-        // else{
-        //     response.render( 'mainPageCards.hbs', { noCards: true, cardEndpoint: "/cards/sale" } );
-        // }
+        else{
+            response.render( 'mainPageCards.hbs', { cardEndpoint: "/cards/sale", noCardMessage: "Sorry, No Cards are Available for Sale" } );
+        }
     }
     catch( error ){
         logger.error( error );
@@ -215,8 +224,8 @@ function getFilterResults( request, cards ){
     let type = request.query.cardType;
     let minCondition = parseInt( request.query.minCondition );
     let maxCondition = parseInt( request.query.maxCondition );
-    let minPrice =  parseInt( request.query.minPrice );
-    let maxPrice = parseInt( request.query.maxPrice );
+    let minPrice = request.query.minPrice != null ? parseInt( request.query.minPrice ) : null;
+    let maxPrice = request.query.maxPrice != null ? parseInt( request.query.maxPrice ) : null;
 
     if(type != "All types"){
         cards = cards.filter( ( card ) => {
