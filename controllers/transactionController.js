@@ -63,7 +63,7 @@ async function addTransaction(request, response) {
 
         for(let i = 0; i < cart.length; i++){
             seller.push(await cardModel.findCardRecord(cart[i]));
-            await cardModel.SetOwnerShip(username, seller[i].CardID);
+            await cardModel.SetOwnerShip(username, seller[i].CardID, 0);
             await userModel.setUserBalance(seller[i].CardOwner, (await userModel.getUserBalance(seller[i].CardOwner)/1) + (seller[i].CardPrice)/1);
         }
 
@@ -170,7 +170,7 @@ async function cancelTransaction(request, response){
 
 
         for(let i = 0; i < seller.length; i++){
-            await cardModel.SetOwnerShip(seller[i].CardOwner, seller[i].CardID);
+            await cardModel.SetOwnerShip(seller[i].CardOwner, seller[i].CardID, 1);
             await userModel.setUserBalance(seller[i].CardOwner, (await userModel.getUserBalance(seller[i].CardOwner)/1) - (seller[i].CardPrice)/1);
         }
 

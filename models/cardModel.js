@@ -405,13 +405,13 @@ async function updateRowInCardTable( specifiedId, newCardName, newType, newDescr
 }
 /**
  * Gives ownership to cards to new uservate
- * sets card to pri
+ * sets card to price
  * @param {*} buyer the previous owner
  * @param {*} seller the new/current owner
  */
-async function SetOwnerShip(buyer, cardId){
+async function SetOwnerShip(buyer, cardId, isForSale){
     try{
-        const sqlQuery = `UPDATE Card SET CardOwner = '${buyer}', IsForSale = 0 WHERE CardID = '${cardId}'`;
+        const sqlQuery = `UPDATE Card SET CardOwner = '${buyer}', IsForSale = ${isForSale} WHERE CardID = '${cardId}'`;
         await connection
           .execute(sqlQuery)
           .then(logger.info(""))
