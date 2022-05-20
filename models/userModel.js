@@ -177,10 +177,9 @@ if (await logInUser(username, password)) {
  */
 async function updateUserBalance(username,addedbalance){
   let userBalance = await getUserBalance(username);
-  let userBalancePostparse =userBalance[0][0].Balance;
-  userBalancePostparse = parseFloat(userBalancePostparse);
-  userBalancePostparse += addedbalance;
-  const sqlQuery =`UPDATE users SET Balance = '${userBalancePostparse}' WHERE username = '${username}';`;
+  userBalance = parseFloat(userBalance);
+  userBalance += addedbalance;
+  const sqlQuery =`UPDATE users SET Balance = '${userBalance}' WHERE username = '${username}';`;
   await dbconnection
   .execute(sqlQuery)
   .then(logger.info("User's Balance updated successfully"))

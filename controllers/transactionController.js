@@ -179,4 +179,4 @@ router.post("/transactionhistory", (request, response) => listMyTransaction(requ
 router.get("/transaction/newdate", (request, response) => updateTransactionDate(request, response))
 router.get("/transaction", (request, response) => addTransaction(request, response))
 
-router.post("/transaction/cancel", (request, response) => cancelTransaction(request, response))
+router.get("/transaction/cancel", (request, response) => cancelTransaction(request, response))
