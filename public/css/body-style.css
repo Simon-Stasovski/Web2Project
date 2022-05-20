@@ -151,5 +151,16 @@
 .transactionsContainer h5{
     font-size: 20px;
 }
+.transactionCompleted{
+    display: flex;
+    flex-direction: column;
+    background-color: #0F044C;
+    color: white;
+    padding-bottom: 25px;
+}
 
+.transactionCompleted{
+    align-items: center;
+
+}
 /* Simon End */

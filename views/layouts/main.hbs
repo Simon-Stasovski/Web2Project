@@ -25,7 +25,6 @@
             let isSessionOpen = decodedCookie.includes( 'userName' );
 
             {{!-- console.log( isSessionOpen ); --}}
-            
             let loginBtn = document.getElementById( 'logInBtn' ).getElementsByTagName( 'a' )[0];
             let createAccountHeaderLink = document.getElementById( 'createAccountHeaderLink' );
             let myCardsBtn = document.getElementById( 'myCardsBtn' );
@@ -51,6 +50,24 @@
                 myAccountBtn.style.display = 'none';
             }
         }
+
+        let toggle = document.getElementById("animationsSlider");
+
+        toggle.addEventListener('change', function() {
+            document.cookie=`wantsAnimations=${toggle.checked}`;
+            let cookieArgs = document.cookie.split('=');
+            let cookieValue = cookieArgs[cookieArgs.length - 1];
+            let card = document.getElementsByClassName("card");
+            console.log(card[0])
+            console.log(cookieValue);
+
+            if(cookieValue == "true"){
+                card[0].style.display = "block";
+            }
+            else{
+                card[0].style.display = "none";
+            }
+        })
     </script>
 </body>
 </html>
