@@ -99,12 +99,12 @@ const res = require("express/lib/response");
 router.post("/loginUser", async (request, response) => {
   let loginData = {
     AlertMessage: true,
-    message: "Incorrect username or password",
+    message: "Incorrect Password",
   };
   const username = request.body.username;
   const password = request.body.password;
   try{
-  await model.logInUser(username, password)
+  if(await model.logInUser(username, password)){
     const sessionId = createSession(username, 50); // Save cookie that will expire.
     response.cookie("sessionId", sessionId, {
       expires: sessions[sessionId].expiresAt,
@@ -117,13 +117,14 @@ router.post("/loginUser", async (request, response) => {
   else{
     response.render("login.hbs", loginData);
   }
-
 }
-catch(error){
-  response.render("login.hbs", { AlertMessage: true,
-    message: "Username wasn't regognized"});
-}
+  catch(error){
+    response.render("login.hbs", { AlertMessage: true,
+      message: "Username wasn't regognized"});
+  }
 });
+
+
 function showLoginPage(request, response) {
   if(request.query.expired != null){
     response.render("login.hbs",{ AlertMessage: true,
