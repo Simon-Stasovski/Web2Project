@@ -81,10 +81,10 @@
     background-color: #0F044C;
     color: #EEEEEE;
     padding: 5px 5px;
-    margin: 8px 0;
+    margin: 8px 15px;
     border: none;
     cursor: pointer;
-    width: 50%;
+    width: 35%;
 }
 .AccountMenu{
     display: flex;

@@ -101,6 +101,7 @@ router.post("/loginUser", async (request, response) => {
     AlertMessage: true,
     message: "Incorrect Password",
   };
+
   const username = request.body.username;
   const password = request.body.password;
   try{
@@ -144,9 +145,11 @@ router.get("/logout", (request, response) => {
     return;
   }
   delete sessions[authenticatedSession.sessionId];
+  
   console.log("Logged out user " + authenticatedSession.userSession.username);
   response.cookie("sessionId", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
   response.cookie("userName", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
+  response.cookie("cart", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
   response.redirect("/login");
 });
 /**

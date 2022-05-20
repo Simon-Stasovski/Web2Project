@@ -18,6 +18,13 @@ module.exports = {
     listCardsForSale
 }
 
+/**
+ * adds the values passed into the request body to the card table if all of the data passed in is valid.
+ * If the passed in data is invalid, the view will be rerendered displaying an error message. This is 
+ * a callback method for a post endpoint.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function addCard( request, response ) {
     try{
         let card = await model.addCard( request.body.cardName, request.body.type, request.body.description, request.body.serialNumber, request.body.frontImagePath, request.body.backImagePath
@@ -49,6 +56,12 @@ async function addCard( request, response ) {
 
 router.post( '/card', addCard );
 
+/**
+ * Lists all of the cards in the card table. This method is currently not
+ * in use by any view.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function listAllCards( request, response ){
     try{
         let listOfCards = await model.readFromCardTable();
@@ -67,7 +80,12 @@ async function listAllCards( request, response ){
 
 router.get( '/cards', listAllCards ); // can it be plural since the idea is multiple
 
-
+/**
+ * Gets the card record of the card with the id specified in the request query. This 
+ * method is currently not used by a view or an endpoint.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function getSpecificCard( request, response ){
     try{
         let id = request.params.id;
@@ -107,12 +125,36 @@ async function getSpecificCard( request, response ){
 
 // router.get( '/card/:id', getSpecificCard ); 
 
+/**
+ * Gets all of the card record's that's card owner is the currently logged in user.
+ * If a query parameter called searchBarSearch is passed in, the user cards that will
+ * be displayed are set to whichever one's names match the search string in the searchBarSearch
+ * query parameter. If a query parameter called addCard is passed in, the view is rendered
+ * with the addCard widget is displayed. If a query parameter called editCard is passed in,
+ * the addCard widget is displayed with the edit card information. If a query parameter called
+ * errorMessage is passed in, it is passed into the rendered view to display the appropriate error
+ * message. If a query parameter called id is passed in, the expanded 
+ * card view is rendered for with the information about that specific card. If the a query
+ * parameter called cardType is passed in, the selected filters passed into the request object
+ * are applied. If no cards are received from the model, a corresponding message is displayed.
+ * Otherwise, the cards received from the model are displayed. 
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function listCardsByUser( request, response ){
     try{
+        response.cookie( "endpoint", '/cards/user', { expires: new Date(Date.now() + 560 * 60000) }); 
+
         let username = request.cookies['userName'];
-        //let username = 'joe123'; // HARDCODED FOR NOW - CHANGE TO COOKIES ONCE YOU MERGE
         let userCards = await model.getCardsByOwner( username );
         let dataToSend = { cards: userCards, endpoint: "/cards/user", userMode: true, currentUser: username }; 
+        let isSearch = false;
+
+        if( (request.query.searchBarSearch != '') && (request.query.searchBarSearch != null ) && ( userCards != null )){
+            userCards = search( request, userCards );
+            isSearch = true;
+            dataToSend.cards = userCards;
+        }
 
         if( request.query.addCard != null ){
             dataToSend.addCardOrEditCard = true; 
@@ -141,15 +183,22 @@ async function listCardsByUser( request, response ){
             dataToSend.specificCardData = cardData;
         }
 
-        if( request.query.cardType != null ){
+        if( request.query.cardType != null && userCards != null ){
             userCards = getFilterResults( request, userCards );
         }
         
         if( userCards != null ){
+            if( userCards.length == 0 ){
+                let message = isSearch ? `No Cards Matching "${request.query.searchBarSearch}" Found In Your Collection` : "No Cards Matching Applied Filters Found";
+                dataToSend = { cardEndpoint: "/cards/sale", noCardMessage: message };
+            }
+
             response.render( 'mainPageCards.hbs', dataToSend );  
         }
         else{
-            response.send( `Unable to retreive cards for user ${username}` );
+            dataToSend.noCardMessage = "You don't have any cards! Add a card to your collection to start.";
+            dataToSend.cards = true;
+            response.render( 'mainPageCards.hbs', dataToSend );  
         }
     }
     catch( error ){
@@ -162,12 +211,26 @@ async function listCardsByUser( request, response ){
 
 router.get( '/cards/user', listCardsByUser );
 
+/**
+ * Lists all of the cards that are marked as for sale in the database. If a query parameter 
+ * called searchBarSearch is passed in, the user cards that will
+ * be displayed are set to whichever one's names match the search string in the searchBarSearch
+ * query parameter.  If a query parameter called id is passed in, the expanded 
+ * card view is rendered for with the information about that specific card. If the a query
+ * parameter called cardType is passed in, the selected filters passed into the request object
+ * are applied. If no cards are received from the model, a corresponding message is displayed.
+ * Otherwise, the cards received from the model are displayed. 
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function listCardsForSale( request, response ){
     try{
+        response.cookie( "endpoint", '/cards/sale', { expires: new Date(Date.now() + 560 * 60000) }); 
+
         let cardsForSale = await model.getCardsForSale();
         let isSearch = false;
 
-        if( (request.query.searchBarSearch != '') && (request.query.searchBarSearch != null) ){
+        if( (request.query.searchBarSearch != '') && (request.query.searchBarSearch != null ) && ( cardsForSale != null )){
             cardsForSale = search( request, cardsForSale );
             isSearch = true;
         }
@@ -188,19 +251,18 @@ async function listCardsForSale( request, response ){
             dataToSend.specificCardData = cardData;
         }
 
-        response.cookie( "endpoint", '/cards/sale', { expires: new Date(Date.now() + 560 * 60000) }); 
 
         if(cardsForSale != null){ 
             if( cardsForSale.length == 0 ){
                 let message = isSearch ? `No Cards For Sale Matching "${request.query.searchBarSearch}" Found` : "No Cards Matching Applied Filters Found";
-                dataToSend = { noCards: true, cardEndpoint: "/cards/sale", noCardMessage: message };
+                dataToSend = { cardEndpoint: "/cards/sale", noCardMessage: message };
             }
 
             response.render( 'mainPageCards.hbs', dataToSend );                   
         }
-        // else{
-        //     response.render( 'mainPageCards.hbs', { noCards: true, cardEndpoint: "/cards/sale" } );
-        // }
+        else{
+            response.render( 'mainPageCards.hbs', { cardEndpoint: "/cards/sale", noCardMessage: "Sorry, No Cards are Available for Sale" } );
+        }
     }
     catch( error ){
         logger.error( error );
@@ -212,12 +274,19 @@ async function listCardsForSale( request, response ){
 
 router.get( '/cards/sale', listCardsForSale );
 
+/**
+ * Applies the filters contained in the request object to the specified array
+ * of card obejects.
+ * @param {*} request The object representation of the http request
+ * @param {*} cards An array of object representations of cards
+ * @returns The filtered array of cards.
+ */
 function getFilterResults( request, cards ){
     let type = request.query.cardType;
     let minCondition = parseInt( request.query.minCondition );
     let maxCondition = parseInt( request.query.maxCondition );
-    let minPrice =  parseInt( request.query.minPrice );
-    let maxPrice = parseInt( request.query.maxPrice );
+    let minPrice = request.query.minPrice != null ? parseInt( request.query.minPrice ) : null;
+    let maxPrice = request.query.maxPrice != null ? parseInt( request.query.maxPrice ) : null;
 
     if(type != "All types"){
         cards = cards.filter( ( card ) => {
@@ -252,6 +321,11 @@ function search( request, cards ){
     });
 }
 
+/**
+ * 
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function editSpecificCard( request, response ){
     try{
         let id = request.body.editId;
@@ -289,13 +363,38 @@ async function editSpecificCard( request, response ){
 
 router.post( '/card/edit', editSpecificCard ); 
 
+/**
+ * 
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function deleteSpecificCard( request, response ){
     try{
         let id = request.body.deleteCard;
         let result = await model.deleteRowFromCardTable( id )
 
         if( result ){
-            response.redirect( '/cards/user' );
+            let cart = serialize.unserialize( request.cookies['cart'] );
+            cart = Object.values( cart );
+            let cardToRemove = id;
+            let indexToSplice;
+            let isInCart = false;
+        
+            for( let i = 0; i < cart.length; i++ ){
+                if( cart[i] == cardToRemove ){
+                    indexToSplice = i;
+                    isInCart = true;
+                    break;
+                }
+            }
+        
+            if( isInCart ){
+                cart.splice( indexToSplice, 1 );
+        
+                response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
+    
+                response.redirect( '/cards/user' );
+            }
         }
 
         // if( result ){

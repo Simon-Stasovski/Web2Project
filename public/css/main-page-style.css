@@ -2,7 +2,7 @@
 
 #mainPage{
     display: flex;
-    min-height: 400px;
+    min-height: 95vh;
 }
 
 /* #filterSidebar{
@@ -44,11 +44,19 @@
     height: 300px;
     border: solid black 1px;
     border-radius: 0.5em;
-    padding: 0.5em;
     margin: 1.2em;
     display: flex;
-    align-items: flex-end;
     justify-content: center;
+    position: relative;
+}
+
+.cardImage{
+    width: 100%;
+}
+
+.cardViewBtnForm{
+    position: absolute;
+    top: 65%;
 }
 
 #addCard.card{
@@ -112,8 +120,27 @@
     margin-bottom: 0;
 } 
 
+#filterSidebar{
+    background-color: #0F044C;
+    color: #EEEEEE;
+}
+
+
 #filterSubmit{
     grid-area: submit;
+    background-color: #9D2235;
+    color: #EEEEEE;  
+    font-size: 1em;
+    padding: 0.6em;
+    border-radius: 0.5em;
+}
+
+#filterSubmit input{
+    color: #EEEEEE; 
+}
+
+#filterSubmit:hover{
+    background-color: #1c088f;;
 }
 
 #priceRangeDiv, #conditionDiv{
@@ -213,6 +240,22 @@
 
 #addCardSection{
     padding: 1.4em;
+    background-color: #9D2235;
+    border: solid #0F044C 3px ;
+    color: #EEEEEE;
+}
+
+#viewCardExpandedView{
+    background-color: #9D2235;
+    color: #EEEEEE;
+}
+
+#viewCardExpandedView #imgDiv{
+    border: none;
+}
+
+#aboutCard, #buyInfo{
+    background-color: #0F044C;
 }
 
 #addCardForm #imageInputs{
@@ -327,3 +370,57 @@
     padding: 0.3em;
 }
 
+/* Chris */
+
+.container{
+    display:flex;
+    justify-content:space-around;
+  }
+  
+  
+  
+  /* Split the screen in half */
+  .split {
+    height: 100%;
+    width: 50%;
+    position: relative;
+    z-index: 1;
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
+  
+  /* Control the left side */
+  .left {
+    display: flex;
+    flex-direction: column;
+    justify-content:space-evenly;
+    left: 0;
+  }
+
+  /* .left button {
+    justify-self: ;
+  } */
+  
+  /* Control the right side */
+  .right {
+    right: 0;
+  }
+  
+  /* If you want the content centered horizontally and vertically */
+  .centered {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  
+  /* Style the image inside the centered container, if needed */
+  .centered img {
+    width: 150px;
+    border-radius: 50%;
+  }
+  
+  #aboutUsPage{
+      margin: 0.5em;
+  }
