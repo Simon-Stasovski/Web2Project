@@ -1,6 +1,7 @@
 const express = require( 'express' );
 const router = express.Router();
 const routeRoot = '/';
+const authenticate = require('./userController');
 const model = require( '../models/cardModel' );
 const logger = require('../logger');
 const { REPL_MODE_STRICT } = require('repl');
