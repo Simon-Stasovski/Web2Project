@@ -99,7 +99,7 @@ const res = require("express/lib/response");
 router.post("/loginUser", async (request, response) => {
   let loginData = {
     AlertMessage: true,
-    message: "Incorrect username or password",
+    message: "Incorrect Password",
   };
 
   const username = request.body.username;
@@ -119,11 +119,13 @@ router.post("/loginUser", async (request, response) => {
     response.render("login.hbs", loginData);
   }
 }
-catch(error){
-  response.render("login.hbs", { AlertMessage: true,
-    message: "Username wasn't regognized"});
-}
+  catch(error){
+    response.render("login.hbs", { AlertMessage: true,
+      message: "Username wasn't regognized"});
+  }
 });
+
+
 function showLoginPage(request, response) {
   if(request.query.expired != null){
     response.render("login.hbs",{ AlertMessage: true,

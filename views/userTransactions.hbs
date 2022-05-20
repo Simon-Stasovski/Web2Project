@@ -3,7 +3,7 @@
 		<div class="filterColumn">
 			<h3>Fliter Options</h3>
 			<br>
-			<form action="/listMyTransactions" method="get">
+			<form action="/transactionhistory" method="post">
 				<h5>Transaction range</h5>
 				<br>
 				<label for="start">Start date:</label>
@@ -29,9 +29,9 @@
 					<option value="Baseball">baseball</option>
 				<option value="Basketball">basketball</option>
 					<option value="Football">football</option>
-					<option value="Magic">magic</option>
+					<option value="Magic">magic the gathering</option>
 					<option value="Pokemon">pokemon</option>
-					<option value="Yu-Gi-Oh!">Yu-gi-oh</option>
+					<option value="Yu-Gi-Oh!">yu-gi-oh</option>
 				</select>
 				
 				<br>
@@ -59,18 +59,18 @@
 		<div class="transactionGrid">
 			{{#each transactions}}
 				<div class="transaction">
-					<br>
 					<h5>Transaction #{{TransactionId}}</h5>
-					<br>
 					<p>Traded Card: {{CardName}}</p>
-					<br>
 					<p>Transaction Date: {{TransactionDate}}</p>
-					<br>
-					<p>Price: {{Price}}</p>
-					<br>
+					<p>Price: {{CardPrice}}</p>
 					<p>Seller: {{OriginalOwner}}</p>
-					<br>
-					<p>Buyer: {{NewOwner}}</p>			
+					<p>Buyer: {{NewOwner}}</p>
+					<form action="/transaction/newdate">
+						<input hidden name="id" value={{TransactionId}}></input>
+						<input type="date" name="transactionDate" value={{TransactionDate}}>
+						<input hidden name="transactions" value={{transactions}}></input> 
+						<input type="submit" value="Update Date">
+					</form>			
 				</div>
 			{{/each}}
 		</div>

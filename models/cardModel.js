@@ -402,6 +402,26 @@ async function updateRowInCardTable( specifiedId, newCardName, newType, newDescr
         throw error;
     }
 }
+/**
+ * Gives ownership to cards to new uservate
+ * sets card to pri
+ * @param {*} buyer the previous owner
+ * @param {*} seller the new/current owner
+ */
+async function SetOwnerShip(buyer, cardId){
+    try{
+        const sqlQuery = `UPDATE Card SET CardOwner = '${buyer}', IsForSale = 0 WHERE CardID = '${cardId}'`;
+        await connection
+          .execute(sqlQuery)
+          .then(logger.info(""))
+          .catch((error) => {
+            throw new Error("");
+          });
+      } catch (error) {
+        logger.error(error);
+        null;
+      }
+}
 
 module.exports = {
     createCardTable,
@@ -413,6 +433,7 @@ module.exports = {
     getCardsForSale,
     updateRowInCardTable,
     deleteRowFromCardTable,
+    SetOwnerShip,
     UserInputError,
     SystemError
 };

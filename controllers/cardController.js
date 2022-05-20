@@ -1,6 +1,7 @@
 const express = require( 'express' );
 const router = express.Router();
 const routeRoot = '/';
+const authenticate = require('./userController');
 const model = require( '../models/cardModel' );
 const logger = require('../logger');
 const { REPL_MODE_STRICT } = require('repl');
@@ -143,8 +144,7 @@ async function getSpecificCard( request, response ){
 async function listCardsByUser( request, response ){
     try{
         response.cookie( "endpoint", '/cards/user', { expires: new Date(Date.now() + 560 * 60000) }); 
-        
-        // let username = request.cookies['username'];
+
         let username = request.cookies['userName'];
         let userCards = await model.getCardsByOwner( username );
         let dataToSend = { cards: userCards, endpoint: "/cards/user", userMode: true, currentUser: username }; 

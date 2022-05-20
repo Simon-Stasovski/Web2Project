@@ -134,7 +134,7 @@ function removeCartItem( request, response ){
 
     cart.splice( indexToSplice, 1 );
 
-    response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
+    response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000), overwrite: true});
     response.redirect( '/cart/items' );
 }
 

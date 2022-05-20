@@ -19,10 +19,11 @@ async function createTransactionTable(databaseConnection){
     connection = databaseConnection;
 
     const sqlQuery = "CREATE TABLE IF NOT EXISTS Transaction(TransactionID int "
-        + "AUTO_INCREMENT, Price DECIMAL(8, 2), CardID int, FOREIGN KEY(CardID) " 
+        + "AUTO_INCREMENT, Price DECIMAL(8, 2), "
+        + "CardID int, FOREIGN KEY(CardID) " 
         + "REFERENCES Card(CardID), OriginalOwner varchar(25), FOREIGN KEY(OriginalOwner) "
-        + "REFERENCES Users(Username), NewOwner varchar(25), FOREIGN KEY(NewOwner) "
-        + "REFERENCES Users(Username), TransactionDate Date, PRIMARY KEY(TransactionID));";
+        + "REFERENCES users(username), NewOwner varchar(25), FOREIGN KEY(NewOwner) "
+        + "REFERENCES users(username), TransactionDate Date, PRIMARY KEY(TransactionID));";
 
     try{
         await connection.execute( sqlQuery ).catch(( error ) => { throw( error ); }); 
@@ -43,8 +44,6 @@ async function createTransactionTable(databaseConnection){
 }
 
 async function dropTransactionTable(){
-    // connection = database.getConnection();
-
     try{
         if ( connection === undefined ){
             throw( "Database or connection not initialized" );
@@ -67,29 +66,69 @@ async function dropTransactionTable(){
     }
 }
 
-async function addTransaction(price, cardID, OriginalOwnerID, NewOwnerID, transactionDate){
+async function createTransaction(cardObject, buyer){
     try{
-        let insertQuery = `INSERT INTO Transaction(Price, CardID, OriginalOwner, NewOwner, TransactionDate) VALUES ('${price}', ${cardID}, '${OriginalOwnerID}', '${NewOwnerID}', '${transactionDate}');`;
+
+        var today = new Date();
+        var day= String(today.getDate()).padStart(2, '0');
+        var month = String(today.getMonth() + 1).padStart(2, '0');
+        var year = today.getFullYear();
+        
+        today = year + '-' + month + '-' + day;
+        let insertQuery = `INSERT INTO Transaction(Price, CardID, OriginalOwner, NewOwner, TransactionDate) VALUES ('${cardObject.CardPrice}', ${cardObject.CardID}, '${cardObject.CardOwner}', '${buyer}', '${today}');`;
         
         await utilsMYSQL.executeCommand(insertQuery, connection);
 
-        return {price : price, oldOwner : OriginalOwnerID, newOwner : NewOwnerID, transactionDate : transactionDate, cardID: cardID};
+        let getLatestIdQuery = 'SELECT TransactionID from Transaction ORDER BY TransactionID DESC LIMIT 1;'
+
+        let result = await connection.query(getLatestIdQuery, [], (err, rows) => {
+
+        });
+
+        if(result[0] == undefined){
+            throw new InvalidInputError("There are no transactions found with this parameters");
+        }
+
+        return result[0];
+
+
+        return ;
     
     } catch (e){
-        console.log(e.message);
         throw e;
     }
 }
-async function getTransaction(id){
+
+async function getSpecifiedTransactions(startDate, endDate, filterType, cardType, isSeller, isBuyer, username){
+
     try{
-        let selectQuery = `SELECT * FROM Transaction WHERE TransactionID = ${id}`;
+        let selectQuery;
+
+        if(isSeller && isBuyer){
+            throw new InvalidDatabaseError("Please select either filter by buyer or seller");
+        }
+        else if(isSeller && !isBuyer && !filterType){
+            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, c.CardPrice, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.OriginalOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND t.OriginalOwner = '${username}';`
+        }
+        else if(isSeller && !isBuyer && filterType){
+            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, c.CardPrice, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.OriginalOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND c.type = '${cardType}' AND t.OriginalOwner = u.Username AND t.OriginalOwner = '${username}';`
+        }
+        else if(!isSeller && isBuyer && !filterType){
+            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, c.CardPrice, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.NewOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND t.NewOwner = '${username}';`
+        }
+        else if(!isSeller && isBuyer && filterType){
+            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, c.CardPrice, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.NewOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND c.type = '${cardType} AND t.NewOwner = '${username}';`
+        }
+        else{
+            throw new InvalidDatabaseError("Please select either filter by buyer or seller");
+        }
 
         let result = await connection.query(selectQuery, [], (err, rows) => {
-                        
+
         });
 
         if(result[0] == undefined){
-            throw new InvalidDatabaseError("Invalid Id");
+            throw new InvalidInputError("There are no transactions found with this parameters");
         }
 
         return result[0];
@@ -97,151 +136,33 @@ async function getTransaction(id){
     }catch(e){
         throw e;
     }
+
 }
 
-async function getAllTransactions(){
+async function UpdateDate(transactionId,  newDate){
     try{
-        let selectQuery = 
-        `SELECT * FROM Transaction;`;
-
-        let result = await connection.query(selectQuery, [], (err, rows) => {
-
-        });
-
-        if(result[0] == undefined){
-            throw new InvalidDatabaseError("Invalid Id");
-        }
-
-        return result[0];
-
-    }catch(e){
-        throw e;
-    }
-}
-
-async function getAllUserTransactions(userId){
-    try{
-        let selectQuery = 
-        `SELECT Cards.CardName Transactions.Price Transactions.TransactionDate from (Transactions INNER JOIN Cards ON Transactions.CardID = Cards.CardID) WHERE OriginalOwner = ? AND NewOwner = ?`;
-
-        let result = await connection.query(selectQuery, [userId, userId], (err, rows) => {
-
-        });
-
-        if(result[0] == undefined){
-            throw new InvalidDatabaseError("Invalid Id");
-        }
-
-        return result[0];
-
-    }catch(e){
-        throw e;
-    }
-}
-
-async function getUserSellTransactions(userId){
-    try{
-        let selectQuery = 
-        `SELECT Cards.CardName Transactions.Price Transactions.TransactionDate from (Transactions INNER JOIN Cards ON Transactions.CardID = Cards.CardID) WHERE OriginalOwner = ?`;
-
-        let result = await connection.query(selectQuery, [userId], (err, rows) => {
-
-        });
-
-        if(result[0] == undefined){
-            throw new InvalidDatabaseError("Invalid Id");
-        }
-
-        return result[0];
-
-    }catch(e){
-        throw e;
-    }
-}
-
-async function getUserBuyTransactions(userId){
-    try{
-        let selectQuery = 
-        `SELECT Cards.CardName Transactions.Price Transactions.TransactionDate from (Transactions INNER JOIN Cards ON Transactions.CardID = Cards.CardID) WHERE NewOwner = ?`;
-
-        let result = await connection.query(selectQuery, [userId], (err, rows) => {
-
-        });
-
-        if(result[0] == undefined){
-            throw new InvalidDatabaseError("Invalid Id");
-        }
-
-        return result[0];
-
-    }catch(e){
-        throw e;
-    }
-}
-
-async function updateTransactionPrice(transactionId, newPrice){
-    try{
-        let updatePrice = `UPDATE Transaction SET Price = ${newPrice} WHERE TransactionID = ${transactionId};`;
+        let updatePrice = `UPDATE Transaction SET TransactionDate = '${newDate}' WHERE TransactionID = ${transactionId};`;
 
         await utilsMYSQL.executeCommand(updatePrice, connection);
 
+
     }catch(e){
         throw e;
     }
 }
 
-async function removeTransaction(id){
+async function DeleteTransaction(transactionId){
+
     try{
-        // if(!Number.isInteger(id)){
-        //     throw new InvalidInputError("Id was not a number");
-        // }
-        
-        let deleteTransaction = `DELETE FROM Transaction WHERE TransactionID = ${id};`;
+
+        transactionId = transactionId/ 1;
+
+        let deleteTransaction = `DELETE FROM Transaction WHERE TransactionID = ${transactionId};`;
 
         await utilsMYSQL.executeCommand(deleteTransaction, connection);
 
     }catch(e){
         throw e;
-    }
-}
-
-async function getSpecifiedTransactions(startDate, endDate, filterType, cardType, isSeller, isBuyer){
-
-    try{
-
-        let selectQuery;
-
-        if(isSeller && isBuyer){
-            return null;
-        }
-        else if(isSeller && !isBuyer && !filterType){
-            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, t.Price, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN Users u On t.OriginalOwner = u.Username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}';`
-        }
-        else if(isSeller && !isBuyer && filterType){
-            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, t.Price, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN Users u On t.OriginalOwner = u.Username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND c.type = '${cardType}';`
-        }
-        else if(!isSeller && isBuyer && !filterType){
-            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, t.Price, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN Users u On t.NewOwner = u.Username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}';`
-        }
-        else if(!isSeller && isBuyer && filterType){
-            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, t.Price, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN Users u On t.NewOwner = u.Username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND c.type = '${cardType}';`
-        }
-        else{
-            return null;
-        }
-
-        let result = await connection.query(selectQuery, [], (err, rows) => {
-
-        });
-
-        if(result[0] == undefined){
-            throw new InvalidDatabaseError("Invalid Id");
-        }
-
-        return result[0];
-
-    }catch(e){
-
     }
 
 }
@@ -249,13 +170,8 @@ async function getSpecifiedTransactions(startDate, endDate, filterType, cardType
 module.exports = {
     createTransactionTable,
     dropTransactionTable,
-    addTransaction,
-    getTransaction,
-    getAllTransactions,
-    getAllUserTransactions,
-    getUserSellTransactions,
-    getUserBuyTransactions,
-    updateTransactionPrice,
-    removeTransaction,
-    getSpecifiedTransactions
+    createTransaction,
+    getSpecifiedTransactions,
+    UpdateDate,
+    DeleteTransaction,
 }
