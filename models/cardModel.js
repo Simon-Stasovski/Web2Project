@@ -226,6 +226,13 @@ async function getLastIdAddedToCardTable(){
     }
 }
 
+/**
+ * Gets all of the card records that's owner matches the specified username. 
+ * The database msut be initialized to use the method.
+ * @param {*} username the username of the user who's cards should be selected
+ * @returns An array of object representations of the cards if the user exists in the database
+ * or if the specified user has more than one card; Null otherwise. 
+ */
 async function getCardsByOwner( username ){
     const NOT_FOUND = null;
 
@@ -253,6 +260,12 @@ async function getCardsByOwner( username ){
     }
 }
 
+/**
+ * Gets all of the card records in the card table that are marked for sale. The database
+ * must be initialized to use the method.
+ * @returns An array of object representations of the cards if there are cards marked for sale 
+ * in the database; Null otherwise. 
+ */
 async function getCardsForSale( ){
     const NOT_FOUND = null;
 
@@ -288,18 +301,18 @@ async function getCardsForSale( ){
  * Returns the object representation of the updated record.
  * The database, connection and card table are initialized before the function
  * is called.
- * @param {*} id 
- * @param {*} newCardName 
- * @param {*} newType 
- * @param {*} newDescription 
- * @param {*} newSerialNumber 
- * @param {*} newFrontImagePath 
- * @param {*} newBackImagePath 
- * @param {*} newIsForSale 
- * @param {*} newCardCondition 
- * @param {*} newCertificateImage 
- * @param {*} newCardPrice 
- * @param {*} newCardOwner 
+ * @param {*} id The card record to update's id
+ * @param {*} newCardName The card record to update's new name
+ * @param {*} newType The card record to update's new type
+ * @param {*} newDescription The card record to update's new description
+ * @param {*} newSerialNumber The card record to update's new serial number
+ * @param {*} newFrontImagePath The card record to update's new front image path
+ * @param {*} newBackImagePath The card record to update's new back image path
+ * @param {*} newIsForSale whether or not the card record is for sale
+ * @param {*} newCardCondition The card record to update's new condition
+ * @param {*} newCertificateImage The card record to update's certificate image
+ * @param {*} newCardPrice The card record to update's new price
+ * @param {*} newCardOwner The card record to update's new owner
  * @returns The object representation of the updated record.
  */
 async function updateRowInCardTable( specifiedId, newCardName, newType, newDescription, newSerialNumber, newFrontImagePath, newBackImagePath, newIsForSale, newCardCondition, newCertificateImage, newCardPrice, newCardOwner ){
