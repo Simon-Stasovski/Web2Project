@@ -40,7 +40,7 @@ const CARD_DATA = [ { BackImagePath: 'https://tse1.mm.bing.net/th?4',
                   }
                 ];
 
-const generateFabricData = () => {
+const generateCardData = () => {
     const index = Math.floor((Math.random() * CARD_DATA.length));
     return CARD_DATA.slice(index, index + 1)[0];
 }
@@ -65,7 +65,7 @@ afterEach( async () => {
 
 test( "Test Successful Add Card", async () => {
     const { CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
-        CertificateImage, CardPrice, CardOwner } = generateFabricData();
+        CertificateImage, CardPrice, CardOwner } = generateCardData();
     // let connection = model.getConnection();
 
     var connection = model.getConnection();
