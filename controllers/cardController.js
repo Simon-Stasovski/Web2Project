@@ -275,10 +275,11 @@ async function listCardsForSale( request, response ){
 router.get( '/cards/sale', listCardsForSale );
 
 /**
- * 
+ * Applies the filters contained in the request object to the specified array
+ * of card obejects.
  * @param {*} request The object representation of the http request
  * @param {*} cards An array of object representations of cards
- * @returns 
+ * @returns The filtered array of cards.
  */
 function getFilterResults( request, cards ){
     let type = request.query.cardType;
@@ -377,19 +378,23 @@ async function deleteSpecificCard( request, response ){
             cart = Object.values( cart );
             let cardToRemove = id;
             let indexToSplice;
+            let isInCart = false;
         
             for( let i = 0; i < cart.length; i++ ){
                 if( cart[i] == cardToRemove ){
                     indexToSplice = i;
+                    isInCart = true;
                     break;
                 }
             }
         
-            cart.splice( indexToSplice, 1 );
+            if( isInCart ){
+                cart.splice( indexToSplice, 1 );
         
-            response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
-
-            response.redirect( '/cards/user' );
+                response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
+    
+                response.redirect( '/cards/user' );
+            }
         }
 
         // if( result ){

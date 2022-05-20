@@ -240,6 +240,22 @@
 
 #addCardSection{
     padding: 1.4em;
+    background-color: #9D2235;
+    border: solid #0F044C 3px ;
+    color: #EEEEEE;
+}
+
+#viewCardExpandedView{
+    background-color: #9D2235;
+    color: #EEEEEE;
+}
+
+#viewCardExpandedView #imgDiv{
+    border: none;
+}
+
+#aboutCard, #buyInfo{
+    background-color: #0F044C;
 }
 
 #addCardForm #imageInputs{
@@ -403,4 +419,8 @@
   .centered img {
     width: 150px;
     border-radius: 50%;
+  }
+  
+  #aboutUsPage{
+      margin: 0.5em;
   }

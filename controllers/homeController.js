@@ -36,6 +36,12 @@ function executeSearchBarSearch( request, response ){
 
 router.get( '/searchbar', executeSearchBarSearch );
 
+function showAboutUs( request, response ){
+    response.render( 'aboutUs.hbs' );
+}
+
+router.get( '/aboutus', showAboutUs );
+
 /**
  * Adds the card id passed in the request to the shopping cart cookie if the user is logged in.
  * @param {*} request The object representation of the http request

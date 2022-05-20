@@ -54,7 +54,7 @@ header #nav-form-btns form{
     border-bottom-right-radius: 0.5em;
 }
 
-header #nav-form-btns form input{
+header #nav-form-btns form input, #aboutUs{
     padding: 0.8em;
     border-radius: 0.5em;
     background-color: #0F044C;
