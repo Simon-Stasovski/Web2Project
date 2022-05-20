@@ -108,8 +108,8 @@ async function getSpecificCard( request, response ){
 
 async function listCardsByUser( request, response ){
     try{
-        // let username = request.cookies['username'];
-        let username = 'joe123'; // HARDCODED FOR NOW - CHANGE TO COOKIES ONCE YOU MERGE
+        let username = request.cookies['userName'];
+        //let username = 'joe123'; // HARDCODED FOR NOW - CHANGE TO COOKIES ONCE YOU MERGE
         let userCards = await model.getCardsByOwner( username );
         let dataToSend = { cards: userCards, endpoint: "/cards/user", userMode: true, currentUser: username }; 
 

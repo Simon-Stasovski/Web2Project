@@ -38,20 +38,17 @@ async function initialize( databaseFilename, resetFlag ){
         }
         
         await userModel.createUserTable( connection ).catch( (error) => {
-            error = `Issue with creating user table: ${error}`;
             logger.error( error ); 
             throw( error );
         });
 
 
         await cardModel.createCardTable( connection ).catch( (error) => {
-            error = `Issue with creating card table: ${error}`;
             logger.error( error ); 
             throw( error );
         });
 
          await transactionModel.createTransactionTable( connection ).catch( (error) => {
-             error = `Issue with creating transaction table: ${error}`;
              logger.error( error ); 
              throw( error );
          });
