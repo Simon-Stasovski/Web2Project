@@ -105,8 +105,10 @@ class UserInputError extends Error{
  * @param {*} cardOwner The owner of the card's username.
  * @returns The object representation of the added card.
  */
- async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner){
+ async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner, dbConnection ){
     try{
+        connection = dbConnection == null ? connection : dbConnection;
+        
         isForSale = isForSale == 'on' ? true : false;
         
         if( await validator.isValid( cardName, description, frontImagePath, backImagePath, type, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection )){ 
@@ -312,6 +314,7 @@ async function updateRowInCardTable( specifiedId, newCardName, newType, newDescr
 
     try{
         let id = await findCardRecord( specifiedId );
+        id = id.CardID;
 
         if ( id === NO_ENTRY_FOUND ){
             let errorMessage = `Entry in card table with id '${specifiedId}' not found`;

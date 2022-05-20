@@ -69,6 +69,20 @@ async function initialize( databaseFilename, resetFlag ){
     return connection;
 }
 
+async function clearDatabase(){
+    await userModel.dropUserTable().catch( (error ) => { 
+        error = `Issue with clearing user table: ${error}`;
+        logger.error( error ); 
+        throw( error );
+    });
+
+    await cardModel.dropCardTable().catch( (error ) => { 
+        error = `Issue with clearing card table: ${error}`;
+        logger.error( error ); 
+        throw( error );
+    });
+}
+
 module.exports = {
     initialize,
     getConnection

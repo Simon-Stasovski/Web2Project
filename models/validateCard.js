@@ -22,6 +22,7 @@ const logger = require( '../logger' );
  * @returns 
  */
 async function isValid( cardName, description, frontImagePath, backImagePath, cardType, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection ){
+
     if(isForSale && cardPrice == null){
         return false;
     }

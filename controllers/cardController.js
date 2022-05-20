@@ -115,11 +115,20 @@ async function listCardsByUser( request, response ){
 
         if( request.query.addCard != null ){
             dataToSend.addCardOrEditCard = true; 
+            dataToSend.addCard = true;
             dataToSend.addOrEditMessage = 'Add Card to Your Collection';
             dataToSend.addOrEditEndpoint = '/card';
             dataToSend.inputMessage = 'Add Card';
+        }     
+        else if( request.query.editCard != null ){
+            let cardData = await model.findCardRecord( request.query.editCard );
+            dataToSend.addCardOrEditCard = true; 
+            dataToSend.addOrEditMessage = `Editting Card`;
+            dataToSend.addOrEditEndpoint = '/card';
+            dataToSend.inputMessage = 'Confirm Changes';
+            dataToSend.cardToEdit = cardData;
+            dataToSend.addOrEditEndpoint = '/card/edit';
         }
-        
 
         if( request.query.errorMessage != null ){
             dataToSend.errorMessage = request.query.errorMessage == 'system' ? "Card add failed due to system error" : "Card add failed due to invalid input";
@@ -244,16 +253,21 @@ function search( request, cards ){
 
 async function editSpecificCard( request, response ){
     try{
-        let id = request.params.id;
-        let card = await model.updateRowInCardTable( id, request.body.newCardName, request.body.newType, request.body.newDescription, request.body.newSerialNumber, 
-            request.body.newFrontImagePath, request.body.newBackImagePath, request.body.newIsForSale, request.body.newCardCondition, request.body.newCertificateImage, 
-            request.body.newCardPrice, request.body.newCardOwner );
+        let id = request.body.editId;
+        let currentCard = await model.findCardRecord( id );
+        let frontImagePath = request.body.editFrontImagePath == 'on' ? request.body.frontImagePath : currentCard.FrontImagePath;
+        let backImagePath = request.body.editBackImagePath == 'on' ? request.body.backImagePath : currentCard.BackImagePath;
+        let certificateImage = request.body.editCertificate == 'on' ? request.body.certificateImage : currentCard.CertificateImage;
+        let isForSale = request.body.isForSale == 'on' ? true : false;
 
-        
+        let card = await model.updateRowInCardTable( id, request.body.cardName, request.body.type, request.body.description, request.body.serialNumber, 
+            frontImagePath, backImagePath, isForSale, request.body.cardCondition, certificateImage, request.body.cardPrice, request.body.cardOwner );
+
+        response.redirect( `/cards/user?id=${id}`);
         // const dataToSend = { fabric: listOfFabric };
         // response.status( 200 );
         // response.render( 'showAllFabric.hbs', dataToSend );
-        response.send( card );
+        // response.send( card );
     }
     catch( error ){
         if( error instanceof model.SystemError ){
@@ -272,19 +286,23 @@ async function editSpecificCard( request, response ){
     }
 }
 
-router.put( '/card/:id', editSpecificCard ); 
+router.post( '/card/edit', editSpecificCard ); 
 
 async function deleteSpecificCard( request, response ){
     try{
-        let id = request.params.id;
+        let id = request.body.deleteCard;
         let result = await model.deleteRowFromCardTable( id )
 
         if( result ){
-            response.send( "Successfully deleted card with id " + id );
+            response.redirect( '/cards/user' );
         }
-        else{
-            response.send( `Unable to delete card with id: ${id}` );
-        }
+
+        // if( result ){
+        //     response.send( "Successfully deleted card with id " + id );
+        // }
+        // else{
+        //     response.send( `Unable to delete card with id: ${id}` );
+        // }
 
         // response.status( 200 );
     }
@@ -307,4 +325,4 @@ async function deleteSpecificCard( request, response ){
     }
 }
 
-router.delete( '/card/:id', deleteSpecificCard );
+router.post( '/card/delete', deleteSpecificCard );
