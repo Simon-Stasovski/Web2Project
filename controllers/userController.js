@@ -99,7 +99,7 @@ const res = require("express/lib/response");
 router.post("/loginUser", async (request, response) => {
   let loginData = {
     AlertMessage: true,
-    message: "Incorrect Password",
+    message: "Incorrect Password"
   };
 
   const username = request.body.username;
