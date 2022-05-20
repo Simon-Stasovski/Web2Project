@@ -1,5 +1,6 @@
 <body>
-    <h2 id="cartHeader">Your Cart</h2>
+    <div id="cart">
+            <h2 id="cartHeader">Your Cart</h2>
     <div id="cartDiv">
         {{#if emptyCart}}
         <div id="emptyCartDiv">
@@ -15,7 +16,7 @@
             <div class="cartItem">
                 <div class="cardImage">
                     <div class="cardImageContainer">
-                        <img src="{{this.FrontImagePath}}">
+                        <img class="cardImg" src="../images/cards/{{this.FrontImagePath}}">
                     </div>
                 </div>
                 <span class="itemInfo">
@@ -63,5 +64,6 @@
             </span>
         </span>
         {{/if}}
+    </div>
     </div>
 </body>

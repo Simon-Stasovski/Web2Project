@@ -4,6 +4,7 @@ const model = require("../models/userModel");
 const router = express.Router();
 const server = require("../server");
 const routeRoot = "/";
+var serialize = require('../node_modules/node-serialize');
 
 /** Error for 500-level issues */
 class DBConnectionError extends Error {}
@@ -149,7 +150,10 @@ router.get("/logout", (request, response) => {
   console.log("Logged out user " + authenticatedSession.userSession.username);
   response.cookie("sessionId", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
   response.cookie("userName", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
-  response.cookie("cart", "", { expires: new Date() }); // "erase" cookie by forcing it to expire.
+
+  cart = null;
+  response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000), overwrite: true});
+  
   response.redirect("/login");
 });
 /**

@@ -121,11 +121,6 @@
     padding: 1em;
 }
 
-.cartItem .cardImageContainer{
-    border: solid black 1px;
-    height: 100%;
-}
-
 .cardPrice input{
     font-weight: 500;
     text-decoration: underline;
@@ -174,6 +169,34 @@
 #emptyCartDiv form button{
     padding: 0.8em;
 }
+
+.cardImageContainer{
+    width: 100%;
+}
+
+
+.cardImg{
+    width: 100%;
+    max-width: 120px;
+}
+
+#buttons button{
+    background-color: #0F044C;
+    color: #eee;
+}
+
+#orderSummary{
+    background-color: #9d2235;
+    color: #eee;
+}
+
+.itemInfo .desc{
+    background-color: #0F044C;
+    color: #eee;
+}
+/* #cart{
+    background-color: #0F044C ;
+} */
 /* #cartTable{
     border: solid black 1px;
     height: 50%;

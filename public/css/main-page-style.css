@@ -422,5 +422,6 @@
   }
   
   #aboutUsPage{
-      margin: 0.5em;
+      margin: 1em;
+      min-height: 40vh;
   }

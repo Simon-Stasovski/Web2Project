@@ -272,91 +272,29 @@ test( "Test Successful Update Entry in Card Table", async () => {
     expect( rows[0].CardOwner === newOwner.toLowerCase() ).toBe( true );
 });
 
-// /**
-//  * Tests that trying to update a record with invalid data does not work.
-//  */
-// test( "Test Update Entry in Fabric Table with Invalid New Data", async () => {
-//     const { name, type, pricePerYard, colour } = generateFabricData();
 
-//     await model.addFabric( name, type, pricePerYard, colour );
+test( "Test Update Entry in Fabric Table with Invalid New Data", async () => {
+    let { CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+        CertificateImage, CardPrice, CardOwner } = generateCardData();
 
-//     const newName = 'New!!!F4bric';
-//     const newType = 'foo';
-//     const newPricePerYard = '23.9999';
-//     const newColour = '#000000';
+    await cardModel.addCard( CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+            CertificateImage, CardPrice, CardOwner, connection );
 
-//     let result = await model.updateRowInFabricTable( name, newName, newType, newPricePerYard, newColour );
+    const newType = 'foo';
 
-//     let rows = await model.readFromFabricTable();
+
+    let result = await cardModel.updateRowInCardTable( 1, CardName, newType, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+        CertificateImage, CardPrice, CardOwner, connection  );
+
+    let rows = await cardModel.readFromCardTable();
     
-//     expect( result === false ).toBe( true );
-//     expect( Array.isArray( rows )).toBe( true );
-//     expect( rows.length ).toBe( 1 );
-//     expect( rows[0].name === name ).toBe( true );
-//     expect( rows[0].type === type ).toBe( true );
-//     expect( rows[0].pricePerYard === pricePerYard ).toBe( true );
-//     expect( rows[0].colour === colour ).toBe( true );
-// });
+    expect( result === false ).toBe( true );
+    expect( Array.isArray( rows )).toBe( true );
+    expect( rows.length ).toBe( 1 );
+    expect( rows[0].Type === Type ).toBe( true );
+    expect( rows[0].Type !== newType ).toBe( true );
+});
 
-// /**
-//  * Tests that trying to update a name with a name that already exists in the database
-//  * does not work. Names must be unique so that only valid new name during an update
-//  * is the current name that that record has or a name that is not yet in the table. 
-//  */
-// test( "Test Update Entry in Fabric Table with newName that Already Exists", async () => {
-//     const { name, type, pricePerYard, colour } = generateFabricData();
-//     const newName = 'New Fabric';
-//     const newType = 'other';
-//     const newPricePerYard = '23.99';
-//     const newColour = '#000000';
-
-//     await model.addFabric( name, type, pricePerYard, colour );
-//     await model.addFabric( newName, "denim", '11.28', '#505e6b' );
-
-//     let result = await model.updateRowInFabricTable( name, newName, newType, newPricePerYard, newColour );
-
-//     let rows = await model.readFromFabricTable();
-//     // const sqlQuery = "SELECT name, type, pricePerYard, colour FROM fabric";
-//     // const [ rows, fields ] = await connection.execute( sqlQuery ); //.then( ( queryOutput ) => console.log( queryOutput ) ).catch( ( error ) => { console.error( error )})
-
-//     expect( result === false ).toBe( true );
-
-//     expect( Array.isArray( rows )).toBe( true );
-//     expect( rows.length ).toBe( 2 );
-
-//     expect( rows[0].name === name.toLowerCase() ).toBe( true ); // index 0 was target record
-//     expect( rows[0].type === type.toLowerCase() ).toBe( true );
-//     expect( rows[0].pricePerYard === pricePerYard ).toBe( true );
-//     expect( rows[0].colour === colour.toLowerCase() ).toBe( true );
-
-//     // just in case
-//     expect( rows[1].name === newName.toLowerCase() ).toBe( true ); // index 0 was target record
-//     expect( rows[1].type === 'denim' ).toBe( true );
-//     expect( rows[1].pricePerYard === '11.28' ).toBe( true );
-//     expect( rows[1].colour === '#505e6b' ).toBe( true );
-// });
-
-// /**
-//  * Tests that trying to update a row that does not exist and 
-//  * passing in a name that does not exist in the table does
-//  * not work and does not alter the table.
-//  */
-// test( "Test Update Entry in Fabric Table with Invalid Search Name", async () => {
-//     const SEARCH_NAME = 'New Fabric';
-
-//     const newName = 'Updated Fabric Name';
-//     const newType = 'other';
-//     const newPricePerYard = '23.99';
-//     const newColour = '#000000';
-
-//     let result = await model.updateRowInFabricTable( SEARCH_NAME, newName, newType, newPricePerYard, newColour );
-
-//     let rows = await model.readFromFabricTable();
-
-//     expect( result === false ).toBe( true );
-//     expect( Array.isArray( rows )).toBe( true );
-//     expect( rows.length ).toBe( 0 );
-// });
 
 // /**
 //  * Tests that deleting a row by passing in its unique name
