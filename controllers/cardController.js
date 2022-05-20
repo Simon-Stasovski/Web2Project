@@ -130,7 +130,13 @@ async function getSpecificCard( request, response ){
  * be displayed are set to whichever one's names match the search string in the searchBarSearch
  * query parameter. If a query parameter called addCard is passed in, the view is rendered
  * with the addCard widget is displayed. If a query parameter called editCard is passed in,
- * the addCard widget is displayed with the edit card information.
+ * the addCard widget is displayed with the edit card information. If a query parameter called
+ * errorMessage is passed in, it is passed into the rendered view to display the appropriate error
+ * message. If a query parameter called id is passed in, the expanded 
+ * card view is rendered for with the information about that specific card. If the a query
+ * parameter called cardType is passed in, the selected filters passed into the request object
+ * are applied. If no cards are received from the model, a corresponding message is displayed.
+ * Otherwise, the cards received from the model are displayed. 
  * @param {*} request The object representation of the http request
  * @param {*} response The object representation of the http response 
  */
