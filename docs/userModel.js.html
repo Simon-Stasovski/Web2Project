@@ -1,4 +1,32 @@
-//TODO
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: userModel.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: userModel.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//TODO
 //refractor the User code to include:
     //Email *
     //Account balance (when creatingthe user)*
@@ -196,7 +224,7 @@ async function updateUserBalance(username, addedbalance){
  * @returns True if the query was successful, otherwise false.
  */
 async function userTransaction(originlaOwnerUsername,newOwnerUsername,price) {
-  if (!getUser(originlaOwnerUsername)&&!getUser(newOwnerUsername)) {
+  if (!getUser(originlaOwnerUsername)&amp;&amp;!getUser(newOwnerUsername)) {
     throw new InvalidInputError();
   } else {
     let balanceOwner = await getUserBalance(originlaOwnerUsername);
@@ -322,3 +350,26 @@ module.exports = {
   UserAlreadyExistsError,
   DBConnectionError,
 };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DBConnectionError.html">DBConnectionError</a></li><li><a href="InvalidInputError.html">InvalidInputError</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCard">addCard</a></li><li><a href="global.html#addToCart">addToCart</a></li><li><a href="global.html#addTransaction">addTransaction</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#authenticateUser">authenticateUser</a></li><li><a href="global.html#cancelTransaction">cancelTransaction</a></li><li><a href="global.html#createCardTable">createCardTable</a></li><li><a href="global.html#createSession">createSession</a></li><li><a href="global.html#createTransaction">createTransaction</a></li><li><a href="global.html#createTransactionTable">createTransactionTable</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteRowFromCardTable">deleteRowFromCardTable</a></li><li><a href="global.html#deleteSpecificCard">deleteSpecificCard</a></li><li><a href="global.html#DeleteTransaction">DeleteTransaction</a></li><li><a href="global.html#deleteUser">deleteUser</a></li><li><a href="global.html#diplayUserTransactions">diplayUserTransactions</a></li><li><a href="global.html#dropCardTable">dropCardTable</a></li><li><a href="global.html#dropTransactionTable">dropTransactionTable</a></li><li><a href="global.html#editSpecificCard">editSpecificCard</a></li><li><a href="global.html#executeSearchBarSearch">executeSearchBarSearch</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#findCardRecord">findCardRecord</a></li><li><a href="global.html#getCardsByOwner">getCardsByOwner</a></li><li><a href="global.html#getCardsForSale">getCardsForSale</a></li><li><a href="global.html#getCartItems">getCartItems</a></li><li><a href="global.html#getConnection">getConnection</a></li><li><a href="global.html#getFilterResults">getFilterResults</a></li><li><a href="global.html#getSpecificCard">getSpecificCard</a></li><li><a href="global.html#getSpecifiedTransactions">getSpecifiedTransactions</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserBalance">getUserBalance</a></li><li><a href="global.html#isValid">isValid</a></li><li><a href="global.html#listAllCards">listAllCards</a></li><li><a href="global.html#listCardsByUser">listCardsByUser</a></li><li><a href="global.html#listCardsForSale">listCardsForSale</a></li><li><a href="global.html#listMyTransaction">listMyTransaction</a></li><li><a href="global.html#logInUser">logInUser</a></li><li><a href="global.html#makeAccountPrivate">makeAccountPrivate</a></li><li><a href="global.html#makeAccountPublic">makeAccountPublic</a></li><li><a href="global.html#readFromCardTable">readFromCardTable</a></li><li><a href="global.html#refreshSession">refreshSession</a></li><li><a href="global.html#removeCartItem">removeCartItem</a></li><li><a href="global.html#renderDeleteUser">renderDeleteUser</a></li><li><a href="global.html#setConnection">setConnection</a></li><li><a href="global.html#SetOwnerShip">SetOwnerShip</a></li><li><a href="global.html#setUserBalance">setUserBalance</a></li><li><a href="global.html#showAccountDetails">showAccountDetails</a></li><li><a href="global.html#showError">showError</a></li><li><a href="global.html#showHome">showHome</a></li><li><a href="global.html#UpdateDate">UpdateDate</a></li><li><a href="global.html#Updateprivacy">Updateprivacy</a></li><li><a href="global.html#updateRowInCardTable">updateRowInCardTable</a></li><li><a href="global.html#updateTransactionDate">updateTransactionDate</a></li><li><a href="global.html#updateUserBalance">updateUserBalance</a></li><li><a href="global.html#updateUserPassword">updateUserPassword</a></li><li><a href="global.html#userTransaction">userTransaction</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri May 20 2022 14:02:05 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
