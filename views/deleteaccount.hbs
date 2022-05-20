@@ -1,0 +1,35 @@
+<body>
+  <div class="accountInfoContainer">
+    <div class="AccountMenu">
+      <form action="/Transactions" method="get" role="form">
+        <button type="submit" class="btn btn-primary">Transactions history</button>
+      </form>
+      <form action="/user/:password" method="get" role="form">
+        <button type="submit" class="btn btn-primary">Change password</button>
+      </form>
+      <form action="/userDeletion" method="get" role="form">
+        <button type="submit" class="btn btn-primary">delete account</button>
+      </form>
+    </div>
+<div class="AccountInfo">
+  <div class="AlertMessage">
+      {{#if AlertMessage}}
+          {{message}}
+      {{/if}}
+  </div>
+      <form action="/userDeletion" method="post" role="form">
+        <legend>Please enter your password to delete the account</legend>
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          minlength="8"
+          required
+        /><br/>
+        <button type="submit" class="btn btn-primary">DELTE ACCOUNT</button>
+        <br />
+      </form>
+    </div>
+  </div>
+</body>

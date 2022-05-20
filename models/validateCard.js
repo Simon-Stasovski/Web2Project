@@ -19,19 +19,20 @@ const logger = require( '../logger' );
  * @param {*} cardOwner 
  * @param {*} certificateImage 
  * @param {*} isForSale 
- * @returns 
+ * @returns Returns true if the Card information is valid, false otherwise.
  */
 async function isValid( cardName, description, frontImagePath, backImagePath, cardType, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection ){
+
     if(isForSale && cardPrice == null){
         return false;
     }
-    if (checkIfContainsSpecialCharacters(serialNumber) || !validator.isLength( `"${serialNumber}"`, { min:0, max: 50 } )){
+    if (!validator.isLength( `"${serialNumber}"`, { min:0, max: 50 } )){
         return false;
     }
     else if( cardPrice != null && !validator.isCurrency( `${cardPrice}`, { allow_negatives: false } )){
         return false;
     }
-    else if( !validator.isLength( `"${cardName}"`, { min:0, max: 50 } ) ){
+    else if(  cardName === '' || !validator.isLength( `"${cardName}"`, { min:1, max: 50 } ) ){
         return false;
     }
     else if( !validator.isLength( `"${description}"`, { min:0, max: 400 } ) ){
@@ -53,7 +54,7 @@ async function isValid( cardName, description, frontImagePath, backImagePath, ca
         return false;
     }
     
-    const sqlQuery =  `SELECT * FROM Users WHERE Username="${cardOwner}"`;
+    const sqlQuery =  `SELECT * FROM users WHERE username="${cardOwner}"`;
 
     try{
         let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
@@ -72,10 +73,6 @@ async function isValid( cardName, description, frontImagePath, backImagePath, ca
     }
 }
 
-// ask Chris about regex
-function checkIfContainsSpecialCharacters( string ){
-
-}
 
 function validateCardType( cardType ){
     for( let i = 0; i < VALID_CARD_TYPES.length; i++ ){

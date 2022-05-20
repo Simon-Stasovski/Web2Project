@@ -1,0 +1,21 @@
+<body>
+    <div class="transactionCompleted">
+        <h1>
+            {{message}}
+        </h1>
+        {{#if successfullTransaction}}
+            <p>Before you leave this page you can cancel the following transaction.</p>
+            <form action="/transaction/cancel" method="get">
+                {{#each TransactionIds}}
+                    <input type="text" hidden name="id" value={{TransactionID}}></input>
+                {{/each}}
+                <input type="submit" value="Cancel Transactions">
+            </form>
+        {{/if}}
+
+        <p>Return to Account page</p>
+        <form action="/userinfo">
+            <input type="submit" value="Return">
+        </form>
+    </div>
+</body>
