@@ -10,9 +10,7 @@ const express = require('express');
 const app = express();
 app.use(cookieParser());
 const {engine} = require('express-handlebars');
-const bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-app.use(cookieParser());
+const bodyParser = require('body-parser')
 
 console.log("Creating app");
 

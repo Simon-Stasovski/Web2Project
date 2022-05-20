@@ -177,10 +177,9 @@ if (await logInUser(username, password)) {
  */
 async function updateUserBalance(username,addedbalance){
   let userBalance = await getUserBalance(username);
-  let userBalancePostparse =userBalance[0][0].Balance;
-  userBalancePostparse = parseFloat(userBalancePostparse);
-  userBalancePostparse += addedbalance;
-  const sqlQuery =`UPDATE users SET Balance = '${userBalancePostparse}' WHERE username = '${username}';`;
+  userBalance = parseFloat(userBalance);
+  userBalance += addedbalance;
+  const sqlQuery =`UPDATE users SET Balance = '${userBalance}' WHERE username = '${username}';`;
   await dbconnection
   .execute(sqlQuery)
   .then(logger.info("User's Balance updated successfully"))
@@ -253,15 +252,35 @@ async function updateUserPassword(username,oldPassword, newPassword) {
 async function getUserBalance(username){
   try{
   const sqlQuery = `SELECT Balance from users WHERE username ='${username}';`;
-  return await dbconnection
+  let balance = await dbconnection
     .execute(sqlQuery)
     .then(logger.info("Balance was found"))
     .catch((error) => {
       throw new Error("Unable to get User balance");
     });
+    return balance[0][0].Balance;
 } catch (error) {
   logger.error("cannot find user balance");
   return null;
+}
+}
+/**
+ *  Sets the balance of the user 
+ * @param {*} username // the username of the user
+ * @param {*} newBalance the new balance to be set
+ */
+ async function setUserBalance(username, newBalance){
+  try{
+  const sqlQuery = `UPDATE users SET Balance = ${newBalance} WHERE username = '${username}'`;
+  await dbconnection
+    .execute(sqlQuery)
+    .then(logger.info(""))
+    .catch((error) => {
+      throw new Error("");
+    });
+} catch (error) {
+  logger.error("");
+  null;
 }
 
 }
@@ -299,8 +318,8 @@ module.exports = {
   getUserBalance,
   userTransaction,
   updateUserBalance,
+  setUserBalance,
   InvalidInputError,
   UserAlreadyExistsError,
   DBConnectionError,
 };
-
