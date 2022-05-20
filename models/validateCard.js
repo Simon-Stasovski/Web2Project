@@ -54,7 +54,7 @@ async function isValid( cardName, description, frontImagePath, backImagePath, ca
         return false;
     }
     
-    const sqlQuery =  `SELECT * FROM Users WHERE Username="${cardOwner}"`;
+    const sqlQuery =  `SELECT * FROM users WHERE username="${cardOwner}"`;
 
     try{
         let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
