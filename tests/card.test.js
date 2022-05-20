@@ -88,196 +88,189 @@ test( "Test Successful Add Card", async () => {
     expect( rows[0].CardOwner === CardOwner ).toBe( true );
 });
 
-// test( "Test Add Invalid Fabric Data", async () => {
-//     let { CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
-//         CertificateImage, CardPrice, CardOwner } = generateCardData();
-//     // let connection = model.getConnection();
+test( "Test Add Invalid Card Data", async () => {
+    let { CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+        CertificateImage, CardPrice, CardOwner } = generateCardData();
+    // let connection = model.getConnection();
 
-//     Type = 'foo'; 
-//     var connection = model.getConnection();
-//     let result = await cardModel.addCard( CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
-//         CertificateImage, CardPrice, CardOwner, connection );
+    Type = 'foo'; 
+    var connection = model.getConnection();
+    let result = await cardModel.addCard( CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+        CertificateImage, CardPrice, CardOwner, connection );
 
-//     let rows = await model.readFromFabricTable();
-//     // const sqlQuery = "SELECT name, type, pricePerYard, colour FROM fabric";
-//     // const [ rows, fields ] = await connection.execute( sqlQuery ); //.then( ( queryOutput ) => console.log( queryOutput ) ).catch( ( error ) => { console.error( error )})
+    let rows = await model.readFromCardTable();
+    // const sqlQuery = "SELECT name, type, pricePerYard, colour FROM fabric";
+    // const [ rows, fields ] = await connection.execute( sqlQuery ); //.then( ( queryOutput ) => console.log( queryOutput ) ).catch( ( error ) => { console.error( error )})
 
-//     expect( result === false ).toBe( true );
-//     expect( Array.isArray( rows )).toBe( true );
-//     expect( rows.length ).toBe( 0 );
-// });
+    expect( result === false ).toBe( true );
+    expect( rows.length ).toBe( 0 );
+});
 
 
-// test( "Test Add Fabric with Name that Already Exists", async () => {
-//     const { name, type, pricePerYard, colour } = generateFabricData();
+test( "Test Successful Find Id in Card Table", async () => {
+    const NUMBER_OF_ROWS_TO_TEST = 3;
+    let rowsArray = [];
+    const SEARCH_INDEX = 1;
 
-//     await model.addFabric( name, type, pricePerYard, colour );
-
-//     // try adding record with same name
-//     let result = await model.addFabric( name, 'other', '23.99', '#000000' );
-
-//     let rows = await model.readFromFabricTable();
- 
-//     expect( result === false ).toBe( true );
-//     expect( Array.isArray( rows )).toBe( true );
-//     expect( rows.length ).toBe( 1 );
-//     expect( rows[0].name === name ).toBe( true );
-//     // all of the other records should be the same as the initial insertion
-//     expect( rows[0].type === type ).toBe( true );
-//     expect( rows[0].pricePerYard === pricePerYard ).toBe( true );
-//     expect( rows[0].colour === colour ).toBe( true );
-// });
-
-// /**
-//  * Tests that passing in the name of a valid record to the 
-//  * findFabricRecord method works and returns the object
-//  * representation of the corresponding row.
-//  */
-// test( "Test Successful Find Name in Fabric Table", async () => {
-//     const NUMBER_OF_ROWS_TO_TEST = 3;
-//     let rowsArray = [];
-//     const SEARCH_INDEX = 1;
-
-//     while( rowsArray.length < NUMBER_OF_ROWS_TO_TEST ){
-//         let { name, type, pricePerYard, colour } = generateFabricData();
+    while( rowsArray.length < NUMBER_OF_ROWS_TO_TEST ){
+        let { CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+            CertificateImage, CardPrice, CardOwner } = generateCardData();
         
-//         let result = await model.addFabric( name, type, pricePerYard, colour );
+            let result = await cardModel.addCard( CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+                CertificateImage, CardPrice, CardOwner, connection );
 
-//         if( result ){
-//             rowsArray.push( { name, type, pricePerYard, colour } );
-//         }
-//     }
+        if( result ){
+            rowsArray.push( { CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+                CertificateImage, CardPrice, CardOwner, connection } );
+        }
+    }
 
-//     let rowObject = await model.findFabricRecord( rowsArray[SEARCH_INDEX].name );
+    let rowObject = await cardModel.findCardRecord( rowsArray[SEARCH_INDEX].CardID );
  
-//     console.log( rowObject );
-//     expect( Object.prototype.toString.call( rowObject ) === '[object Object]' ).toBe( true );
-//     expect( rowObject.id === SEARCH_INDEX + 1 ).toBe( true );
-//     expect( rowObject.name === rowsArray[SEARCH_INDEX].name ).toBe( true );
-//     expect( rowObject.type === rowsArray[SEARCH_INDEX].type ).toBe( true );
-//     expect( rowObject.pricePerYard === rowsArray[SEARCH_INDEX].pricePerYard ).toBe( true );
-//     expect( rowObject.colour === rowsArray[SEARCH_INDEX].colour ).toBe( true );
-// });
+    console.log( rowObject );
+    expect( Object.prototype.toString.call( rowObject ) === '[object Object]' ).toBe( true );
+    expect( rowObject.CardName === rowsArray[SEARCH_INDEX].CardName ).toBe( true );
+    expect( rowObject.Type === rowsArray[SEARCH_INDEX].Type ).toBe( true );
+    expect( rowObject.Description === rowsArray[SEARCH_INDEX].Description ).toBe( true );
+    expect( rowObject.SerialNumber === rowsArray[SEARCH_INDEX].SerialNumber ).toBe( true );
+    expect( rowObject.FrontImagePath === rowsArray[SEARCH_INDEX].FrontImagePath ).toBe( true );
+    expect( rowObject.BackImagePath === rowsArray[SEARCH_INDEX].BackImagePath ).toBe( true );
+    expect( rowObject.IsForSale === rowsArray[SEARCH_INDEX].IsForSale ).toBe( true );
+    expect( rowObject.CardCondition === rowsArray[SEARCH_INDEX].CardCondition ).toBe( true );
+    expect( rowObject.CertificateImage === rowsArray[SEARCH_INDEX].CertificateImage ).toBe( true );
+    expect( rowObject.CardPrice === rowsArray[SEARCH_INDEX].CardPrice ).toBe( true );
+    expect( rowObject.CardOwner === rowsArray[SEARCH_INDEX].CardOwner ).toBe( true );
+});
 
-// /**
-//  * Tests that passing in a name that does not exist the
-//  * fabric table into the findFabricRecord function returns 
-//  * null.
-//  */
-//  test( "Test Find Name in Fabric Table With Inexistent Name", async () => {
-//     let rowObject = await model.findFabricRecord( 'foo' );
+
+test( "Test Find Id in Card Table With Inexistent ID", async () => {
+    // causing an error to occur by dropping the fabric table 
+    const sqlQuery = "DROP TABLE IF EXISTS Card";
+    let connection = model.getConnection();
+
+    await connection.execute( sqlQuery ).catch(( error ) => console.error( error ));
+
+    let rowObject = await cardModel.findCardRecord( 1 );
  
-//     expect( rowObject === null ).toBe( true );
-// });
+    expect( rowObject === null ).toBe( true );
+});
 
-// /**
-//  * Tests that if an error occurs during the findFabricRecord method
-//  * that prevents the record from being found, a null value is returned. 
-//  */
-// test( "Test Find Name in Fabric Table With Inexistent Name", async () => {
-//     // causing an error to occur by dropping the fabric table 
-//     const sqlQuery = "DROP TABLE IF EXISTS fabric";
-//     let connection = model.getConnection();
 
-//     await connection.execute( sqlQuery ).catch(( error ) => console.error( error ));
-
-//     let rowObject = await model.findFabricRecord( 'foo' );
+test( "Test Successful Read From Card Table No Data", async () => {
+    let rows = await cardModel.readFromCardTable();
  
-//     expect( rowObject === null ).toBe( true );
-// });
+    expect( Array.isArray( rows )).toBe( true );
+    expect( rows.length ).toBe( 0 );
+});
 
-// /**
-//  * Tests that reading from the fabric table when it has no
-//  * data returns an empty array.
-//  */
-// test( "Test Successful Read From Fabric Table No Data", async () => {
-//     let rows = await model.readFromFabricTable();
+
+test( "Test Successful Read From Card Table User Joe", async () => {
+    let { CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+        CertificateImage, CardPrice, CardOwner } = generateCardData();
+
+    let result = await cardModel.addCard( CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+            CertificateImage, CardPrice, CardOwner, connection );
+
+    cards = cardModel.getCardsByOwner( 'joe123' );
+
+    expect( cards[0].CardName === CardName ).toBe( true );
+    expect( cards[0].Type === Type ).toBe( true );
+    expect( cards[0].Description === Description ).toBe( true );
+    expect( cards[0].SerialNumber === SerialNumber ).toBe( true );
+    expect( cards[0].FrontImagePath === FrontImagePath ).toBe( true );
+    expect( cards[0].BackImagePath === BackImagePath ).toBe( true );
+
+    cards[0].IsForSale = rows[0].IsForSale == 1 ? true : false;
+    expect( cards[0].IsForSale === IsForSale ).toBe( true );
+    expect( cards[0].CardCondition === CardCondition ).toBe( true );
+    expect( cards[0].CertificateImage === CertificateImage ).toBe( true );
+    expect( cards[0].CardPrice === CardPrice ).toBe( true );
+    expect( cards[0].CardOwner === CardOwner ).toBe( true );
+});
+
+test( "Test Successful Read From Card Table Cards For Sale", async () => {
+    let { CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+        CertificateImage, CardPrice, CardOwner } = generateCardData();
+
+    IsForSale = true;
+    let result = await cardModel.addCard( CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+            CertificateImage, CardPrice, CardOwner, connection );
+
+    cards = cardModel.getCardsForSale();
+
+    expect( cards[0].CardName === CardName ).toBe( true );
+    expect( cards[0].Type === Type ).toBe( true );
+    expect( cards[0].Description === Description ).toBe( true );
+    expect( cards[0].SerialNumber === SerialNumber ).toBe( true );
+    expect( cards[0].FrontImagePath === FrontImagePath ).toBe( true );
+    expect( cards[0].BackImagePath === BackImagePath ).toBe( true );
+
+    cards[0].IsForSale = rows[0].IsForSale == 1 ? true : false;
+    expect( cards[0].IsForSale === IsForSale ).toBe( true );
+    expect( cards[0].CardCondition === CardCondition ).toBe( true );
+    expect( cards[0].CertificateImage === CertificateImage ).toBe( true );
+    expect( cards[0].CardPrice === CardPrice ).toBe( true );
+    expect( cards[0].CardOwner === CardOwner ).toBe( true );
+});
+
+
+
+test( "Test Read From Card Table After Table has Been Dropped", async () => {
+    const sqlQuery = "DROP TABLE IF EXISTS Card";
+    let connection = model.getConnection();
+
+    await connection.execute( sqlQuery ).catch(( error ) => console.error( error ));
+
+    let rows = await cardModel.readFromCardTable();
  
-//     expect( Array.isArray( rows )).toBe( true );
-//     expect( rows.length ).toBe( 0 );
-// });
+    console.log( rows );
+    expect( Array.isArray( rows )).toBe( true );
+    expect( rows.length ).toBe( 0 );
+});
 
-// /**
-//  * Tests that reading the fabric table when it has multiple
-//  * rows returns an array of rows with the correct amount of rows
-//  * and with accurate data. 
-//  */
-// test( "Test Successful Read From Fabric Table Multiple Rows", async () => {
-//     const NUMBER_OF_ROWS_TO_TEST = 3;
-//     let rowsArray = [];
 
-//     while( rowsArray.length < NUMBER_OF_ROWS_TO_TEST ){
-//         let { name, type, pricePerYard, colour } = generateFabricData();
-        
-//         let result = await model.addFabric( name, type, pricePerYard, colour );
+test( "Test Successful Update Entry in Card Table", async () => {
+    let { CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+        CertificateImage, CardPrice, CardOwner } = generateCardData();
 
-//         if( result ){
-//             rowsArray.push( { name, type, pricePerYard, colour } );
-//         }
-//     }
+    await cardModel.addCard( CardName, Type, Description, SerialNumber, FrontImagePath, BackImagePath, IsForSale, CardCondition, 
+            CertificateImage, CardPrice, CardOwner, connection );
+    // let connection = model.getConnection();
 
-//     // console.log( rowsArray ); 
-    
-//     let rows = await model.readFromFabricTable();
- 
-//     expect( Array.isArray( rows )).toBe( true );
-//     expect( rows.length ).toBe( rowsArray.length );
+    const newName = 'Eevee';
+    const newType = 'Pokemon';
+    const newDescription = 'foo';
+    const newSerialNumber = '000000';
+    const newFrontImagePath = '';
+    const newBackImagePath = '';
+    const newIsForSale = false;
+    const newCardCondition = 1;
+    const newCertificateImage = '';
+    const newCardPrice = 1.88;
+    const newOwner = 'joe123'
 
-//     for( let i = 0; i < rowsArray.length; i++ ){
-//         expect( rows[i].name === rowsArray[i].name ).toBe( true );
-//         expect( rows[i].type === rowsArray[i].type ).toBe( true );
-//         expect( rows[i].pricePerYard === rowsArray[i].pricePerYard ).toBe( true );
-//         expect( rows[i].colour === rowsArray[i].colour ).toBe( true );
-//     }
 
-// });
+    let result = await cardModel.updateRowInCardTable( 1, newName, newType, newDescription, newSerialNumber, newFrontImagePath, newBackImagePath, newIsForSale, newCardCondition, newCertificateImage, newCardPrice, newOwner  );
 
-// /**
-//  * Tests that trying to read from the fabric table when it doesn't 
-//  * exist results in an empty array being returned. 
-//  */
-// test( "Test Read From Fabric Table After Table has Been Dropped", async () => {
-//     const sqlQuery = "DROP TABLE IF EXISTS fabric";
-//     let connection = model.getConnection();
+    let rows = await cardModel.readFromCardTable();
 
-//     await connection.execute( sqlQuery ).catch(( error ) => console.error( error ));
+    expect( result === true ).toBe( true );
+    expect( Array.isArray( rows )).toBe( true );
+    expect( rows.length ).toBe( 1 );
+    expect( rows[0].CardName === newName.toLowerCase() ).toBe( true );
+    expect( rows[0].Type === newType.toLowerCase() ).toBe( true );
+    expect( rows[0].Description === newDescription ).toBe( true );
+    expect( rows[0].SerialNumber === newSerialNumber.toLowerCase() ).toBe( true );
+    expect( rows[0].FrontImagePath === newFrontImagePath.toLowerCase() ).toBe( true );
+    expect( rows[0].BackImagePath === newBackImagePath.toLowerCase() ).toBe( true );
 
-//     let rows = await model.readFromFabricTable();
- 
-//     console.log( rows );
-//     expect( Array.isArray( rows )).toBe( true );
-//     expect( rows.length ).toBe( 0 );
-// });
-
-// /**
-//  * Tests that updating an entry by passing in an existing row name
-//  * and updating that row with valid data works.
-//  */
-// test( "Test Successful Update Entry in Fabric Table", async () => {
-//     const { name, type, pricePerYard, colour } = generateFabricData();
-//     // let connection = model.getConnection();
-
-//     await model.addFabric( name, type, pricePerYard, colour );
-
-//     const newName = 'New Fabric';
-//     const newType = 'other';
-//     const newPricePerYard = '23.99';
-//     const newColour = '#000000';
-
-//     let result = await model.updateRowInFabricTable( name, newName, newType, newPricePerYard, newColour );
-
-//     let rows = await model.readFromFabricTable();
-//     // const sqlQuery = "SELECT name, type, pricePerYard, colour FROM fabric";
-//     // const [ rows, fields ] = await connection.execute( sqlQuery ); //.then( ( queryOutput ) => console.log( queryOutput ) ).catch( ( error ) => { console.error( error )})
-
-//     expect( result === true ).toBe( true );
-//     expect( Array.isArray( rows )).toBe( true );
-//     expect( rows.length ).toBe( 1 );
-//     expect( rows[0].name === newName.toLowerCase() ).toBe( true );
-//     expect( rows[0].type === newType.toLowerCase() ).toBe( true );
-//     expect( rows[0].pricePerYard === newPricePerYard ).toBe( true );
-//     expect( rows[0].colour === newColour.toLowerCase() ).toBe( true );
-// });
+    rows[0].IsForSale = rows[0].IsForSale == 1 ? true : false;
+    expect( rows[0].IsForSale === newIsForSale.toLowerCase() ).toBe( true );
+    expect( rows[0].CardCondition === newCardCondition.toLowerCase() ).toBe( true );
+    expect( rows[0].CertificateImage === newCertificateImage.toLowerCase() ).toBe( true );
+    expect( rows[0].CardPrice === newCardPrice.toLowerCase() ).toBe( true );
+    expect( rows[0].CardOwner === newOwner.toLowerCase() ).toBe( true );
+});
 
 // /**
 //  * Tests that trying to update a record with invalid data does not work.
