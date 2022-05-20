@@ -19,7 +19,7 @@ const logger = require( '../logger' );
  * @param {*} cardOwner 
  * @param {*} certificateImage 
  * @param {*} isForSale 
- * @returns 
+ * @returns Returns true if the Card information is valid, false otherwise.
  */
 async function isValid( cardName, description, frontImagePath, backImagePath, cardType, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection ){
 
@@ -73,10 +73,6 @@ async function isValid( cardName, description, frontImagePath, backImagePath, ca
     }
 }
 
-// ask Chris about regex
-function checkIfContainsSpecialCharacters( string ){
-
-}
 
 function validateCardType( cardType ){
     for( let i = 0; i < VALID_CARD_TYPES.length; i++ ){
