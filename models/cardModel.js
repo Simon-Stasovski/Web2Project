@@ -26,8 +26,8 @@ class UserInputError extends Error{
     connection = databaseConnection;
 
     const sqlQuery =  'CREATE TABLE IF NOT EXISTS Card(CardID int AUTO_INCREMENT, CardName VARCHAR(50) NOT NULL, Type VARCHAR(50) NOT NULL,' +
-     'Description VARCHAR(400), SerialNumber VARCHAR(50), FrontImagePath VARCHAR(150), BackImagePath VARCHAR(150), IsForSale BIT, CardCondition int, ' +
-     'CertificateImage varchar(150), CardPrice DECIMAL(8, 2), CardOwner varchar(25), PRIMARY KEY(CardID), FOREIGN KEY (CardOwner) REFERENCES Users(Username));';
+     'Description VARCHAR(400), SerialNumber VARCHAR(50), FrontImagePath VARCHAR(150), BackImagePath VARCHAR(150), IsForSale TINYINT(1), CardCondition int, ' +
+     'CertificateImage varchar(150), CardPrice DECIMAL(8, 2), CardOwner varchar(25), PRIMARY KEY(CardID), FOREIGN KEY (CardOwner) REFERENCES users(username));';
     
     try{
         await connection.execute( sqlQuery ).catch(( error ) => { throw( error ); }); 
@@ -105,8 +105,12 @@ class UserInputError extends Error{
  * @param {*} cardOwner The owner of the card's username.
  * @returns The object representation of the added card.
  */
- async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner){
+ async function addCard( cardName, type, description, serialNumber, frontImagePath, backImagePath, isForSale, cardCondition, certificateImage, cardPrice, cardOwner, dbConnection ){
     try{
+        connection = dbConnection == null ? connection : dbConnection;
+        
+        isForSale = isForSale == 'on' ? true : false;
+        
         if( await validator.isValid( cardName, description, frontImagePath, backImagePath, type, serialNumber, cardCondition, cardPrice, cardOwner, certificateImage, isForSale, connection )){ 
             // add all the string values to lower case so they are inserted in lower case
             cardName = cardName.toLowerCase();
@@ -222,6 +226,72 @@ async function getLastIdAddedToCardTable(){
     }
 }
 
+/**
+ * Gets all of the card records that's owner matches the specified username. 
+ * The database msut be initialized to use the method.
+ * @param {*} username the username of the user who's cards should be selected
+ * @returns An array of object representations of the cards if the user exists in the database
+ * or if the specified user has more than one card; Null otherwise. 
+ */
+async function getCardsByOwner( username ){
+    const NOT_FOUND = null;
+
+    try{
+        const sqlQuery = `SELECT * FROM Card WHERE CardOwner = '${username}'`;
+        let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
+            let errorMessage = `Unable to find card record due to error: ${error}`;
+            logger.error( errorMessage );
+            throw new SystemError( errorMessage ); 
+        });   
+
+        if( rows.length <= 0 ){
+            let errorMessage = `Records for user with username ${username} does not found in the card table.`;
+            logger.error( errorMessage );
+            throw new UserInputError( errorMessage ); 
+        }
+
+        logger.info( `Successfully retrieved cards from user with username ${username}'` );
+
+        return rows;
+    }
+    catch( error ){
+        logger.error( error );
+        return NOT_FOUND;
+    }
+}
+
+/**
+ * Gets all of the card records in the card table that are marked for sale. The database
+ * must be initialized to use the method.
+ * @returns An array of object representations of the cards if there are cards marked for sale 
+ * in the database; Null otherwise. 
+ */
+async function getCardsForSale( ){
+    const NOT_FOUND = null;
+
+    try{
+        const sqlQuery = `SELECT * FROM Card WHERE IsForSale = 1`;
+        let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
+            let errorMessage = `Unable to find card record due to error: ${error}`;
+            logger.error( errorMessage );
+            throw new SystemError( errorMessage ); 
+        });   
+
+        if( rows.length <= 0 ){
+            let errorMessage = `No cards for sale were found.`;
+            logger.error( errorMessage );
+            throw new UserInputError( errorMessage ); 
+        }
+
+        logger.info( `Successfully retrieved cards for sale` );
+
+        return rows;
+    }
+    catch( error ){
+        logger.error( error );
+        return NOT_FOUND;
+    }
+}
 
 /**
  * /**
@@ -231,21 +301,21 @@ async function getLastIdAddedToCardTable(){
  * Returns the object representation of the updated record.
  * The database, connection and card table are initialized before the function
  * is called.
- * @param {*} id 
- * @param {*} newCardName 
- * @param {*} newType 
- * @param {*} newDescription 
- * @param {*} newSerialNumber 
- * @param {*} newFrontImagePath 
- * @param {*} newBackImagePath 
- * @param {*} newIsForSale 
- * @param {*} newCardCondition 
- * @param {*} newCertificateImage 
- * @param {*} newCardPrice 
- * @param {*} newCardOwner 
+ * @param {*} id The card record to update's id
+ * @param {*} newCardName The card record to update's new name
+ * @param {*} newType The card record to update's new type
+ * @param {*} newDescription The card record to update's new description
+ * @param {*} newSerialNumber The card record to update's new serial number
+ * @param {*} newFrontImagePath The card record to update's new front image path
+ * @param {*} newBackImagePath The card record to update's new back image path
+ * @param {*} newIsForSale whether or not the card record is for sale
+ * @param {*} newCardCondition The card record to update's new condition
+ * @param {*} newCertificateImage The card record to update's certificate image
+ * @param {*} newCardPrice The card record to update's new price
+ * @param {*} newCardOwner The card record to update's new owner
  * @returns The object representation of the updated record.
  */
-async function updateRowInCardTable( id, newCardName, newType, newDescription, newSerialNumber, newFrontImagePath, newBackImagePath, newIsForSale, newCardCondition, newCertificateImage, newCardPrice, newCardOwner ){
+async function updateRowInCardTable( specifiedId, newCardName, newType, newDescription, newSerialNumber, newFrontImagePath, newBackImagePath, newIsForSale, newCardCondition, newCertificateImage, newCardPrice, newCardOwner ){
     //let sqlQuery = `SELECT Id FROM card WHERE name = '${name}'`;
     const NO_ENTRY_FOUND = null ;
 
@@ -253,30 +323,32 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
     newCardName = newCardName.toLowerCase();
     newType = newType.toLowerCase();
     newCardPrice = parseFloat( newCardPrice );
-    
 
     try{
-        let id = await findCardRecord(id);
+        let id = await findCardRecord( specifiedId );
+        id = id.CardID;
 
         if ( id === NO_ENTRY_FOUND ){
-            let errorMessage = `Entry in card table with id '${id}' not found`;
+            let errorMessage = `Entry in card table with id '${specifiedId}' not found`;
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
         }
-        else if( await validator.isValid( newCardName, newDescription, newFrontImagePath, newBackImagePath, newType, newSerialNumber, newCardCondition, newCardPrice, newCardOwner, newCertificateImage, newIsForSale, connection )){
+        else if(!(await validator.isValid( newCardName, newDescription, newFrontImagePath, newBackImagePath, newType, newSerialNumber, newCardCondition, newCardPrice, newCardOwner, newCertificateImage, newIsForSale, connection ))){
             let errorMessage = 'New values to be inserted are invalid';
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
         }
 
-        const sqlQuery = `UPDATE card 
+        newIsForSale = newIsForSale == true ? 1 : 0;
+
+        const sqlQuery = `UPDATE Card 
                           SET CardName = '${newCardName}', Type = '${newType}', 
                           Description = '${newDescription}', SerialNumber = '${newSerialNumber}',
                           FrontImagePath = '${newFrontImagePath}', BackImagePath = '${newBackImagePath}',
-                          IsForSale = '${newIsForSale}', CardCondition = '${newCardCondition}',
-                          CertificateImage = '${newCertificateImage}', CardPrice = '${newCardPrice}',
+                          IsForSale = ${newIsForSale}, CardCondition = ${newCardCondition},
+                          CertificateImage = '${newCertificateImage}', CardPrice = ${newCardPrice},
                           CardOwner = '${newCardOwner}'                        
-                          WHERE Id = ${id}`;
+                          WHERE CardID = ${id}`;
 
         await connection.execute( sqlQuery ).catch(( error ) => {  
             let errorMessage = `Unable to update entry in card table: ${error}`;
@@ -286,7 +358,7 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
 
         logger.info( "Successfully updated record" );
 
-        return findCardRecord( id );
+        return await findCardRecord( id );
     }
     catch( error ){
         logger.error( error );
@@ -301,19 +373,19 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
  * @param {*} id The id of the row to delete.
  * @returns True if the row was deleted successfully; False otherwise.
  */
- async function deleteRowFromCardTable( id ){
+ async function deleteRowFromCardTable( specifiedId ){
     const NO_ENTRY_FOUND = null;
 
     try{
-        let id = await findCardRecord( id );
+        let id = await findCardRecord( specifiedId );
 
         if ( id === NO_ENTRY_FOUND ){
-            let errorMessage = `Entry in card table with id '${id}' not found`;
+            let errorMessage = `Entry in card table with id '${specifiedId}' not found`;
             logger.error( errorMessage );
             throw new UserInputError( errorMessage );
         }
 
-        const sqlQuery = `DELETE FROM Card WHERE CardID = ${id}`;
+        const sqlQuery = `DELETE FROM Card WHERE CardID = ${id.CardID}`;
 
         await connection.execute( sqlQuery ).catch(( error ) => {  
             let errorMessage = `Unable to delete entry in card table: ${error}`;
@@ -321,7 +393,7 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
             throw new SystemError( errorMessage );
         });
 
-        logger.info( `Successfully deleted record with id '${id}' from card table` );
+        logger.info( `Successfully deleted record with id '${specifiedId}' from card table` );
         
         return true;
     }
@@ -330,6 +402,26 @@ async function updateRowInCardTable( id, newCardName, newType, newDescription, n
         throw error;
     }
 }
+/**
+ * Gives ownership to cards to new uservate
+ * sets card to pri
+ * @param {*} buyer the previous owner
+ * @param {*} seller the new/current owner
+ */
+async function SetOwnerShip(buyer, cardId){
+    try{
+        const sqlQuery = `UPDATE Card SET CardOwner = '${buyer}', IsForSale = 0 WHERE CardID = '${cardId}'`;
+        await connection
+          .execute(sqlQuery)
+          .then(logger.info(""))
+          .catch((error) => {
+            throw new Error("");
+          });
+      } catch (error) {
+        logger.error(error);
+        null;
+      }
+}
 
 module.exports = {
     createCardTable,
@@ -337,8 +429,11 @@ module.exports = {
     addCard, 
     readFromCardTable,
     findCardRecord,
+    getCardsByOwner,
+    getCardsForSale,
     updateRowInCardTable,
     deleteRowFromCardTable,
+    SetOwnerShip,
     UserInputError,
     SystemError
 };

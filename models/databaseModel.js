@@ -23,36 +23,36 @@ async function initialize( databaseFilename, resetFlag ){
                 throw( error );
             }); // have to throw here if not execution continues
 
+
             await cardModel.dropCardTable().catch( (error ) => { 
                 error = `Issue with clearing card table: ${error}`;
+                logger.error( error ); 
+                throw( error );
+            }); // have to throw here if not execution continues
+          
+            await transactionModel.dropTransactionTable().catch( (error ) => { 
+                error = `Issue with clearing transaction table: ${error}`;
                 logger.error( error ); 
                 throw( error );
             }); // have to throw here if not execution continues
         }
         
         await userModel.createUserTable( connection ).catch( (error) => {
-            error = `Issue with creating user table: ${error}`;
             logger.error( error ); 
             throw( error );
         });
+
 
         await cardModel.createCardTable( connection ).catch( (error) => {
-            error = `Issue with creating card table: ${error}`;
             logger.error( error ); 
             throw( error );
         });
 
-        // await transactionModel.createTransactionTable().catch( (error) => {
-        //     error = `Issue with creating fabric table: ${error}`;
-        //     logger.error( error ); 
-        //     throw( error );
-        // });
+         await transactionModel.createTransactionTable( connection ).catch( (error) => {
+             logger.error( error ); 
+             throw( error );
+         });
 
-        // await userModel.createUserTable().catch( (error) => {
-        //     error = `Issue with creating fabric table: ${error}`;
-        //     logger.error( error ); 
-        //     throw( error );
-        // });
     }
     catch( error ){
         logger.error( `Error: Unable to initialize database: ${error}` );
@@ -67,6 +67,20 @@ async function initialize( databaseFilename, resetFlag ){
  */
  function getConnection(){
     return connection;
+}
+
+async function clearDatabase(){
+    await userModel.dropUserTable().catch( (error ) => { 
+        error = `Issue with clearing user table: ${error}`;
+        logger.error( error ); 
+        throw( error );
+    });
+
+    await cardModel.dropCardTable().catch( (error ) => { 
+        error = `Issue with clearing card table: ${error}`;
+        logger.error( error ); 
+        throw( error );
+    });
 }
 
 module.exports = {
