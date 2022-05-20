@@ -3,8 +3,8 @@
         <h1>
             {{message}}
         </h1>
-        <p>Before you leave this page you can cancel the following transaction.</p>
         {{#if successfullTransaction}}
+            <p>Before you leave this page you can cancel the following transaction.</p>
             <form action="/transaction/cancel" method="get">
                 {{#each TransactionIds}}
                     <input type="text" hidden name="id" value={{TransactionID}}></input>

@@ -263,14 +263,15 @@ async function getCardsByOwner( username ){
 /**
  * Gets all of the card records in the card table that are marked for sale. The database
  * must be initialized to use the method.
+ * @param {*} currentUser the username of the user who's currently logged in.
  * @returns An array of object representations of the cards if there are cards marked for sale 
  * in the database; Null otherwise. 
  */
-async function getCardsForSale( ){
+async function getCardsForSale(currentUser){
     const NOT_FOUND = null;
 
     try{
-        const sqlQuery = `SELECT * FROM Card WHERE IsForSale = 1`;
+        const sqlQuery = `SELECT * FROM Card WHERE IsForSale = 1 AND CardOwner != '${currentUser}'`;
         let [rows, fields] = await connection.execute( sqlQuery ).catch(( error ) => { 
             let errorMessage = `Unable to find card record due to error: ${error}`;
             logger.error( errorMessage );

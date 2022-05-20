@@ -186,12 +186,12 @@ header, header > *::before, header > *::after {
   
   header .card {
     margin-bottom: 2.5px;
-    margin-right: 40px;
+    margin-right: 20px;
     height: 80px;
     width: 80px;
   }
   
-  header .card__content {
+  header .cardcontent {
     text-align: center;
     position: relative;
     padding: 5em 5em;
@@ -199,61 +199,65 @@ header, header > *::before, header > *::after {
     transform-style: preserve-3d;
     height: 80px;
     padding: 0px;
+    width: 80px;
   }
   
-  header .card:hover .card__content {
+  header .card:hover .cardcontent {
     transform: rotateY(-1turn);
 } 
 
-header .card__front,
-header .card__back {
+header .cardfront,
+header .cardback {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     padding: 40px 40px;
-    backface-visibility: visible;
     transform-style: preserve-3d;
-    display: grid;
+    display: grid;  
+    backface-visibility: hidden;
     align-content: center;
     border-radius: 15px;
     height: 40px;
     width: 80px;
   }
   
-  header .card__front {
-    background-image: url(../images/logoImg.jpg);
+  header .cardfront {
+    background-color: var(--clr);
+    backface-visibility: visible;
+    background-image: url(../images/cards/pokemon_card_back.png);
     background-size: cover;
     background-blend-mode: overlay;
     border-radius: 15px;
     color: black;
+    width: 40px;
   }
 
   
-  header .card__body {
-    transform: var(--level-two);
-    font-weight: var(fw-normal);
+  header .cardbody {
     font-size: 1.5rem;
     line-height: 1.6;
   }
   
   
-  header .card__title{
+  header .cardtitle{
     position: relative;
     align-items: center;
 }
-header .card__back {
-    color: var(--clr);
-    background: black;
+header .cardback {
+    transform: rotateY(-1turn);
     background-image: url(../images/logoImg.jpg);
+    color: var(--clr);
     background-size: cover;
+    backface-visibility: hidden;
+    width: 40px;
   }
   
   .switch {
     position: relative;
     display: inline-block;
-    width: 60px;
+    width: 40px;
     height: 34px;
   }
  

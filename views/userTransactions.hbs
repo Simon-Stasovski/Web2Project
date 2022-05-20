@@ -8,14 +8,14 @@
 				<br>
 				<label for="start">Start date:</label>
 				<input type="date" id="start" name="start"
-		value="2022-05-15">
+		 min="2022-01-01" max="2100-12-31" >
 				<br>
 				<br>
 				
 				<label for="end">End date:</label>
 
 				<input type="date" id="end" name="end"
-		value="2022-05-15">
+		 min="2022-01-01" max="2100-12-31" >
 				<br>
 				<br>
 				
@@ -56,18 +56,19 @@
 	</div>
 	<div class="transactionColumn">
 		<h3>Your Transations</h3>
+		<p>{{message}}</p>
 		<div class="transactionGrid">
 			{{#each transactions}}
 				<div class="transaction">
 					<h5>Transaction #{{TransactionId}}</h5>
 					<p>Traded Card: {{CardName}}</p>
 					<p>Transaction Date: {{TransactionDate}}</p>
-					<p>Price: {{CardPrice}}</p>
+					<p>Price: {{Price}}</p>
 					<p>Seller: {{OriginalOwner}}</p>
 					<p>Buyer: {{NewOwner}}</p>
 					<form action="/transaction/newdate">
 						<input hidden name="id" value={{TransactionId}}></input>
-						<input type="date" name="transactionDate" value={{TransactionDate}}>
+						<input type="date" name="transactionDate" min="2022-01-01" max="2100-12-31" value={{TransactionDate}}>
 						<input hidden name="transactions" value={{transactions}}></input> 
 						<input type="submit" value="Update Date">
 					</form>			

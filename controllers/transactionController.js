@@ -15,7 +15,12 @@ module.exports = {
     addTransaction,
     listMyTransaction,
 }
-
+/**
+ * Adds a transaction to the database and renders a page to tell the user if it was successful and 
+ * to ask the user to purchase if they wish to cancel it or go to the home page if it was successful.  
+ * @param {*} request The json object that represents the http request
+ * @param {*} response The json object that represents the http response 
+ */
 async function addTransaction(request, response) {
     try{
         let username = request.cookies['userName'];
@@ -73,11 +78,17 @@ async function addTransaction(request, response) {
         response.render("transactionCompleted.hbs", {TransactionIds: transactionList, message: "Transaction completed successfully.", successfullTransaction: true});
     }catch(err){
         response.status(400);
-        response.render("transactionCompleted.hbs", {TransactionIds: transactionList, message: "TRANSACTION FAILED! Insufficient funds.", successfullTransaction: true});
+        response.render("transactionCompleted.hbs", {TransactionIds: null, message: "Transaction failed! Insufficient funds.", successfullTransaction: false});
     }
 }
 
-
+/**
+ * Lists all the transaction based on the filtering options of the user.
+ * Renders the page with a message indicating if their their filtering option
+ * returned nothing or if it was a filter option that did not work.
+ * @param {*} request The json object that represents the http request
+ * @param {*} response The json object that represents the http response 
+ */
 async function listMyTransaction(request, response) {
     try{
         let username = request.cookies['userName'];
@@ -107,41 +118,47 @@ async function listMyTransaction(request, response) {
             transaction.TransactionDate = transaction.TransactionDate.toString().substring(0, 15);
         })
 
-        response.render("userTransactions.hbs", {transactions: transactionList});
+        let message;
+
+        if(transactionList.length == 0){
+            message = "No transaction found with these settings.";
+        }
+        else{
+            message = "";
+        }
+
+        response.render("userTransactions.hbs", {transactions: transactionList, message: message});
     }catch(err){
-        if(err === model.InvalidDatabaseError){
-            response.status(500);
-            response.render("userTransactions.hbs", {transactions: transactionList}, {message: err.message});
-            return;
-        }
-        else if(err === model.InvalidInputError){
-            response.status(400)
-            response.render("userTransactions.hbs", {transactions: transactionList}, {message: err.message});
-            return;
-        }
-        response.status(300);
-        console.log(err.message);
-        response.render("userTransactions.hbs", {transactions: transactionList}, {message: "ERROR 300. Please contact the website administrator"});
+        response.status(400);
+        response.render("userTransactions.hbs", {transactions: null, message: err.message});
     }
 }
-
+/**
+ * Updates the transaction id and renders the page with a message to notify the user if it has been updated successfully.
+ * @param {*} request The json object that represents the http request
+ * @param {*} response The json object that represents the http response 
+ */
 async function updateTransactionDate(request, response){
     try{
 
         await model.UpdateDate(request.query.id, request.query.transactionDate);
 
         response.status(200);
-        response.render("userTransactions.hbs", {transactions: null});
+        response.render("userTransactions.hbs", {transactions: null, message: "Transaction update successfully"});
     }catch(err){
-        response.status(300);
-        response.render("userTransactions.hbs", {message: "ERROR 300. Please contact the website administrator."}, {transactions: transactions});
+        response.status(500);
+        response.render("userTransactions.hbs", {transactions: null, message: "Transaction update failed"});
     }
 }
-
+/**
+ * Cancels the user's recently made transaction by deleting the transaction and returning
+ * ownership of the cards and returning the respective amounts to their balances.
+ * Renders page that will 
+ * @param {*} request The json object that represents the http request
+ * @param {*} response The json object that represents the http response 
+ */
 async function cancelTransaction(request, response){
     try{
-        
-        
 
         for(let i=0; i < seller.Length; i++){
             await model.DeleteTransaction(request.request.id[i]);
@@ -149,28 +166,30 @@ async function cancelTransaction(request, response){
         
         let username = request.cookies['userName'];
 
-        await userModel.setUserBalance(username, (await userModel.getUserBalance(username)/1) + totalExpenses);
+        await userModel.setUserBalance(username, (await userModel.getUserBalance(username)/1) + (totalExpenses * 1.15));
 
 
         for(let i = 0; i < seller.length; i++){
             await cardModel.SetOwnerShip(seller[i].CardOwner, seller[i].CardID);
-            await userModel.setUserBalance(seller[i].CardOwner, (await userModel.getUserBalance(seller[i].CardOwner)/1) + (seller[i].CardPrice)/1);
+            await userModel.setUserBalance(seller[i].CardOwner, (await userModel.getUserBalance(seller[i].CardOwner)/1) - (seller[i].CardPrice)/1);
         }
 
         seller = [];
         response.status(200);
-        response.render("accountPage.hbs");
+        response.render("transactionCompleted.hbs", {TransactionIds: null, message: "Transaction successfully cancelled.", successfullTransaction: false});
     }catch(err){
         response.status(300);
-        response.render("userTransactions.hbs", {message: "ERROR 300. Please contact the website administrator."}, {transactions: transactions});
+        response.render("transactionCompleted.hbs", {TransactionIds: null, message: "Transaction cancellation failed.", successfullTransaction: false});
     }
 }
-
+/**
+ * Displays the filtering page for the transactions.
+ * @param {*} request The json object that represents the http request
+ * @param {*} response The json object that represents the http response  
+ */
 async function diplayUserTransactions(request, response){
+    response.status(200);
     response.render("userTransactions.hbs", {transactions: null});
-}
-async function displayCurrentTransactions(request, response){
-    response.render("currentTransactions.hbs")
 }
 
 router.get("/transactionhistory", (request, response) => diplayUserTransactions(request, response))

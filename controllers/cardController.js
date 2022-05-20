@@ -227,7 +227,9 @@ async function listCardsForSale( request, response ){
     try{
         response.cookie( "endpoint", '/cards/sale', { expires: new Date(Date.now() + 560 * 60000) }); 
 
-        let cardsForSale = await model.getCardsForSale();
+        let username = request.cookies['userName'];
+
+        let cardsForSale = await model.getCardsForSale(username);
         let isSearch = false;
 
         if( (request.query.searchBarSearch != '') && (request.query.searchBarSearch != null ) && ( cardsForSale != null )){

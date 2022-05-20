@@ -13,7 +13,10 @@ class InvalidDatabaseError extends Error {
         this.name = "InvalidDatabaseError";
   }
 };
-
+/**
+ * Creates the Transaction table if it does not exist for a given database.
+ * @param {*} databaseConnection The connection to the database that the table will be created in.
+ */
 async function createTransactionTable(databaseConnection){
 
     connection = databaseConnection;
@@ -42,7 +45,9 @@ async function createTransactionTable(databaseConnection){
         console.info( 'Transactions table successfully initialized. File reset due to error.' );
     }
 }
-
+/**
+ * Drops the Transaction table.
+ */
 async function dropTransactionTable(){
     try{
         if ( connection === undefined ){
@@ -65,7 +70,13 @@ async function dropTransactionTable(){
         throw( errorMessage );
     }
 }
-
+/**
+ * Creates a transaction from the information from the username of the buyer and the
+ * and information from the buyer.
+ * @param {*} cardObject JSON object containing all the columns of particular card. 
+ * @param {*} buyer The username of the buyer of the card.
+ * @returns Returns the Transation Id of the newly created transaction.
+ */
 async function createTransaction(cardObject, buyer){
     try{
 
@@ -86,7 +97,7 @@ async function createTransaction(cardObject, buyer){
         });
 
         if(result[0] == undefined){
-            throw new InvalidInputError("There are no transactions found with this parameters");
+            throw new InvalidInputError("Can not create a transaction with these inputs");
         }
 
         return result[0];
@@ -98,29 +109,39 @@ async function createTransaction(cardObject, buyer){
         throw e;
     }
 }
-
+/**
+ * Retrieves transactions based on certain filtering criteria.
+ * @param {*} startDate The start date of the time range.
+ * @param {*} endDate The end date of the time range.
+ * @param {*} filterType Flag to indicate whether the user wants to filter by card type.
+ * @param {*} cardType The type of the card.
+ * @param {*} isSeller Flag to indicate if the user wants to see his sales.
+ * @param {*} isBuyer Flag to indicate if the user wants to see his purchases.
+ * @param {*} username The username of the currently logged in user.
+ * @returns A list of transaction in accordance to the user's filtering options.
+ */
 async function getSpecifiedTransactions(startDate, endDate, filterType, cardType, isSeller, isBuyer, username){
 
     try{
         let selectQuery;
 
         if(isSeller && isBuyer){
-            throw new InvalidDatabaseError("Please select either filter by buyer or seller");
+            throw new InvalidInputError("Please select either filter by buyer or seller");
         }
         else if(isSeller && !isBuyer && !filterType){
-            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, c.CardPrice, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.OriginalOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND t.OriginalOwner = '${username}';`
+            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, t.Price, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.OriginalOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND t.OriginalOwner = '${username}';`
         }
         else if(isSeller && !isBuyer && filterType){
-            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, c.CardPrice, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.OriginalOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND c.type = '${cardType}' AND t.OriginalOwner = u.Username AND t.OriginalOwner = '${username}';`
+            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, t.Price, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.OriginalOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND c.type = '${cardType}' AND t.OriginalOwner = u.Username AND t.OriginalOwner = '${username}';`
         }
         else if(!isSeller && isBuyer && !filterType){
-            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, c.CardPrice, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.NewOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND t.NewOwner = '${username}';`
+            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, t.Price, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.NewOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND t.NewOwner = '${username}';`
         }
         else if(!isSeller && isBuyer && filterType){
-            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, c.CardPrice, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.NewOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND c.type = '${cardType} AND t.NewOwner = '${username}';`
+            selectQuery = `SELECT t.TransactionId, c.CardName, t.TransactionDate, t.Price, t.OriginalOwner, t.NewOwner FROM Transaction t INNER JOIN Card c ON t.CardID = c.CardID INNER JOIN users u On t.NewOwner = u.username WHERE t.TransactionDate >= '${startDate}' AND t.TransactionDate <= '${endDate}' AND c.type = '${cardType} AND t.NewOwner = '${username}';`
         }
         else{
-            throw new InvalidDatabaseError("Please select either filter by buyer or seller");
+            throw new InvalidInputError("Please select either filter by buyer or seller");
         }
 
         let result = await connection.query(selectQuery, [], (err, rows) => {
@@ -138,19 +159,29 @@ async function getSpecifiedTransactions(startDate, endDate, filterType, cardType
     }
 
 }
-
+/**
+ * Changed the date of a particular transaction.
+ * @param {*} transactionId The transaction id of the transaction to be changed.
+ * @param {*} newDate The new date of the transaction.
+ * @returns {boolean} True if the transaction was updated, error otherwise.
+ */
 async function UpdateDate(transactionId,  newDate){
     try{
         let updatePrice = `UPDATE Transaction SET TransactionDate = '${newDate}' WHERE TransactionID = ${transactionId};`;
 
         await utilsMYSQL.executeCommand(updatePrice, connection);
 
+        return true;
 
     }catch(e){
         throw e;
     }
 }
-
+/**
+ * Deletes a particular Transaction from the database.
+ * @param {*} transactionId The transaction id of the transaction to be deleted.
+ * @returns {boolean} Whether the transaction was successfully deleted.
+ */
 async function DeleteTransaction(transactionId){
 
     try{
@@ -161,10 +192,20 @@ async function DeleteTransaction(transactionId){
 
         await utilsMYSQL.executeCommand(deleteTransaction, connection);
 
+        return true;
+
+
     }catch(e){
         throw e;
     }
 
+}
+/**
+ * Sets the connection to  particular connection promise object
+ * @param {*} cnn The connection promise 
+ */
+function setConnection(cnn){
+    connection = cnn;
 }
 
 module.exports = {
@@ -174,4 +215,5 @@ module.exports = {
     getSpecifiedTransactions,
     UpdateDate,
     DeleteTransaction,
+    setConnection,
 }
