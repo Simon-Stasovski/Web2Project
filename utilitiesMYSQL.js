@@ -9,7 +9,7 @@ const mysql = require( 'mysql2/promise' );
  async function executeCommand(command, connection) {
     try {
       let response = await connection
-        .cexecute(command)
+        .execute(command)
         .then(console.log('Command ${command} executed'))
         .catch((error) => {
           throw new DatabaseReadWriteError(error);

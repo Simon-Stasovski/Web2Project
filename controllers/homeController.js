@@ -89,7 +89,10 @@ router.get( '/cart', addToCart );
 async function getCartItems( request, response ){
     let cart = serialize.unserialize( request.cookies['cart'] );
     let dataToSend = {};
-    cart = Object.values( cart );
+
+    if(cart != null){
+        cart = Object.values( cart );
+    }
 
     if( cart == null || cart.length == 0 ){
         cart = [];

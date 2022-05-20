@@ -5,6 +5,7 @@ const authenticate = require('./userController');
 const model = require( '../models/cardModel' );
 const logger = require('../logger');
 const { REPL_MODE_STRICT } = require('repl');
+const serialize = require('node-serialize');
 
 module.exports = {
     router,
@@ -377,26 +378,27 @@ async function deleteSpecificCard( request, response ){
 
         if( result ){
             let cart = serialize.unserialize( request.cookies['cart'] );
-            cart = Object.values( cart );
-            let cardToRemove = id;
-            let indexToSplice;
-            let isInCart = false;
+            if(cart != null){
+                cart = Object.values( cart );
+                let cardToRemove = id;
+                let indexToSplice;
+                let isInCart = false;
+            
+                for( let i = 0; i < cart.length; i++ ){
+                    if( cart[i] == cardToRemove ){
+                        indexToSplice = i;
+                        isInCart = true;
+                        break;
+                    }
+                }
+                if( isInCart ){
+                    cart.splice( indexToSplice, 1 );
+            
+                    response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
         
-            for( let i = 0; i < cart.length; i++ ){
-                if( cart[i] == cardToRemove ){
-                    indexToSplice = i;
-                    isInCart = true;
-                    break;
                 }
             }
-        
-            if( isInCart ){
-                cart.splice( indexToSplice, 1 );
-        
-                response.cookie( 'cart', serialize.serialize( cart ), { expires: new Date(Date.now() + 10000 * 60000) });
-    
-                response.redirect( '/cards/user' );
-            }
+            response.redirect( '/cards/user' );
         }
 
         // if( result ){
@@ -420,7 +422,7 @@ async function deleteSpecificCard( request, response ){
             // response.render( 'deleteFabricForm.hbs', { errorClass: "alert alert-secondary", alertMessage: `Fabric name: ${request.params.name} does not exist in database` });
         } 
         else{
-            response.send( `Unable to delete card with id: ${id}` );
+            response.send( `Unable to delete card with given id` );
             response.status( 500 );
             logger.error( error.message );
         }

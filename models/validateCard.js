@@ -26,7 +26,7 @@ async function isValid( cardName, description, frontImagePath, backImagePath, ca
     if(isForSale && cardPrice == null){
         return false;
     }
-    if (checkIfContainsSpecialCharacters(serialNumber) || !validator.isLength( `"${serialNumber}"`, { min:0, max: 50 } )){
+    if (!validator.isLength( `"${serialNumber}"`, { min:0, max: 50 } )){
         return false;
     }
     else if( cardPrice != null && !validator.isCurrency( `${cardPrice}`, { allow_negatives: false } )){

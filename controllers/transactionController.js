@@ -63,7 +63,7 @@ async function addTransaction(request, response) {
 
         for(let i = 0; i < cart.length; i++){
             seller.push(await cardModel.findCardRecord(cart[i]));
-            cardModel.SetOwnerShip(username, seller[i].CardID);
+            await cardModel.SetOwnerShip(username, seller[i].CardID);
             await userModel.setUserBalance(seller[i].CardOwner, (await userModel.getUserBalance(seller[i].CardOwner)/1) + (seller[i].CardPrice)/1);
         }
 

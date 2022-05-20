@@ -86,7 +86,7 @@ async function createTransaction(cardObject, buyer){
         var year = today.getFullYear();
         
         today = year + '-' + month + '-' + day;
-        let insertQuery = `INSERT INTO Transaction(Price, CardID, OriginalOwner, NewOwner, TransactionDate) VALUES ('${cardObject.CardPrice}', ${cardObject.CardID}, '${cardObject.CardOwner}', '${buyer}', '${today}');`;
+        let insertQuery = `INSERT INTO Transaction(Price, CardID, OriginalOwner, NewOwner, TransactionDate) VALUES (${cardObject.CardPrice}, ${cardObject.CardID}, '${cardObject.CardOwner}', '${buyer}', '${today}');`;
         
         await utilsMYSQL.executeCommand(insertQuery, connection);
 
