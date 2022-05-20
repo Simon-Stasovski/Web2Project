@@ -17,6 +17,13 @@ module.exports = {
     listCardsForSale
 }
 
+/**
+ * adds the values passed into the request body to the card table if all of the data passed in is valid.
+ * If the passed in data is invalid, the view will be rerendered displaying an error message. This is 
+ * a callback method for a post endpoint.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function addCard( request, response ) {
     try{
         let card = await model.addCard( request.body.cardName, request.body.type, request.body.description, request.body.serialNumber, request.body.frontImagePath, request.body.backImagePath
@@ -48,6 +55,12 @@ async function addCard( request, response ) {
 
 router.post( '/card', addCard );
 
+/**
+ * Lists all of the cards in the card table. This method is currently not
+ * in use by any view.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function listAllCards( request, response ){
     try{
         let listOfCards = await model.readFromCardTable();
@@ -66,7 +79,12 @@ async function listAllCards( request, response ){
 
 router.get( '/cards', listAllCards ); // can it be plural since the idea is multiple
 
-
+/**
+ * Gets the card record of the card with the id specified in the request query. This 
+ * method is currently not used by a view or an endpoint.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function getSpecificCard( request, response ){
     try{
         let id = request.params.id;
@@ -106,6 +124,16 @@ async function getSpecificCard( request, response ){
 
 // router.get( '/card/:id', getSpecificCard ); 
 
+/**
+ * Gets all of the card record's that's card owner is the currently logged in user.
+ * If a query parameter called searchBarSearch is passed in, the user cards that will
+ * be displayed are set to whichever one's names match the search string in the searchBarSearch
+ * query parameter. If a query parameter called addCard is passed in, the view is rendered
+ * with the addCard widget is displayed. If a query parameter called editCard is passed in,
+ * the addCard widget is displayed with the edit card information.
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function listCardsByUser( request, response ){
     try{
         response.cookie( "endpoint", '/cards/user', { expires: new Date(Date.now() + 560 * 60000) }); 
@@ -177,6 +205,11 @@ async function listCardsByUser( request, response ){
 
 router.get( '/cards/user', listCardsByUser );
 
+/**
+ * 
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function listCardsForSale( request, response ){
     try{
         response.cookie( "endpoint", '/cards/sale', { expires: new Date(Date.now() + 560 * 60000) }); 
@@ -268,6 +301,11 @@ function search( request, cards ){
     });
 }
 
+/**
+ * 
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function editSpecificCard( request, response ){
     try{
         let id = request.body.editId;
@@ -305,6 +343,11 @@ async function editSpecificCard( request, response ){
 
 router.post( '/card/edit', editSpecificCard ); 
 
+/**
+ * 
+ * @param {*} request The object representation of the http request
+ * @param {*} response The object representation of the http response 
+ */
 async function deleteSpecificCard( request, response ){
     try{
         let id = request.body.deleteCard;

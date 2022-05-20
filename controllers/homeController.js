@@ -26,7 +26,8 @@ router.get( '/', showHome );
 //#region ANNA
 /**
  * redirects the search bar search item to the last visited endpoint (either shopping page or card page)
- * @param {*} request The object representation of the http request
+ * @param {*} request The object representation of the http request. The endpoint cookie is set before this
+ * method is called.
  * @param {*} response The object representation of the http response
  */
 function executeSearchBarSearch( request, response ){
